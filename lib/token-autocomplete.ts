@@ -419,9 +419,9 @@ class TokenAutocomplete {
             let me = this;
             let request = new XMLHttpRequest();
             request.onload = function() {
-                if (Array.isArray(request.response)) {
-                    request.response.forEach(function (suggestion) {
-                    me.addSuggestion(suggestion); 
+                if (Array.isArray(request.response.completions)) {
+                    request.response.completions.forEach(function (suggestion: Suggestion) {
+                        me.addSuggestion(suggestion); 
                     });
                 }
             };
