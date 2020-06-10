@@ -22,6 +22,7 @@ var TokenAutocomplete = /** @class */ (function () {
             initialTokens: null,
             initialSuggestions: null,
             suggestionsUri: '',
+            suggestionsUriBuilder: function (query) { return this.suggestionsUri + '?query=' + query; },
             suggestionRenderer: TokenAutocomplete.Autocomplete.defaultRenderer,
             minCharactersForSuggestion: 1
         };
@@ -81,10 +82,9 @@ var TokenAutocomplete = /** @class */ (function () {
             }
         });
         this.textInput.addEventListener('keyup', function (event) {
-            var _a, _b;
             if ((event.which == me.KEY_UP || event.keyCode == me.KEY_UP) && me.autocomplete.suggestions.childNodes.length > 0) {
                 var highlightedSuggestion = me.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                var aboveSuggestion = (_a = highlightedSuggestion) === null || _a === void 0 ? void 0 : _a.previousSibling;
+                var aboveSuggestion = highlightedSuggestion === null || highlightedSuggestion === void 0 ? void 0 : highlightedSuggestion.previousSibling;
                 if (aboveSuggestion != null) {
                     me.autocomplete.highlightSuggestion(aboveSuggestion);
                 }
@@ -92,7 +92,7 @@ var TokenAutocomplete = /** @class */ (function () {
             }
             if ((event.which == me.KEY_DOWN || event.keyCode == me.KEY_DOWN) && me.autocomplete.suggestions.childNodes.length > 0) {
                 var highlightedSuggestion = me.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                var belowSuggestion = (_b = highlightedSuggestion) === null || _b === void 0 ? void 0 : _b.nextSibling;
+                var belowSuggestion = highlightedSuggestion === null || highlightedSuggestion === void 0 ? void 0 : highlightedSuggestion.nextSibling;
                 if (belowSuggestion != null) {
                     me.autocomplete.highlightSuggestion(belowSuggestion);
                 }
@@ -243,11 +243,11 @@ var TokenAutocomplete = /** @class */ (function () {
          * @param {Element} token - the token to remove
          */
         class_1.prototype.removeToken = function (token) {
-            var _a, _b;
+            var _a;
             this.container.removeChild(token);
             var tokenText = token.getAttribute('data-text');
             var hiddenOption = this.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
-            (_b = (_a = hiddenOption) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.removeChild(hiddenOption);
+            (_a = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(hiddenOption);
             this.parent.log('removed token', token.textContent);
         };
         class_1.prototype.removeTokenWithText = function (tokenText) {
@@ -318,7 +318,8 @@ var TokenAutocomplete = /** @class */ (function () {
                         });
                     }
                 };
-                request.open('GET', me.options.suggestionsUri + '?query=' + query, true);
+                var suggestionsUri = me.options.suggestionsUriBuilder(query);
+                request.open('GET', suggestionsUri, true);
                 request.responseType = 'json';
                 request.setRequestHeader('Content-type', 'application/json');
                 request.send();
