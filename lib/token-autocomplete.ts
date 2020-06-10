@@ -57,6 +57,7 @@ class TokenAutocomplete {
 
     KEY_BACKSPACE = 8;
     KEY_ENTER = 13;
+    KEY_TAB = 9;
     KEY_UP = 38;
     KEY_DOWN = 40;
 
@@ -127,7 +128,7 @@ class TokenAutocomplete {
         }
 
         this.textInput.addEventListener('keydown', function (event) {
-            if (event.which == me.KEY_ENTER || event.keyCode == me.KEY_ENTER) {
+            if (event.which == me.KEY_ENTER || event.keyCode == me.KEY_ENTER || event.which == me.KEY_TAB || event.keyCode == me.KEY_TAB) {
                 event.preventDefault();
                 
                 let highlightedSuggestion = me.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
@@ -137,7 +138,6 @@ class TokenAutocomplete {
                     } else {
                         me.select.addToken(highlightedSuggestion.getAttribute('data-value'), highlightedSuggestion.textContent);
                     }
-                    
                 } else {
                     me.select.addToken(me.textInput.textContent, me.textInput.textContent);
                 }
