@@ -317,6 +317,12 @@ var TokenAutocomplete = /** @class */ (function () {
                         request.response.completions.forEach(function (suggestion) {
                             me.addSuggestion(suggestion);
                         });
+                        if (me.suggestions.childNodes.length > 0) {
+                            me.highlightSuggestionAtPosition(0);
+                        }
+                        else if (me.options.noMatchesText) {
+                            me.addSuggestion({ value: '_no_match_', text: me.options.noMatchesText, description: null });
+                        }
                     }
                 };
                 var suggestionsUri = me.options.suggestionsUriBuilder(query);

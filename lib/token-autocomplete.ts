@@ -423,6 +423,11 @@ class TokenAutocomplete {
                     request.response.completions.forEach(function (suggestion: Suggestion) {
                         me.addSuggestion(suggestion); 
                     });
+                    if (me.suggestions.childNodes.length > 0) {
+                        me.highlightSuggestionAtPosition(0);
+                    } else if (me.options.noMatchesText) {
+                        me.addSuggestion({value: '_no_match_', text: me.options.noMatchesText, description: null});
+                    }
                 }
             };
             let suggestionsUri = me.options.suggestionsUriBuilder(query);
