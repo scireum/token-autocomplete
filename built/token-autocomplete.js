@@ -35,6 +35,8 @@ var TokenAutocomplete = /** @class */ (function () {
         this.KEY_TAB = 'Tab';
         this.KEY_UP = 'ArrowUp';
         this.KEY_DOWN = 'ArrowDown';
+        this.KEY_LEFT = 'ArrowLeft';
+        this.KEY_RIGHT = 'ArrowRight';
         this.KEY_ESC = 'Escape';
         this.defaults = {
             name: '',
@@ -127,7 +129,11 @@ var TokenAutocomplete = /** @class */ (function () {
             if (event.key == me.KEY_UP && me.autocomplete.suggestions.childNodes.length > 0) {
                 event.preventDefault();
                 var highlightedSuggestion = me.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                var aboveSuggestion = highlightedSuggestion === null || highlightedSuggestion === void 0 ? void 0 : highlightedSuggestion.previousSibling;
+                if (highlightedSuggestion == null) {
+                    me.autocomplete.highlightSuggestionAtPosition(me.autocomplete.suggestions.childNodes.length - 1);
+                    return;
+                }
+                var aboveSuggestion = highlightedSuggestion.previousSibling;
                 if (aboveSuggestion != null) {
                     me.autocomplete.highlightSuggestion(aboveSuggestion);
                 }
@@ -141,11 +147,19 @@ var TokenAutocomplete = /** @class */ (function () {
                 var highlightedSuggestion = me.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                 if (highlightedSuggestion == null) {
                     me.autocomplete.highlightSuggestionAtPosition(0);
+                    return;
                 }
                 var belowSuggestion = highlightedSuggestion === null || highlightedSuggestion === void 0 ? void 0 : highlightedSuggestion.nextSibling;
                 if (belowSuggestion != null) {
                     me.autocomplete.highlightSuggestion(belowSuggestion);
                 }
+                else {
+                    highlightedSuggestion.classList.remove('token-autocomplete-suggestion-highlighted');
+                }
+                return;
+            }
+            if (event.key == me.KEY_LEFT || event.key == me.KEY_RIGHT) {
+                // We dont want to retrigger the autocompletion when the user navigates the cursor inside the input.
                 return;
             }
             var value = me.getCurrentInput();
