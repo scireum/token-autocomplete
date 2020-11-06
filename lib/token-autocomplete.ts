@@ -639,8 +639,15 @@ class TokenAutocomplete {
                 me.request = null;
 
                 me.clearSuggestions();
-                if (Array.isArray(this.response.completions)) {
-                    this.response.completions.forEach(function (suggestion: Suggestion) {
+
+                let answer = this.response;
+                //IE 11 doesnt properly respect content type header, need to parse json string by hand..
+                if (typeof answer === 'string') {
+                    answer = JSON.parse(answer);
+                }
+
+                if (Array.isArray(answer.completions)) {
+                    answer.completions.forEach(function (suggestion: Suggestion) {
                         me.addSuggestion(suggestion);
                     });
                     if (me.suggestions.childNodes.length == 0 && me.options.noMatchesText) {
