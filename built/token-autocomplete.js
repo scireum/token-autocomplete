@@ -98,6 +98,9 @@ var TokenAutocomplete = /** @class */ (function () {
         this.select.initEventListeners();
         this.autocomplete.initEventListeners();
         this.debug(false);
+        if (Array.isArray(this.options.initialTokens)) {
+            this.val(this.options.initialTokens);
+        }
         this.container.tokenAutocomplete = this;
     }
     /**

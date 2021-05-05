@@ -177,6 +177,10 @@ class TokenAutocomplete {
 
         this.debug(false);
 
+        if (Array.isArray(this.options.initialTokens)) {
+            this.val(this.options.initialTokens);
+        }
+
         this.container.tokenAutocomplete = this as TokenAutocomplete;
     }
 
