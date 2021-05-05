@@ -208,33 +208,33 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.parent.textInput.textContent = '';
             };
             class_1.prototype.initEventListeners = function () {
-                var me = this.parent;
-                var multiSelect = me.select;
-                me.textInput.addEventListener('keydown', function (event) {
-                    if (event.key == me.KEY_ENTER || event.key == me.KEY_TAB) {
+                var me = this;
+                var parent = this.parent;
+                parent.textInput.addEventListener('keydown', function (event) {
+                    if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
                         event.preventDefault();
-                        var highlightedSuggestion = me.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                        if (highlightedSuggestion == null && event.key == me.KEY_TAB && me.autocomplete.areSuggestionsDisplayed()) {
-                            highlightedSuggestion = me.autocomplete.suggestions.firstChild;
+                        var highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
+                        if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                            highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                         }
                         if (highlightedSuggestion !== null) {
-                            multiSelect.clearCurrentInput();
+                            me.clearCurrentInput();
                             if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
-                                multiSelect.removeTokenWithText(highlightedSuggestion.dataset.text);
+                                me.removeTokenWithText(highlightedSuggestion.dataset.text);
                             }
                             else {
-                                multiSelect.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
+                                me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
                             }
                         }
                         else {
-                            multiSelect.handleInputAsValue(me.getCurrentInput());
+                            me.handleInputAsValue(parent.getCurrentInput());
                         }
                     }
-                    else if (me.getCurrentInput() === '' && event.key == me.KEY_BACKSPACE) {
+                    else if (parent.getCurrentInput() === '' && event.key == parent.KEY_BACKSPACE) {
                         event.preventDefault();
-                        multiSelect.removeLastToken();
+                        me.removeLastToken();
                     }
-                    if ((event.key == me.KEY_DOWN || event.key == me.KEY_UP) && me.autocomplete.suggestions.childNodes.length > 0) {
+                    if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                         event.preventDefault();
                     }
                 });
@@ -421,34 +421,34 @@ var TokenAutocomplete = /** @class */ (function () {
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
         };
         class_2.prototype.initEventListeners = function () {
-            var me = this.parent;
-            var singleSelect = me.select;
-            me.textInput.addEventListener('keydown', function (event) {
-                if (event.key == me.KEY_ENTER || event.key == me.KEY_TAB) {
+            var me = this;
+            var parent = this.parent;
+            parent.textInput.addEventListener('keydown', function (event) {
+                if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
                     event.preventDefault();
-                    var highlightedSuggestion = me.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                    if (highlightedSuggestion == null && event.key == me.KEY_TAB && me.autocomplete.areSuggestionsDisplayed()) {
-                        highlightedSuggestion = me.autocomplete.suggestions.firstChild;
+                    var highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
+                    if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                        highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
                     if (highlightedSuggestion !== null) {
-                        singleSelect.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
+                        me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
                     }
                     else {
-                        singleSelect.handleInputAsValue(me.getCurrentInput());
+                        me.handleInputAsValue(parent.getCurrentInput());
                     }
                 }
-                if ((event.key == me.KEY_DOWN || event.key == me.KEY_UP) && me.autocomplete.suggestions.childNodes.length > 0) {
+                if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
                 }
             });
-            me.textInput.addEventListener('click', function (event) {
-                if (me.autocomplete.areSuggestionsDisplayed()) {
-                    me.textInput.dispatchEvent(new KeyboardEvent('keyup', { 'key': me.KEY_ESC }));
+            parent.textInput.addEventListener('click', function (event) {
+                if (parent.autocomplete.areSuggestionsDisplayed()) {
+                    parent.textInput.dispatchEvent(new KeyboardEvent('keyup', { 'key': parent.KEY_ESC }));
                 }
                 else {
-                    me.autocomplete.showSuggestions();
-                    me.textInput.dispatchEvent(new KeyboardEvent('keyup', { 'key': me.KEY_DOWN }));
-                    me.textInput.focus();
+                    parent.autocomplete.showSuggestions();
+                    parent.textInput.dispatchEvent(new KeyboardEvent('keyup', { 'key': parent.KEY_DOWN }));
+                    parent.textInput.focus();
                 }
             });
         };
