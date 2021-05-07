@@ -6,14 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Token Autocomplete Sample</title>
 
-    <script src="https://raw.githack.com/sabieber/token-autocomplete/master/built/token-autocomplete.js"></script>
-    <link href="https://raw.githack.com/sabieber/token-autocomplete/master/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
+    <script src="http://localhost:5500/built/token-autocomplete.js"></script>
+    <link href="http://localhost:5500/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
 
-    <style>
-    body {
-        background-color: #333;
-    }
-    </style>
 </head>
 <body>
     <form>
@@ -46,6 +41,27 @@
         <div id="sample4"></div>
         <div>
             <button type="submit">Submit</button>
+        </div>
+        <h1>Single select via option elements:</h1>
+        <div id="sample5">
+            <option value="apple">
+                Apple
+            </option>
+            <option value="banana">
+                Banana
+            </option>
+            <option value="donut">
+                Donut
+            </option>
+            <option value="pizza">
+                Pizza
+            </option>
+            <option value="burger" selected="selected">
+                Burger
+            </option>
+            <option value="pancake">
+                Pancake
+            </option>
         </div>
     </form>
     
@@ -121,6 +137,15 @@
         }
     });
     tokenAutocomplete4.debug(true);
+
+    let tokenAutocomplete5 = new TokenAutocomplete({
+        name: 'sample5',
+        selector: '#sample5',
+        noMatchesText: 'No matching results...',
+        selectMode: 0
+    });
+
+    tokenAutocomplete5.debug(true);
     
     </script>
 </body>
