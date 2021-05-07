@@ -92,7 +92,7 @@ var TokenAutocomplete = /** @class */ (function () {
         }
         else if (this.options.selectMode == SelectModes.SINGLE) {
             this.hiddenSelect.removeAttribute('multiple');
-            this.select = new TokenAutocomplete.SinlgeSelect(this);
+            this.select = new TokenAutocomplete.SingleSelect(this);
         }
         this.autocomplete = new TokenAutocomplete.Autocomplete(this);
         this.select.initEventListeners();
@@ -369,7 +369,7 @@ var TokenAutocomplete = /** @class */ (function () {
             return chip;
         },
         _a);
-    TokenAutocomplete.SinlgeSelect = /** @class */ (function () {
+    TokenAutocomplete.SingleSelect = /** @class */ (function () {
         function class_2(parent) {
             this.parent = parent;
             this.container = parent.container;

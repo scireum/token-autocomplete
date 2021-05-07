@@ -168,7 +168,7 @@ class TokenAutocomplete {
             this.select = new TokenAutocomplete.SearchMultiSelect(this);
         } else if (this.options.selectMode == SelectModes.SINGLE) {
             this.hiddenSelect.removeAttribute('multiple');
-            this.select = new TokenAutocomplete.SinlgeSelect(this);
+            this.select = new TokenAutocomplete.SingleSelect(this);
         }
         this.autocomplete = new TokenAutocomplete.Autocomplete(this);
 
@@ -484,7 +484,7 @@ class TokenAutocomplete {
         }
     }
 
-    static SinlgeSelect = class implements SingleSelect {
+    static SingleSelect = class implements SingleSelect {
 
         parent: TokenAutocomplete;
         container: any;
