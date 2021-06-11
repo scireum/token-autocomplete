@@ -9,65 +9,111 @@
     <script src="http://localhost:5500/built/token-autocomplete.js"></script>
     <link href="http://localhost:5500/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
 
+    <script>
+        if (window.NodeList && !NodeList.prototype.forEach) {
+            NodeList.prototype.forEach = Array.prototype.forEach;
+        }
+        (function () {
+
+            if (typeof window.CustomEvent === 'function') return false;
+
+            function CustomEvent(event, params) {
+                params = params || { bubbles: false, cancelable: false, detail: undefined };
+                var evt = document.createEvent('CustomEvent');
+                evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+                return evt;
+            }
+
+            CustomEvent.prototype = window.Event.prototype;
+
+            window.CustomEvent = CustomEvent;
+        })();
+    </script>
+
 </head>
 <body>
-    <form>
-        <h1>Tokens / Suggestions via constructor parameters:</h1>
-        <div id="sample"></div>
-        <h1>Tokens / Suggestions via option elements:</h1>
-        <div id="sample2">
-            <option value="apple">
-                Apple
-            </option>
-            <option value="banana">
-                Banana
-            </option>
-            <option value="donut" selected="selected">
-                Donut
-            </option>
-            <option value="pizza">
-                Pizza
-            </option>
-            <option value="burger" selected="selected">
-                Burger
-            </option>
-            <option value="pancake">
-                Pancake
-            </option>
-        </div>
-        <h1>Suggestions via service URI:</h1>
-        <div id="sample3"></div>
-        <h1>Custom suggestion renderer:</h1>
-        <div id="sample4"></div>
-        <div>
-            <button type="submit">Submit</button>
-        </div>
-        <h1>Single select via option elements:</h1>
-        <div id="sample5">
-            <option value="apple">
-                Apple
-            </option>
-            <option value="banana">
-                Banana
-            </option>
-            <option value="donut">
-                Donut
-            </option>
-            <option value="pizza">
-                Pizza
-            </option>
-            <option value="burger" selected="selected">
-                Burger
-            </option>
-            <option value="pancake">
-                Pancake
-            </option>
-        </div>
-    </form>
-    
+<form>
+    <h1>Tokens / Suggestions via constructor parameters:</h1>
+    <div id="sample"></div>
+    <h1>Tokens / Suggestions via option elements:</h1>
+    <div id="sample2">
+        <option value="apple">
+            Apple
+        </option>
+        <option value="banana">
+            Banana
+        </option>
+        <option value="donut" selected="selected">
+            Donut
+        </option>
+        <option value="pizza">
+            Pizza
+        </option>
+        <option value="burger" selected="selected">
+            Burger
+        </option>
+        <option value="pancake">
+            Pancake
+        </option>
+    </div>
+    <h1>Suggestions via service URI:</h1>
+    <div id="sample3"></div>
+    <h1>Custom suggestion renderer:</h1>
+    <div id="sample4"></div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+    <h1>Single select via option elements:</h1>
+    <div id="sample5">
+        <option value="apple">
+            Apple
+        </option>
+        <option value="banana">
+            Banana
+        </option>
+        <option value="donut">
+            Donut
+        </option>
+        <option value="pizza">
+            Pizza
+        </option>
+        <option value="burger" selected="selected">
+            Burger
+        </option>
+        <option value="pancake">
+            Pancake
+        </option>
+    </div>
+    <h1>No custom entries, only given options can be choosen:</h1>
+    <div id="sample6"></div>
+    <h1>Single select readonly:</h1>
+    <div id="sample7">
+        <option value="apple">
+            Apple
+        </option>
+        <option value="banana">
+            Banana
+        </option>
+        <option value="donut">
+            Donut
+        </option>
+        <option value="pizza">
+            Pizza
+        </option>
+        <option value="burger" selected="selected">
+            Burger
+        </option>
+        <option value="pancake">
+            Pancake
+        </option>
+    </div>
+    <h1>Multiselect readonly:</h1>
+    <div id="sample8"></div>
+</form>
 
-    <script>
-    
+
+<script>
+
     let tokenAutocomplete = new TokenAutocomplete({
         name: 'sample',
         selector: '#sample',
@@ -146,7 +192,63 @@
     });
 
     tokenAutocomplete5.debug(true);
-    
-    </script>
+
+    let tokenAutocomplete6 = new TokenAutocomplete({
+        name: 'sample6',
+        selector: '#sample6',
+        noMatchesText: 'No matching results...',
+        allowCustomEntries: false,
+        initialTokens: [
+            {value: 'apple', text: 'Apple'},
+            {value: 'banana', text: 'Banana'},
+            {value: 'pancake', text: 'Pancake'}
+        ],
+        initialSuggestions: [
+            {value: 'apple', text: 'Apple', description: 'Fruit'},
+            {value: 'banana', text: 'Banana', description: 'Fruit'},
+            {value: 'donut', text: 'Donut', description: 'Sweet'},
+            {value: 'pizza', text: 'Pizza', description: 'Cheesy'},
+            {value: 'burger', text: 'Burger', description: 'Meaty'},
+            {value: 'pancake', text: 'Pancake', description: 'Sweet'}
+        ]
+    });
+
+    tokenAutocomplete6.debug(true);
+
+    let tokenAutocomplete7 = new TokenAutocomplete({
+        name: 'sample7',
+        selector: '#sample7',
+        noMatchesText: 'No matching results...',
+        selectMode: 0,
+        readonly: true
+    });
+
+    tokenAutocomplete7.debug(true);
+
+    let tokenAutocomplete8 = new TokenAutocomplete({
+        name: 'sample8',
+        selector: '#sample8',
+        noMatchesText: 'No matching results...',
+        allowCustomEntries: false,
+        readonly: true,
+        initialTokens: [
+            {value: 'apple', text: 'Apple'},
+            {value: 'banana', text: 'Banana'},
+            {value: 'pancake', text: 'Pancake'}
+        ],
+        initialSuggestions: [
+            {value: 'apple', text: 'Apple', description: 'Fruit'},
+            {value: 'banana', text: 'Banana', description: 'Fruit'},
+            {value: 'donut', text: 'Donut', description: 'Sweet'},
+            {value: 'pizza', text: 'Pizza', description: 'Cheesy'},
+            {value: 'burger', text: 'Burger', description: 'Meaty'},
+            {value: 'pancake', text: 'Pancake', description: 'Sweet'}
+        ]
+    });
+
+    tokenAutocomplete8.debug(true);
+
+
+</script>
 </body>
 </html>

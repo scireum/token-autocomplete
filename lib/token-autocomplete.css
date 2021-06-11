@@ -5,9 +5,14 @@
     background-color: #FFFFFF;
 }
 
+.token-autocomplete-container.token-autocomplete-readonly {
+    border-color: #747474;
+    background-color: #E6E6E6;
+}
+
 .token-autocomplete-container, .token-autocomplete-container * {
     box-sizing: border-box;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 .token-autocomplete-container .token-autocomplete-input {
@@ -20,15 +25,19 @@
     flex-grow: 1;
 }
 
+.token-autocomplete-container.token-autocomplete-readonly .token-autocomplete-input {
+    display: none;
+}
+
 .token-autocomplete-container .token-autocomplete-input:empty::before {
     content: attr(data-placeholder);
-    color: rgb(0,0,0,0.6);
+    color: rgba(0, 0, 0, 0.6);
 }
 
 .token-autocomplete-container .token-autocomplete-token {
     font-size: 16px;
     line-height: 32px;
-    color: rgb(0,0,0,0.6);
+    color: rgba(0, 0, 0, 0.6);
     background-color: #E6E6E6;
     margin: 4px 2px;
     border-radius: 32px;
@@ -36,11 +45,19 @@
     pointer-events: none;
 }
 
+.token-autocomplete-container.token-autocomplete-readonly .token-autocomplete-token {
+    background-color: #cccccc;
+}
+
 .token-autocomplete-container.token-autocomplete-singleselect .token-autocomplete-input {
     padding: 0 24px 0 8px;
     width: 100%;
     position: relative;
     cursor: pointer;
+}
+
+.token-autocomplete-container.token-autocomplete-singleselect.token-autocomplete-readonly .token-autocomplete-input {
+    display: inherit;
 }
 
 .token-autocomplete-container.token-autocomplete-singleselect .token-autocomplete-input[contenteditable="true"] {
@@ -58,9 +75,17 @@
     border-color: #000 transparent transparent transparent;
 }
 
+.token-autocomplete-container.token-autocomplete-readonly.token-autocomplete-singleselect .token-autocomplete-input:after {
+    border-color: #cccccc transparent transparent transparent;
+}
+
 .token-autocomplete-container.token-autocomplete-singleselect.select-arrow-active:after {
     border-color: transparent transparent #000 transparent;
     top: 7px;
+}
+
+.token-autocomplete-container.token-autocomplete-readonly.token-autocomplete-singleselect.select-arrow-active:after {
+    border-color: transparent transparent #cccccc transparent;
 }
 
 .token-autocomplete-container .token-autocomplete-token:hover {
@@ -110,7 +135,7 @@
 }
 
 .token-autocomplete-container .token-autocomplete-suggestions li .token-autocomplete-suggestion-description {
-    display:block;
+    display: block;
     font-size: 0.7em;
     color: #808080;
 }

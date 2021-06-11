@@ -8,6 +8,7 @@ interface Suggestion {
     id: string | null,
     value: string,
     text: string,
+    label: string | null,
     type: string | null,
     description: string | null
 }
@@ -24,7 +25,9 @@ interface Options {
     suggestionsUri: string,
     suggestionsUriBuilder: SuggestionUriBuilder,
     suggestionRenderer: SuggestionRenderer,
-    minCharactersForSuggestion: number
+    minCharactersForSuggestion: number,
+    allowCustomEntries: boolean,
+    readonly: boolean
 }
 
 enum SelectModes {
@@ -70,6 +73,8 @@ interface Autocomplete {
     showSuggestions(): void;
 
     hideSuggestions(): void;
+
+    loadSuggestions(): void;
 
     areSuggestionsDisplayed(): boolean;
 
@@ -121,7 +126,9 @@ class TokenAutocomplete {
             return this.suggestionsUri + '?query=' + query
         },
         suggestionRenderer: TokenAutocomplete.Autocomplete.defaultRenderer,
-        minCharactersForSuggestion: 1
+        minCharactersForSuggestion: 1,
+        allowCustomEntries: true,
+        readonly: false
     };
     log: any;
 
@@ -146,20 +153,30 @@ class TokenAutocomplete {
         this.hiddenSelect.setAttribute('multiple', 'true');
         this.hiddenSelect.style.display = 'none';
 
+        if (this.options.readonly && this.options.tokenRenderer === TokenAutocomplete.MultiSelect.defaultRenderer) {
+            this.options.tokenRenderer = TokenAutocomplete.MultiSelect.defaultReadonlyRenderer;
+        }
+
         this.textInput = document.createElement('span');
         this.textInput.id = this.container.id + '-input';
         this.textInput.classList.add('token-autocomplete-input');
-        if (this.options.placeholderText != null) {
-            this.textInput.dataset.placeholder = this.options.placeholderText;
-        }
-        this.textInput.contentEditable = 'true';
-        this.textInput.addEventListener("paste", function (event) {
-            event.preventDefault();
-            const text = event.clipboardData?.getData("text/plain");
-            document.execCommand("insertHTML", false, text);
-        });
+        if (!this.options.readonly) {
+            if (this.options.placeholderText != null) {
+                this.textInput.dataset.placeholder = this.options.placeholderText;
+            }
 
+            this.textInput.contentEditable = 'true';
+            this.textInput.addEventListener("paste", function (event) {
+                event.preventDefault();
+                const text = event.clipboardData?.getData("text/plain");
+                document.execCommand("insertHTML", false, text);
+            });
+        } else {
+            this.container.classList.add('token-autocomplete-readonly');
+        }
         this.container.appendChild(this.textInput);
+
+
         this.container.appendChild(this.hiddenSelect);
 
         if (this.options.selectMode == SelectModes.MULTI) {
@@ -204,6 +221,7 @@ class TokenAutocomplete {
                     id: null,
                     value: option.value,
                     text: option.text,
+                    label: null,
                     type: null,
                     description: null
                 });
@@ -308,6 +326,9 @@ class TokenAutocomplete {
         initEventListeners(): void {
             const me = this;
             const parent = this.parent;
+            if (this.parent.options.readonly) {
+                return;
+            }
             parent.textInput.addEventListener('keydown', function (event) {
                 if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
                     event.preventDefault();
@@ -345,8 +366,16 @@ class TokenAutocomplete {
          * @param {string} input - the actual input the user entered
          */
         handleInputAsValue(input: string): void {
-            this.clearCurrentInput();
-            this.addToken(input, input, null);
+            if (this.parent.options.allowCustomEntries) {
+                this.clearCurrentInput();
+                this.addToken(input, input, null);
+                return;
+            }
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
+                this.parent.autocomplete.suggestions.firstChild.click();
+            } else {
+                this.clearCurrentInput();
+            }
         }
 
         /**
@@ -482,6 +511,19 @@ class TokenAutocomplete {
 
             return chip;
         }
+
+        static defaultReadonlyRenderer: TokenRenderer = function (token: Token): HTMLElement {
+            const chip = document.createElement('span');
+            chip.classList.add('token-autocomplete-token');
+            chip.dataset.text = token.text;
+            chip.dataset.value = token.value;
+            if (token.type != null) {
+                chip.dataset.type = token.type;
+            }
+            chip.textContent = token.text;
+
+            return chip;
+        }
     }
 
     static SingleSelect = class implements SingleSelect {
@@ -501,6 +543,9 @@ class TokenAutocomplete {
         }
 
         clear(silent: boolean): void {
+            if (this.options.readonly) {
+                return;
+            }
             let me = this;
             let tokenText = me.parent.textInput.textContent;
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
@@ -516,7 +561,7 @@ class TokenAutocomplete {
          */
         handleInputAsValue(input: string): void {
             if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
-                this.parent.autocomplete.suggestions.firstChild.dispatchEvent(new MouseEvent('click'));
+                this.parent.autocomplete.suggestions.firstChild.click();
             } else {
                 this.clearCurrentInput();
             }
@@ -550,6 +595,9 @@ class TokenAutocomplete {
         initEventListeners(): void {
             const me = this;
             const parent = this.parent;
+            if (this.parent.options.readonly) {
+                return;
+            }
             parent.textInput.addEventListener('keydown', function (event) {
                 if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
                     event.preventDefault();
@@ -572,10 +620,10 @@ class TokenAutocomplete {
             });
             parent.textInput.addEventListener('click', function (event) {
                 if (parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.textInput.dispatchEvent(new KeyboardEvent('keyup', {'key': parent.KEY_ESC}))
+                    parent.autocomplete.hideSuggestions();
                 } else {
                     parent.autocomplete.showSuggestions();
-                    parent.textInput.dispatchEvent(new KeyboardEvent('keyup', {'key': parent.KEY_DOWN}))
+                    parent.autocomplete.loadSuggestions();
                     parent.textInput.focus();
                 }
             });
@@ -622,6 +670,9 @@ class TokenAutocomplete {
 
         initEventListeners() {
             let me = this;
+            if (this.parent.options.readonly) {
+                return;
+            }
             this.parent.textInput.addEventListener('keyup', function (event) {
                 if (event.key == me.parent.KEY_ESC || event.key == me.parent.KEY_ENTER) {
                     me.hideSuggestions();
@@ -661,44 +712,50 @@ class TokenAutocomplete {
                     // We dont want to retrigger the autocompletion when the user navigates the cursor inside the input.
                     return;
                 }
-
-                let value = me.parent.getCurrentInput();
-
-                if (me.parent.options.selectMode == SelectModes.SINGLE) {
-                    if (!me.parent.textInput.isContentEditable) {
-                        me.parent.select.clearCurrentInput();
-                        value = '';
-                    }
-                } else if (value.length < me.parent.options.minCharactersForSuggestion) {
-                    me.hideSuggestions();
-                    me.clearSuggestions();
-                    return;
-                }
-                if (Array.isArray(me.parent.options.initialSuggestions)) {
-                    me.clearSuggestions();
-                    me.parent.options.initialSuggestions.forEach(function (suggestion) {
-                        if (typeof suggestion !== 'object') {
-                            // the suggestion is of wrong type and therefore ignored
-                            return;
-                        }
-                        if (value.localeCompare(suggestion.text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
-                            // The suggestion starts with the query text the user entered and will be displayed
-                            me.addSuggestion(suggestion);
-                        }
-                    });
-                    if (me.suggestions.childNodes.length == 0 && me.parent.options.noMatchesText) {
-                        me.addSuggestion({
-                            id: null,
-                            value: '_no_match_',
-                            text: me.parent.options.noMatchesText,
-                            type: '_no_match_',
-                            description: null
-                        });
-                    }
-                } else if (me.parent.options.suggestionsUri.length > 0) {
-                    me.requestSuggestions(value);
-                }
+                me.loadSuggestions();
             });
+        }
+
+        loadSuggestions() {
+            let me = this;
+            let value = me.parent.getCurrentInput();
+
+            if (me.parent.options.selectMode == SelectModes.SINGLE) {
+                if (!me.parent.textInput.isContentEditable) {
+                    me.parent.select.clearCurrentInput();
+                    value = '';
+                }
+            } else if (value.length < me.parent.options.minCharactersForSuggestion) {
+                me.hideSuggestions();
+                me.clearSuggestions();
+                return;
+            }
+            if (Array.isArray(me.parent.options.initialSuggestions)) {
+                me.clearSuggestions();
+                me.parent.options.initialSuggestions.forEach(function (suggestion) {
+                    if (typeof suggestion !== 'object') {
+                        // the suggestion is of wrong type and therefore ignored
+                        return;
+                    }
+                    let text = suggestion.label || suggestion.text;
+                    if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
+                        // The suggestion starts with the query text the user entered and will be displayed
+                        me.addSuggestion(suggestion);
+                    }
+                });
+                if (me.suggestions.childNodes.length == 0 && me.parent.options.noMatchesText) {
+                    me.addSuggestion({
+                        id: null,
+                        value: '_no_match_',
+                        text: me.parent.options.noMatchesText,
+                        label: null,
+                        type: '_no_match_',
+                        description: null
+                    });
+                }
+            } else if (me.parent.options.suggestionsUri.length > 0) {
+                me.requestSuggestions(value);
+            }
         }
 
         /**
@@ -779,6 +836,7 @@ class TokenAutocomplete {
                             id: null,
                             value: '_no_match_',
                             text: me.options.noMatchesText,
+                            label: null,
                             type: '_no_match_',
                             description: null
                         });
@@ -801,38 +859,39 @@ class TokenAutocomplete {
             let element = this.renderer(suggestion);
 
             let value = suggestion.id || suggestion.value;
+            let text = suggestion.label || suggestion.text;
 
             element.dataset.value = value;
-            element.dataset.text = suggestion.text;
+            element.dataset.text = text;
             if (suggestion.type != null) {
                 element.dataset.type = suggestion.type;
             }
 
             let me = this;
             element.addEventListener('click', function (_event: Event) {
-                if (suggestion.text == me.options.noMatchesText) {
+                if (text == me.options.noMatchesText) {
                     return true;
                 }
                 if (me.parent.options.selectMode == SelectModes.SINGLE) {
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
                         me.parent.select.clear(false);
                     } else {
-                        me.parent.select.addToken(value, suggestion.text, suggestion.type, false);
+                        me.parent.select.addToken(value, text, suggestion.type, false);
                     }
                 } else {
                     me.parent.select.clearCurrentInput();
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
                         let multiSelect = me.parent.select as MultiSelect;
-                        multiSelect.removeTokenWithText(suggestion.text);
+                        multiSelect.removeTokenWithText(text);
                     } else {
-                        me.parent.select.addToken(value, suggestion.text, suggestion.type, false);
+                        me.parent.select.addToken(value, text, suggestion.type, false);
                     }
                 }
                 me.clearSuggestions();
                 me.hideSuggestions();
             });
 
-            if (this.container.querySelector('.token-autocomplete-token[data-text="' + suggestion.text + '"]') !== null) {
+            if (this.container.querySelector('.token-autocomplete-token[data-text="' + text + '"]') !== null) {
                 element.classList.add('token-autocomplete-suggestion-active');
             }
 
@@ -844,7 +903,7 @@ class TokenAutocomplete {
 
         static defaultRenderer: SuggestionRenderer = function (suggestion: Suggestion): HTMLElement {
             let option = document.createElement('li');
-            option.textContent = suggestion.text;
+            option.textContent = suggestion.label || suggestion.text;
 
             if (suggestion.description) {
                 let description = document.createElement('small');
