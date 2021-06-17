@@ -9,8 +9,11 @@ interface Suggestion {
     value: string,
     text: string,
     label: string | null,
+    fieldLabel: string | null,
     type: string | null,
-    description: string | null
+    description: string | null,
+    completionLabel: string | null,
+    completionDescription: string | null
 }
 
 interface Options {
@@ -222,8 +225,11 @@ class TokenAutocomplete {
                     value: option.value,
                     text: option.text,
                     label: null,
+                    fieldLabel: null,
                     type: null,
-                    description: null
+                    description: null,
+                    completionDescription: null,
+                    completionLabel: null
                 });
             }
             me.container.removeChild(option);
@@ -737,7 +743,7 @@ class TokenAutocomplete {
                         // the suggestion is of wrong type and therefore ignored
                         return;
                     }
-                    let text = suggestion.label || suggestion.text;
+                    let text = suggestion.fieldLabel || suggestion.label || suggestion.text;
                     if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
                         // The suggestion starts with the query text the user entered and will be displayed
                         me.addSuggestion(suggestion);
@@ -750,7 +756,10 @@ class TokenAutocomplete {
                         text: me.parent.options.noMatchesText,
                         label: null,
                         type: '_no_match_',
-                        description: null
+                        description: null,
+                        fieldLabel: null,
+                        completionDescription: null,
+                        completionLabel: null
                     });
                 }
             } else if (me.parent.options.suggestionsUri.length > 0) {
@@ -838,7 +847,10 @@ class TokenAutocomplete {
                             text: me.options.noMatchesText,
                             label: null,
                             type: '_no_match_',
-                            description: null
+                            description: null,
+                            fieldLabel: null,
+                            completionDescription: null,
+                            completionLabel: null
                         });
                     }
                 }
@@ -859,7 +871,7 @@ class TokenAutocomplete {
             let element = this.renderer(suggestion);
 
             let value = suggestion.id || suggestion.value;
-            let text = suggestion.label || suggestion.text;
+            let text = suggestion.fieldLabel || suggestion.label || suggestion.text;
 
             element.dataset.value = value;
             element.dataset.text = text;
@@ -903,11 +915,11 @@ class TokenAutocomplete {
 
         static defaultRenderer: SuggestionRenderer = function (suggestion: Suggestion): HTMLElement {
             let option = document.createElement('li');
-            option.textContent = suggestion.label || suggestion.text;
+            option.textContent = suggestion.completionLabel || suggestion.label || suggestion.text;
 
             if (suggestion.description) {
                 let description = document.createElement('small');
-                description.textContent = suggestion.description;
+                description.textContent = suggestion.completionDescription || suggestion.description;
                 description.classList.add('token-autocomplete-suggestion-description');
                 option.appendChild(description);
             }
