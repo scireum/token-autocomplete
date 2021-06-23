@@ -593,6 +593,9 @@ var TokenAutocomplete = /** @class */ (function () {
                 }
                 if (Array.isArray(me.parent.options.initialSuggestions)) {
                     me.clearSuggestions();
+                    if (me.parent.options.suggestionsUri.length > 0) {
+                        me.requestSuggestions(value);
+                    }
                     me.parent.options.initialSuggestions.forEach(function (suggestion) {
                         if (typeof suggestion !== 'object') {
                             // the suggestion is of wrong type and therefore ignored
