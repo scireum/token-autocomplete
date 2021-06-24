@@ -132,8 +132,11 @@ var TokenAutocomplete = /** @class */ (function () {
                     value: option.value,
                     text: option.text,
                     label: null,
+                    fieldLabel: null,
                     type: null,
-                    description: null
+                    description: null,
+                    completionDescription: null,
+                    completionLabel: null
                 });
             }
             me.container.removeChild(option);
@@ -595,7 +598,7 @@ var TokenAutocomplete = /** @class */ (function () {
                             // the suggestion is of wrong type and therefore ignored
                             return;
                         }
-                        var text = suggestion.label || suggestion.text;
+                        var text = suggestion.fieldLabel || suggestion.label || suggestion.text;
                         if (value.localeCompare(text.slice(0, value.length), undefined, { sensitivity: 'base' }) === 0) {
                             // The suggestion starts with the query text the user entered and will be displayed
                             me.addSuggestion(suggestion);
@@ -608,7 +611,10 @@ var TokenAutocomplete = /** @class */ (function () {
                             text: me.parent.options.noMatchesText,
                             label: null,
                             type: '_no_match_',
-                            description: null
+                            description: null,
+                            fieldLabel: null,
+                            completionDescription: null,
+                            completionLabel: null
                         });
                     }
                 }
@@ -684,7 +690,10 @@ var TokenAutocomplete = /** @class */ (function () {
                                 text: me.options.noMatchesText,
                                 label: null,
                                 type: '_no_match_',
-                                description: null
+                                description: null,
+                                fieldLabel: null,
+                                completionDescription: null,
+                                completionLabel: null
                             });
                         }
                     }
@@ -703,7 +712,7 @@ var TokenAutocomplete = /** @class */ (function () {
             class_4.prototype.addSuggestion = function (suggestion) {
                 var element = this.renderer(suggestion);
                 var value = suggestion.id || suggestion.value;
-                var text = suggestion.label || suggestion.text;
+                var text = suggestion.fieldLabel || suggestion.label || suggestion.text;
                 element.dataset.value = value;
                 element.dataset.text = text;
                 if (suggestion.type != null) {
@@ -746,10 +755,10 @@ var TokenAutocomplete = /** @class */ (function () {
         }()),
         _b.defaultRenderer = function (suggestion) {
             var option = document.createElement('li');
-            option.textContent = suggestion.label || suggestion.text;
+            option.textContent = suggestion.completionLabel || suggestion.label || suggestion.text;
             if (suggestion.description) {
                 var description = document.createElement('small');
-                description.textContent = suggestion.description;
+                description.textContent = suggestion.completionDescription || suggestion.description;
                 description.classList.add('token-autocomplete-suggestion-description');
                 option.appendChild(description);
             }
