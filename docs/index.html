@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Token Autocomplete Sample</title>
 
-    <script src="http://localhost:5500/built/token-autocomplete.js"></script>
-    <link href="http://localhost:5500/lib/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
+    <script src="http://localhost:5500/dist/token-autocomplete.js"></script>
+    <link href="http://localhost:5500/dist/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
 
     <script>
         if (window.NodeList && !NodeList.prototype.forEach) {
@@ -109,6 +109,27 @@
     </div>
     <h1>Multiselect readonly:</h1>
     <div id="sample8"></div>
+    <h1>Single select optional:</h1>
+    <div id="sample9">
+        <option value="apple">
+            Apple
+        </option>
+        <option value="banana">
+            Banana
+        </option>
+        <option value="donut">
+            Donut
+        </option>
+        <option value="pizza">
+            Pizza
+        </option>
+        <option value="burger" selected="selected">
+            Burger
+        </option>
+        <option value="pancake">
+            Pancake
+        </option>
+    </div>
 </form>
 
 
@@ -119,9 +140,9 @@
         selector: '#sample',
         noMatchesText: 'No matching results...',
         initialTokens: [
-            {value: 'apple', fieldLabel: 'Apple'},
-            {value: 'banana', fieldLabel: 'Banana'},
-            {value: 'pancake', fieldLabel: 'Pancake'}
+            {value: 'apple', text: 'Apple'},
+            {value: 'banana', text: 'Banana'},
+            {value: 'pancake', text: 'Pancake'}
         ],
         initialSuggestions: [
             {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
@@ -154,9 +175,9 @@
         selector: '#sample4',
         noMatchesText: 'No matching results...',
         initialTokens: [
-            {value: 'apple', fieldLabel: 'Apple'},
-            {value: 'banana', fieldLabel: 'Banana'},
-            {value: 'pancake', fieldLabel: 'Pancake'}
+            {value: 'apple', text: 'Apple'},
+            {value: 'banana', text: 'Banana'},
+            {value: 'pancake', text: 'Pancake'}
         ],
         initialSuggestions: [
             {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
@@ -199,9 +220,9 @@
         noMatchesText: 'No matching results...',
         allowCustomEntries: false,
         initialTokens: [
-            {value: 'apple', fieldLabel: 'Apple'},
-            {value: 'banana', fieldLabel: 'Banana'},
-            {value: 'pancake', fieldLabel: 'Pancake'}
+            {value: 'apple', text: 'Apple'},
+            {value: 'banana', text: 'Banana'},
+            {value: 'pancake', text: 'Pancake'}
         ],
         initialSuggestions: [
             {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
@@ -232,9 +253,9 @@
         allowCustomEntries: false,
         readonly: true,
         initialTokens: [
-            {value: 'apple', fieldLabel: 'Apple'},
-            {value: 'banana', fieldLabel: 'Banana'},
-            {value: 'pancake', fieldLabel: 'Pancake'}
+            {value: 'apple', text: 'Apple'},
+            {value: 'banana', text: 'Banana'},
+            {value: 'pancake', text: 'Pancake'}
         ],
         initialSuggestions: [
             {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
@@ -248,6 +269,15 @@
 
     tokenAutocomplete8.debug(true);
 
+    let tokenAutocomplete9 = new TokenAutocomplete({
+        name: 'sample9',
+        selector: '#sample9',
+        noMatchesText: 'No matching results...',
+        selectMode: 0,
+        optional: true
+    });
+
+    tokenAutocomplete9.debug(true);
 
 </script>
 </body>
