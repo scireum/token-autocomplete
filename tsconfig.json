@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
-        "outDir": "./js",
+        "outDir": "./dist",
         "allowJs": true,
         "target": "es5",
         "noImplicitAny": true,
         "strictNullChecks": true,
         "noImplicitThis": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "inlineSources": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true
     },
     "include": [
-        "./sources/**/*"
+        "./lib/**/*"
     ]
 }
