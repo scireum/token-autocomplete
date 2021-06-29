@@ -119,17 +119,17 @@
         selector: '#sample',
         noMatchesText: 'No matching results...',
         initialTokens: [
-            {value: 'apple', text: 'Apple'},
-            {value: 'banana', text: 'Banana'},
-            {value: 'pancake', text: 'Pancake'}
+            {value: 'apple', fieldLabel: 'Apple'},
+            {value: 'banana', fieldLabel: 'Banana'},
+            {value: 'pancake', fieldLabel: 'Pancake'}
         ],
         initialSuggestions: [
-            {value: 'apple', text: 'Apple', description: 'Fruit'},
-            {value: 'banana', text: 'Banana', description: 'Fruit'},
-            {value: 'donut', text: 'Donut', description: 'Sweet'},
-            {value: 'pizza', text: 'Pizza', description: 'Cheesy'},
-            {value: 'burger', text: 'Burger', description: 'Meaty'},
-            {value: 'pancake', text: 'Pancake', description: 'Sweet'}
+            {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
+            {value: 'banana', fieldLabel: 'Banana', completionDescription: 'Fruit'},
+            {value: 'donut', fieldLabel: 'Donut', completionDescription: 'Sweet'},
+            {value: 'pizza', fieldLabel: 'Pizza', completionDescription: 'Cheesy'},
+            {value: 'burger', fieldLabel: 'Burger', completionDescription: 'Meaty'},
+            {value: 'pancake', fieldLabel: 'Pancake', completionDescription: 'Sweet'}
         ]
     });
     tokenAutocomplete.debug(true);
@@ -154,17 +154,17 @@
         selector: '#sample4',
         noMatchesText: 'No matching results...',
         initialTokens: [
-            {value: 'apple', text: 'Apple'},
-            {value: 'banana', text: 'Banana'},
-            {value: 'pancake', text: 'Pancake'}
+            {value: 'apple', fieldLabel: 'Apple'},
+            {value: 'banana', fieldLabel: 'Banana'},
+            {value: 'pancake', fieldLabel: 'Pancake'}
         ],
         initialSuggestions: [
-            {value: 'apple', text: 'Apple', description: 'Fruit'},
-            {value: 'banana', text: 'Banana', description: 'Fruit'},
-            {value: 'donut', text: 'Donut', description: 'Sweet'},
-            {value: 'pizza', text: 'Pizza', description: 'Cheesy'},
-            {value: 'burger', text: 'Burger', description: 'Meaty'},
-            {value: 'pancake', text: 'Pancake', description: 'Sweet'}
+            {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
+            {value: 'banana', fieldLabel: 'Banana', completionDescription: 'Fruit'},
+            {value: 'donut', fieldLabel: 'Donut', completionDescription: 'Sweet'},
+            {value: 'pizza', fieldLabel: 'Pizza', completionDescription: 'Cheesy'},
+            {value: 'burger', fieldLabel: 'Burger', completionDescription: 'Meaty'},
+            {value: 'pancake', fieldLabel: 'Pancake', completionDescription: 'Sweet'}
         ],
         suggestionRenderer: function (suggestion) {
             var option = document.createElement('li');
@@ -173,9 +173,9 @@
             text.textContent = suggestion.text;
             option.appendChild(text);
 
-            if (suggestion.description) {
+            if (suggestion.completionDescription) {
                 var description = document.createElement('span');
-                description.textContent = ' (' + suggestion.description + ')';
+                description.textContent = ' (' + suggestion.completionDescription + ')';
                 option.appendChild(description);
             }
 
@@ -199,17 +199,17 @@
         noMatchesText: 'No matching results...',
         allowCustomEntries: false,
         initialTokens: [
-            {value: 'apple', text: 'Apple'},
-            {value: 'banana', text: 'Banana'},
-            {value: 'pancake', text: 'Pancake'}
+            {value: 'apple', fieldLabel: 'Apple'},
+            {value: 'banana', fieldLabel: 'Banana'},
+            {value: 'pancake', fieldLabel: 'Pancake'}
         ],
         initialSuggestions: [
-            {value: 'apple', text: 'Apple', description: 'Fruit'},
-            {value: 'banana', text: 'Banana', description: 'Fruit'},
-            {value: 'donut', text: 'Donut', description: 'Sweet'},
-            {value: 'pizza', text: 'Pizza', description: 'Cheesy'},
-            {value: 'burger', text: 'Burger', description: 'Meaty'},
-            {value: 'pancake', text: 'Pancake', description: 'Sweet'}
+            {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
+            {value: 'banana', fieldLabel: 'Banana', completionDescription: 'Fruit'},
+            {value: 'donut', fieldLabel: 'Donut', completionDescription: 'Sweet'},
+            {value: 'pizza', fieldLabel: 'Pizza', completionDescription: 'Cheesy'},
+            {value: 'burger', fieldLabel: 'Burger', completionDescription: 'Meaty'},
+            {value: 'pancake', fieldLabel: 'Pancake', completionDescription: 'Sweet'}
         ]
     });
 
@@ -232,17 +232,17 @@
         allowCustomEntries: false,
         readonly: true,
         initialTokens: [
-            {value: 'apple', text: 'Apple'},
-            {value: 'banana', text: 'Banana'},
-            {value: 'pancake', text: 'Pancake'}
+            {value: 'apple', fieldLabel: 'Apple'},
+            {value: 'banana', fieldLabel: 'Banana'},
+            {value: 'pancake', fieldLabel: 'Pancake'}
         ],
         initialSuggestions: [
-            {value: 'apple', text: 'Apple', description: 'Fruit'},
-            {value: 'banana', text: 'Banana', description: 'Fruit'},
-            {value: 'donut', text: 'Donut', description: 'Sweet'},
-            {value: 'pizza', text: 'Pizza', description: 'Cheesy'},
-            {value: 'burger', text: 'Burger', description: 'Meaty'},
-            {value: 'pancake', text: 'Pancake', description: 'Sweet'}
+            {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
+            {value: 'banana', fieldLabel: 'Banana', completionDescription: 'Fruit'},
+            {value: 'donut', fieldLabel: 'Donut', completionDescription: 'Sweet'},
+            {value: 'pizza', fieldLabel: 'Pizza', completionDescription: 'Cheesy'},
+            {value: 'burger', fieldLabel: 'Burger', completionDescription: 'Meaty'},
+            {value: 'pancake', fieldLabel: 'Pancake', completionDescription: 'Sweet'}
         ]
     });
 

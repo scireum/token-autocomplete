@@ -7,11 +7,8 @@ interface Token {
 interface Suggestion {
     id: string | null,
     value: string,
-    text: string,
-    label: string | null,
-    fieldLabel: string | null,
+    fieldLabel: string,
     type: string | null,
-    description: string | null,
     completionLabel: string | null,
     completionDescription: string | null
 }
@@ -181,6 +178,7 @@ class TokenAutocomplete {
 
 
         this.container.appendChild(this.hiddenSelect);
+        this.addHiddenEmptyOption();
 
         if (this.options.selectMode == SelectModes.MULTI) {
             this.select = new TokenAutocomplete.MultiSelect(this);
@@ -223,11 +221,8 @@ class TokenAutocomplete {
                 initialSuggestions.push({
                     id: null,
                     value: option.value,
-                    text: option.text,
-                    label: null,
-                    fieldLabel: null,
+                    fieldLabel: option.text,
                     type: null,
-                    description: null,
                     completionDescription: null,
                     completionLabel: null
                 });
@@ -286,6 +281,7 @@ class TokenAutocomplete {
     }
 
     addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null) {
+        this.hiddenSelect.querySelector('.empty-token')?.remove();
         const option = document.createElement('option');
         option.text = tokenText;
         option.value = tokenValue;
@@ -295,6 +291,15 @@ class TokenAutocomplete {
         if (tokenType != null) {
             option.dataset.type = tokenType;
         }
+        this.hiddenSelect.add(option);
+    }
+
+    addHiddenEmptyOption() {
+        const option = document.createElement('option');
+        option.text = '';
+        option.value = '';
+        option.setAttribute('selected', 'true');
+        option.classList.add('empty-token');
         this.hiddenSelect.add(option);
     }
 
@@ -477,6 +482,10 @@ class TokenAutocomplete {
                 }));
             }
 
+            if (this.currentTokens().length === 0) {
+                this.parent.addHiddenEmptyOption();
+            }
+
             this.parent.log('removed token', token.textContent);
         }
 
@@ -556,6 +565,7 @@ class TokenAutocomplete {
             let tokenText = me.parent.textInput.textContent;
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
             hiddenOption?.parentElement?.removeChild(hiddenOption);
+            me.parent.addHiddenEmptyOption();
             me.parent.textInput.textContent = '';
             me.parent.textInput.contentEditable = 'true';
         }
@@ -730,23 +740,26 @@ class TokenAutocomplete {
                 if (!me.parent.textInput.isContentEditable) {
                     me.parent.select.clearCurrentInput();
                     value = '';
+                    me.parent.addHiddenEmptyOption();
                 }
             } else if (value.length < me.parent.options.minCharactersForSuggestion) {
                 me.hideSuggestions();
                 me.clearSuggestions();
                 return;
             }
+            if (me.parent.options.suggestionsUri.length > 0) {
+                me.requestSuggestions(value);
+                return;
+            }
             if (Array.isArray(me.parent.options.initialSuggestions)) {
                 me.clearSuggestions();
-                if (me.parent.options.suggestionsUri.length > 0) {
-                    me.requestSuggestions(value);
-                }
+
                 me.parent.options.initialSuggestions.forEach(function (suggestion) {
                     if (typeof suggestion !== 'object') {
                         // the suggestion is of wrong type and therefore ignored
                         return;
                     }
-                    let text = suggestion.fieldLabel || suggestion.label || suggestion.text;
+                    let text = suggestion.fieldLabel;
                     if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
                         // The suggestion starts with the query text the user entered and will be displayed
                         me.addSuggestion(suggestion);
@@ -756,17 +769,12 @@ class TokenAutocomplete {
                     me.addSuggestion({
                         id: null,
                         value: '_no_match_',
-                        text: me.parent.options.noMatchesText,
-                        label: null,
+                        fieldLabel: me.parent.options.noMatchesText,
                         type: '_no_match_',
-                        description: null,
-                        fieldLabel: null,
                         completionDescription: null,
                         completionLabel: null
                     });
                 }
-            } else if (me.parent.options.suggestionsUri.length > 0) {
-                me.requestSuggestions(value);
             }
         }
 
@@ -847,11 +855,8 @@ class TokenAutocomplete {
                         me.addSuggestion({
                             id: null,
                             value: '_no_match_',
-                            text: me.options.noMatchesText,
-                            label: null,
+                            fieldLabel: me.options.noMatchesText,
                             type: '_no_match_',
-                            description: null,
-                            fieldLabel: null,
                             completionDescription: null,
                             completionLabel: null
                         });
@@ -874,7 +879,7 @@ class TokenAutocomplete {
             let element = this.renderer(suggestion);
 
             let value = suggestion.id || suggestion.value;
-            let text = suggestion.fieldLabel || suggestion.label || suggestion.text;
+            let text = suggestion.completionLabel || suggestion.fieldLabel;
 
             element.dataset.value = value;
             element.dataset.text = text;
@@ -885,7 +890,7 @@ class TokenAutocomplete {
             let me = this;
             element.addEventListener('click', function (_event: Event) {
                 if (text == me.options.noMatchesText) {
-                    return true;
+                    return;
                 }
                 if (me.parent.options.selectMode == SelectModes.SINGLE) {
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
@@ -918,11 +923,11 @@ class TokenAutocomplete {
 
         static defaultRenderer: SuggestionRenderer = function (suggestion: Suggestion): HTMLElement {
             let option = document.createElement('li');
-            option.textContent = suggestion.completionLabel || suggestion.label || suggestion.text;
+            option.textContent = suggestion.completionLabel || suggestion.fieldLabel;
 
-            if (suggestion.description) {
+            if (suggestion.completionDescription) {
                 let description = document.createElement('small');
-                description.textContent = suggestion.completionDescription || suggestion.description;
+                description.textContent = suggestion.completionDescription;
                 description.classList.add('token-autocomplete-suggestion-description');
                 option.appendChild(description);
             }
