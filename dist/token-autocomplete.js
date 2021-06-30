@@ -247,10 +247,10 @@ var TokenAutocomplete = /** @class */ (function () {
                         if (highlightedSuggestion !== null) {
                             me.clearCurrentInput();
                             if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
-                                me.removeTokenWithText(highlightedSuggestion.dataset.text);
+                                me.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
                             }
                             else {
-                                me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
+                                me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
                             }
                             parent.autocomplete.hideSuggestions();
                         }
@@ -444,8 +444,8 @@ var TokenAutocomplete = /** @class */ (function () {
             var hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
             if (!me.options.optional) {
                 me.previousValue = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.value;
-                me.previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
-                me.previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
+                me.previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.tokenText;
+                me.previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.type;
             }
             else {
                 this.container.classList.remove('optional-singleselect-with-value');
@@ -507,7 +507,7 @@ var TokenAutocomplete = /** @class */ (function () {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
                     if (highlightedSuggestion !== null) {
-                        me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
+                        me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
                         parent.autocomplete.hideSuggestions();
                     }
                     else {
@@ -787,6 +787,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 var text = suggestion.completionLabel || suggestion.fieldLabel;
                 element.dataset.value = value;
                 element.dataset.text = text;
+                element.dataset.tokenText = suggestion.fieldLabel;
                 if (suggestion.type != null) {
                     element.dataset.type = suggestion.type;
                 }
@@ -800,7 +801,7 @@ var TokenAutocomplete = /** @class */ (function () {
                             me.parent.select.clear(false);
                         }
                         else {
-                            me.parent.select.addToken(value, text, suggestion.type, false);
+                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                         }
                     }
                     else {
@@ -810,7 +811,7 @@ var TokenAutocomplete = /** @class */ (function () {
                             multiSelect.removeTokenWithText(text);
                         }
                         else {
-                            me.parent.select.addToken(value, text, suggestion.type, false);
+                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                         }
                     }
                     me.clearSuggestions();
