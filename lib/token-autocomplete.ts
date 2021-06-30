@@ -722,6 +722,7 @@ class TokenAutocomplete {
             me.parent.textInput.addEventListener('keyup', function (event) {
                 if (event.key == me.parent.KEY_ESC) {
                     me.hideSuggestions();
+                    me.parent.textInput.blur();
                     return;
                 }
                 if (event.key == me.parent.KEY_UP && me.suggestions.childNodes.length > 0) {
