@@ -444,7 +444,7 @@ var TokenAutocomplete = /** @class */ (function () {
             var hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
             if (!me.options.optional) {
                 me.previousValue = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.value;
-                me.previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.tokenText;
+                me.previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
                 me.previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.type;
             }
             else {

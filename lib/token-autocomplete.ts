@@ -580,7 +580,7 @@ class TokenAutocomplete {
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]') as HTMLElement;
             if (!me.options.optional) {
                 me.previousValue = hiddenOption?.dataset.value;
-                me.previousText = hiddenOption?.dataset.tokenText;
+                me.previousText = hiddenOption?.dataset.text;
                 me.previousType = hiddenOption?.dataset.type;
             } else {
                 this.container.classList.remove('optional-singleselect-with-value');
