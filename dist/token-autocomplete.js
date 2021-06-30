@@ -55,7 +55,8 @@ var TokenAutocomplete = /** @class */ (function () {
             minCharactersForSuggestion: 1,
             allowCustomEntries: true,
             readonly: false,
-            optional: false
+            optional: false,
+            enableTabulator: true
         };
         this.options = __assign(__assign({}, this.defaults), options);
         var passedContainer = document.querySelector(this.options.selector);
@@ -233,14 +234,14 @@ var TokenAutocomplete = /** @class */ (function () {
             class_1.prototype.initEventListeners = function () {
                 var me = this;
                 var parent = this.parent;
-                if (this.parent.options.readonly) {
+                if (parent.options.readonly) {
                     return;
                 }
                 parent.textInput.addEventListener('keydown', function (event) {
-                    if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                    if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                         event.preventDefault();
                         var highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                        if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                        if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                             highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                         }
                         if (highlightedSuggestion !== null) {
@@ -494,14 +495,14 @@ var TokenAutocomplete = /** @class */ (function () {
             var _a;
             var me = this;
             var parent = this.parent;
-            if (this.parent.options.readonly) {
+            if (parent.options.readonly) {
                 return;
             }
             parent.textInput.addEventListener('keydown', function (event) {
-                if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
                     var highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                    if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                    if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
                     if (highlightedSuggestion !== null) {

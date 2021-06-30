@@ -28,7 +28,8 @@ interface Options {
     minCharactersForSuggestion: number,
     allowCustomEntries: boolean,
     readonly: boolean,
-    optional: boolean
+    optional: boolean,
+    enableTabulator: boolean
 }
 
 enum SelectModes {
@@ -130,7 +131,8 @@ class TokenAutocomplete {
         minCharactersForSuggestion: 1,
         allowCustomEntries: true,
         readonly: false,
-        optional: false
+        optional: false,
+        enableTabulator: true
     };
     log: any;
 
@@ -339,16 +341,16 @@ class TokenAutocomplete {
         initEventListeners(): void {
             const me = this;
             const parent = this.parent;
-            if (this.parent.options.readonly) {
+            if (parent.options.readonly) {
                 return;
             }
             parent.textInput.addEventListener('keydown', function (event) {
-                if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
 
                     let highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
 
-                    if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                    if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
 
@@ -632,16 +634,16 @@ class TokenAutocomplete {
         initEventListeners(): void {
             const me = this;
             const parent = this.parent;
-            if (this.parent.options.readonly) {
+            if (parent.options.readonly) {
                 return;
             }
             parent.textInput.addEventListener('keydown', function (event) {
-                if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
 
                     let highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
 
-                    if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                    if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
 
