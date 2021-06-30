@@ -688,10 +688,10 @@ class TokenAutocomplete {
 
         initEventListeners() {
             let me = this;
-            if (this.parent.options.readonly) {
+            if (me.parent.options.readonly) {
                 return;
             }
-            this.parent.textInput.addEventListener('keyup', function (event) {
+            me.parent.textInput.addEventListener('keyup', function (event) {
                 if (event.key == me.parent.KEY_ESC) {
                     me.hideSuggestions();
                     return;
@@ -731,6 +731,9 @@ class TokenAutocomplete {
                     return;
                 }
                 me.loadSuggestions();
+            });
+            me.parent.textInput.addEventListener('focusout', function (event) {
+                me.hideSuggestions();
             });
         }
 

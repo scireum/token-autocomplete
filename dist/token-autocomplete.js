@@ -542,10 +542,10 @@ var TokenAutocomplete = /** @class */ (function () {
             }
             class_4.prototype.initEventListeners = function () {
                 var me = this;
-                if (this.parent.options.readonly) {
+                if (me.parent.options.readonly) {
                     return;
                 }
-                this.parent.textInput.addEventListener('keyup', function (event) {
+                me.parent.textInput.addEventListener('keyup', function (event) {
                     if (event.key == me.parent.KEY_ESC) {
                         me.hideSuggestions();
                         return;
@@ -587,6 +587,9 @@ var TokenAutocomplete = /** @class */ (function () {
                         return;
                     }
                     me.loadSuggestions();
+                });
+                me.parent.textInput.addEventListener('focusout', function (event) {
+                    me.hideSuggestions();
                 });
             };
             class_4.prototype.loadSuggestions = function () {
