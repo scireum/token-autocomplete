@@ -403,7 +403,7 @@ class TokenAutocomplete {
          * @param {boolean} silent - whether an appropriate event should be triggered
          */
         addToken(tokenValue: string | null, tokenText: string | null, tokenType: string | null, silent: boolean = false) {
-            if (tokenValue === null || tokenText === null) {
+            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                 return;
             }
 
@@ -619,7 +619,7 @@ class TokenAutocomplete {
         }
 
         addToken(tokenValue: string | null, tokenText: string | null, tokenType: string | null, silent: boolean): void {
-            if (tokenValue === null || tokenText === null) {
+            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                 return;
             }
             this.clear(true);
