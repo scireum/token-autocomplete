@@ -150,7 +150,6 @@
 }
 
 .token-autocomplete-container.token-autocomplete-singleselect.optional-singleselect-with-value .token-singleselect-token-delete {
-    content: 'x';
     color: #000;
     position: absolute;
     top: 10px;
