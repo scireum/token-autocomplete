@@ -752,7 +752,7 @@ class TokenAutocomplete {
                     event.preventDefault();
                     let highlightedSuggestion = me.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                     if (highlightedSuggestion == null) {
-                        // highlight last entry and scroll to top
+                        // highlight first entry and scroll to top
                         me.highlightSuggestionAtPosition(0);
                         me.suggestions.scrollTop = 0;
                         return;
