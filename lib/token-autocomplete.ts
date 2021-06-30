@@ -560,6 +560,12 @@ class TokenAutocomplete {
             this.options = parent.options;
 
             this.container.classList.add('token-autocomplete-singleselect');
+            if (this.options.optional) {
+                let deleteToken = document.createElement('span');
+                deleteToken.classList.add('token-singleselect-token-delete');
+                deleteToken.textContent = '\u00D7';
+                this.container.append(deleteToken);
+            }
         }
 
         clear(silent: boolean): void {
@@ -573,6 +579,8 @@ class TokenAutocomplete {
                 me.previousValue = hiddenOption?.dataset.value;
                 me.previousText = hiddenOption?.dataset.text;
                 me.previousType = hiddenOption?.dataset.text;
+            } else {
+                this.container.classList.remove('optional-singleselect-with-value');
             }
             hiddenOption?.parentElement?.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
@@ -614,6 +622,9 @@ class TokenAutocomplete {
             this.clear(true);
             this.parent.textInput.textContent = tokenText;
             this.parent.textInput.contentEditable = 'false';
+            if (this.options.optional) {
+                this.container.classList.add('optional-singleselect-with-value');
+            }
 
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
         }
@@ -658,6 +669,9 @@ class TokenAutocomplete {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
                     }
                 }, 200);
+            });
+            parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
+                me.clear(false);
             });
         }
     }

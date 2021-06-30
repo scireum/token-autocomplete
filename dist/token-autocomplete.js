@@ -425,6 +425,12 @@ var TokenAutocomplete = /** @class */ (function () {
             this.container = parent.container;
             this.options = parent.options;
             this.container.classList.add('token-autocomplete-singleselect');
+            if (this.options.optional) {
+                var deleteToken = document.createElement('span');
+                deleteToken.classList.add('token-singleselect-token-delete');
+                deleteToken.textContent = '\u00D7';
+                this.container.append(deleteToken);
+            }
         }
         class_2.prototype.clear = function (silent) {
             var _a;
@@ -438,6 +444,9 @@ var TokenAutocomplete = /** @class */ (function () {
                 me.previousValue = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.value;
                 me.previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
                 me.previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
+            }
+            else {
+                this.container.classList.remove('optional-singleselect-with-value');
             }
             (_a = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
@@ -476,9 +485,13 @@ var TokenAutocomplete = /** @class */ (function () {
             this.clear(true);
             this.parent.textInput.textContent = tokenText;
             this.parent.textInput.contentEditable = 'false';
+            if (this.options.optional) {
+                this.container.classList.add('optional-singleselect-with-value');
+            }
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
         };
         class_2.prototype.initEventListeners = function () {
+            var _a;
             var me = this;
             var parent = this.parent;
             if (this.parent.options.readonly) {
@@ -516,6 +529,9 @@ var TokenAutocomplete = /** @class */ (function () {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
                     }
                 }, 200);
+            });
+            (_a = parent.container.querySelector('.token-singleselect-token-delete')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
+                me.clear(false);
             });
         };
         return class_2;
