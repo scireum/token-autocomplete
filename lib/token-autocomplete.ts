@@ -562,6 +562,7 @@ class TokenAutocomplete {
             this.options = parent.options;
 
             this.container.classList.add('token-autocomplete-singleselect');
+            this.parent.textInput.tabIndex = 0;
             if (this.options.optional) {
                 let deleteToken = document.createElement('span');
                 deleteToken.classList.add('token-singleselect-token-delete');
@@ -660,10 +661,22 @@ class TokenAutocomplete {
             });
             parent.textInput.addEventListener('click', function (event) {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.autocomplete.showSuggestions();
-                    parent.autocomplete.loadSuggestions();
                     parent.textInput.focus();
                 }
+            });
+            me.parent.textInput.addEventListener('focusin', function (event) {
+                if (!parent.autocomplete.areSuggestionsDisplayed()) {
+                    parent.autocomplete.showSuggestions();
+                    parent.autocomplete.loadSuggestions();
+                }
+                // move the cursor into the editable div
+                const selection = window.getSelection();
+                const range = document.createRange();
+                selection?.removeAllRanges();
+                range.selectNodeContents(parent.textInput);
+                range.collapse(false);
+                selection?.addRange(range);
+                parent.textInput.focus();
             });
             parent.textInput.addEventListener('focusout', function (event) {
                 // we use setTimeout here so we won't interfere with a user clicking on a suggestion
