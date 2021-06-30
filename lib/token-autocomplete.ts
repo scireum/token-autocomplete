@@ -664,6 +664,7 @@ class TokenAutocomplete {
                 }
             });
             parent.textInput.addEventListener('focusout', function (event) {
+                // we use setTimeout here so we won't interfere with a user clicking on a suggestion
                 setTimeout(function () {
                     if (!me.options.optional && (me.currentTokens().length === 0 || me.currentTokens()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
@@ -762,6 +763,7 @@ class TokenAutocomplete {
                 me.loadSuggestions();
             });
             me.parent.textInput.addEventListener('focusout', function (event) {
+                // we use setTimeout here so we won't interfere with a user clicking on a suggestion
                 setTimeout(function () {
                     me.hideSuggestions();
                 }, 200);
