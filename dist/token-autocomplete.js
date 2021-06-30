@@ -589,7 +589,9 @@ var TokenAutocomplete = /** @class */ (function () {
                     me.loadSuggestions();
                 });
                 me.parent.textInput.addEventListener('focusout', function (event) {
-                    me.hideSuggestions();
+                    setTimeout(function () {
+                        me.hideSuggestions();
+                    }, 100);
                 });
                 me.parent.textInput.addEventListener('focusin', function (event) {
                     me.loadSuggestions();
