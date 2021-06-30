@@ -424,7 +424,6 @@ var TokenAutocomplete = /** @class */ (function () {
             this.parent = parent;
             this.container = parent.container;
             this.options = parent.options;
-            this.renderer = parent.options.tokenRenderer;
             this.container.classList.add('token-autocomplete-singleselect');
         }
         class_2.prototype.clear = function (silent) {
@@ -435,6 +434,11 @@ var TokenAutocomplete = /** @class */ (function () {
             var me = this;
             var tokenText = me.parent.textInput.textContent;
             var hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
+            if (!me.options.optional) {
+                me.previousValue = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.value;
+                me.previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
+                me.previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
+            }
             (_a = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
             me.parent.textInput.textContent = '';
@@ -449,7 +453,7 @@ var TokenAutocomplete = /** @class */ (function () {
             if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
                 this.parent.autocomplete.suggestions.firstChild.click();
             }
-            else if (this.parent.options.optional) {
+            else {
                 this.clearCurrentInput();
             }
         };
@@ -505,6 +509,13 @@ var TokenAutocomplete = /** @class */ (function () {
                     parent.autocomplete.loadSuggestions();
                     parent.textInput.focus();
                 }
+            });
+            parent.textInput.addEventListener('focusout', function (event) {
+                setTimeout(function () {
+                    if (!me.options.optional && (me.currentTokens().length === 0 || me.currentTokens()[0] === '')) {
+                        me.addToken(me.previousValue, me.previousText, me.previousType, true);
+                    }
+                }, 200);
             });
         };
         return class_2;
@@ -591,7 +602,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 me.parent.textInput.addEventListener('focusout', function (event) {
                     setTimeout(function () {
                         me.hideSuggestions();
-                    }, 100);
+                    }, 200);
                 });
                 me.parent.textInput.addEventListener('focusin', function (event) {
                     me.loadSuggestions();
@@ -602,9 +613,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 var value = me.parent.getCurrentInput();
                 if (me.parent.options.selectMode == SelectModes.SINGLE) {
                     if (!me.parent.textInput.isContentEditable) {
-                        me.parent.select.clearCurrentInput();
-                        value = '';
-                        me.parent.addHiddenEmptyOption();
+                        me.parent.select.clear(true);
                     }
                 }
                 else if (value.length < me.parent.options.minCharactersForSuggestion) {

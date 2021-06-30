@@ -550,12 +550,14 @@ class TokenAutocomplete {
         container: any;
         options: Options;
         renderer: TokenRenderer;
+        previousValue: any;
+        previousText: any;
+        previousType: any;
 
         constructor(parent: TokenAutocomplete) {
             this.parent = parent;
             this.container = parent.container;
             this.options = parent.options;
-            this.renderer = parent.options.tokenRenderer;
 
             this.container.classList.add('token-autocomplete-singleselect');
         }
@@ -566,7 +568,12 @@ class TokenAutocomplete {
             }
             let me = this;
             let tokenText = me.parent.textInput.textContent;
-            let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
+            let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]') as HTMLElement;
+            if (!me.options.optional) {
+                me.previousValue = hiddenOption?.dataset.value;
+                me.previousText = hiddenOption?.dataset.text;
+                me.previousType = hiddenOption?.dataset.text;
+            }
             hiddenOption?.parentElement?.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
             me.parent.textInput.textContent = '';
@@ -581,7 +588,7 @@ class TokenAutocomplete {
         handleInputAsValue(input: string): void {
             if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
                 this.parent.autocomplete.suggestions.firstChild.click();
-            } else if (this.parent.options.optional) {
+            } else {
                 this.clearCurrentInput();
             }
         }
@@ -592,7 +599,7 @@ class TokenAutocomplete {
                 if (option.dataset.value != null) {
                     tokens.push(option.dataset.value);
                 }
-            })
+            });
             return tokens;
         }
 
@@ -644,6 +651,13 @@ class TokenAutocomplete {
                     parent.autocomplete.loadSuggestions();
                     parent.textInput.focus();
                 }
+            });
+            parent.textInput.addEventListener('focusout', function (event) {
+                setTimeout(function () {
+                    if (!me.options.optional && (me.currentTokens().length === 0 || me.currentTokens()[0] === '')) {
+                        me.addToken(me.previousValue, me.previousText, me.previousType, true);
+                    }
+                }, 200);
             });
         }
     }
@@ -735,7 +749,7 @@ class TokenAutocomplete {
             me.parent.textInput.addEventListener('focusout', function (event) {
                 setTimeout(function () {
                     me.hideSuggestions();
-                }, 100);
+                }, 200);
             });
             me.parent.textInput.addEventListener('focusin', function (event) {
                 me.loadSuggestions();
@@ -748,9 +762,7 @@ class TokenAutocomplete {
 
             if (me.parent.options.selectMode == SelectModes.SINGLE) {
                 if (!me.parent.textInput.isContentEditable) {
-                    me.parent.select.clearCurrentInput();
-                    value = '';
-                    me.parent.addHiddenEmptyOption();
+                    me.parent.select.clear(true);
                 }
             } else if (value.length < me.parent.options.minCharactersForSuggestion) {
                 me.hideSuggestions();
