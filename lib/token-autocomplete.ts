@@ -730,11 +730,18 @@ class TokenAutocomplete {
                     event.preventDefault();
                     let highlightedSuggestion = me.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                     if (highlightedSuggestion == null) {
+                        // highlight last entry and scroll to bottom
                         me.highlightSuggestionAtPosition(me.suggestions.childNodes.length - 1);
+                        me.suggestions.scrollTop = me.suggestions.scrollHeight;
                         return;
                     }
                     let aboveSuggestion = highlightedSuggestion.previousSibling;
                     if (aboveSuggestion != null) {
+                        // if the suggestions is above the scroll position, scroll to the suggestion
+                        let suggestionTop = (aboveSuggestion as HTMLElement).offsetTop;
+                        if (me.suggestions.scrollTop > suggestionTop) {
+                            me.suggestions.scrollTop = suggestionTop;
+                        }
                         me.highlightSuggestion(aboveSuggestion as Element);
                     } else {
                         highlightedSuggestion.classList.remove('token-autocomplete-suggestion-highlighted');
@@ -745,11 +752,18 @@ class TokenAutocomplete {
                     event.preventDefault();
                     let highlightedSuggestion = me.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                     if (highlightedSuggestion == null) {
+                        // highlight last entry and scroll to top
                         me.highlightSuggestionAtPosition(0);
+                        me.suggestions.scrollTop = 0;
                         return;
                     }
                     let belowSuggestion = highlightedSuggestion?.nextSibling;
                     if (belowSuggestion != null) {
+                        // if the suggestions is not completely visible, scroll until the suggestion is at the bottom
+                        let suggestionBottom = (belowSuggestion as HTMLElement).offsetTop + (belowSuggestion as HTMLElement).offsetHeight;
+                        if (me.suggestions.scrollTop + me.suggestions.clientHeight < suggestionBottom) {
+                            me.suggestions.scrollTop = suggestionBottom - me.suggestions.clientHeight;
+                        }
                         me.highlightSuggestion(belowSuggestion as Element);
                     } else {
                         highlightedSuggestion.classList.remove('token-autocomplete-suggestion-highlighted');
@@ -849,8 +863,8 @@ class TokenAutocomplete {
         }
 
         highlightSuggestion(suggestion: Element) {
-            this.suggestions.querySelectorAll('li').forEach(function (suggestion) {
-                suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
+            this.suggestions.querySelectorAll('li').forEach(function (suggestionElement) {
+                suggestionElement.classList.remove('token-autocomplete-suggestion-highlighted');
             })
             suggestion.classList.add('token-autocomplete-suggestion-highlighted');
         }

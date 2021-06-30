@@ -583,11 +583,18 @@ var TokenAutocomplete = /** @class */ (function () {
                         event.preventDefault();
                         var highlightedSuggestion = me.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                         if (highlightedSuggestion == null) {
+                            // highlight last entry and scroll to bottom
                             me.highlightSuggestionAtPosition(me.suggestions.childNodes.length - 1);
+                            me.suggestions.scrollTop = me.suggestions.scrollHeight;
                             return;
                         }
                         var aboveSuggestion = highlightedSuggestion.previousSibling;
                         if (aboveSuggestion != null) {
+                            // if the suggestions is above the scroll position, scroll to the suggestion
+                            var suggestionTop = aboveSuggestion.offsetTop;
+                            if (me.suggestions.scrollTop > suggestionTop) {
+                                me.suggestions.scrollTop = suggestionTop;
+                            }
                             me.highlightSuggestion(aboveSuggestion);
                         }
                         else {
@@ -599,11 +606,18 @@ var TokenAutocomplete = /** @class */ (function () {
                         event.preventDefault();
                         var highlightedSuggestion = me.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                         if (highlightedSuggestion == null) {
+                            // highlight first entry and scroll to top
                             me.highlightSuggestionAtPosition(0);
+                            me.suggestions.scrollTop = 0;
                             return;
                         }
                         var belowSuggestion = highlightedSuggestion === null || highlightedSuggestion === void 0 ? void 0 : highlightedSuggestion.nextSibling;
                         if (belowSuggestion != null) {
+                            // if the suggestions is not completely visible, scroll until the suggestion is at the bottom
+                            var suggestionBottom = belowSuggestion.offsetTop + belowSuggestion.offsetHeight;
+                            if (me.suggestions.scrollTop + me.suggestions.clientHeight < suggestionBottom) {
+                                me.suggestions.scrollTop = suggestionBottom - me.suggestions.clientHeight;
+                            }
                             me.highlightSuggestion(belowSuggestion);
                         }
                         else {
@@ -696,8 +710,8 @@ var TokenAutocomplete = /** @class */ (function () {
                 suggestions[index].classList.add('token-autocomplete-suggestion-highlighted');
             };
             class_4.prototype.highlightSuggestion = function (suggestion) {
-                this.suggestions.querySelectorAll('li').forEach(function (suggestion) {
-                    suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
+                this.suggestions.querySelectorAll('li').forEach(function (suggestionElement) {
+                    suggestionElement.classList.remove('token-autocomplete-suggestion-highlighted');
                 });
                 suggestion.classList.add('token-autocomplete-suggestion-highlighted');
             };
