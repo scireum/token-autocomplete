@@ -785,7 +785,7 @@ class TokenAutocomplete {
                     }
                     return;
                 }
-                if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT) {
+                if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT || event.key == me.parent.KEY_ENTER) {
                     // We dont want to retrigger the autocompletion when the user navigates the cursor inside the input.
                     return;
                 }

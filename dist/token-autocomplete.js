@@ -296,7 +296,7 @@ var TokenAutocomplete = /** @class */ (function () {
             class_1.prototype.addToken = function (tokenValue, tokenText, tokenType, silent) {
                 var _a;
                 if (silent === void 0) { silent = false; }
-                if (tokenValue === null || tokenText === null) {
+                if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                     return;
                 }
                 this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
@@ -481,7 +481,7 @@ var TokenAutocomplete = /** @class */ (function () {
             this.clear(true);
         };
         class_2.prototype.addToken = function (tokenValue, tokenText, tokenType, silent) {
-            if (tokenValue === null || tokenText === null) {
+            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                 return;
             }
             this.clear(true);
@@ -639,7 +639,7 @@ var TokenAutocomplete = /** @class */ (function () {
                         }
                         return;
                     }
-                    if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT) {
+                    if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT || event.key == me.parent.KEY_ENTER) {
                         // We dont want to retrigger the autocompletion when the user navigates the cursor inside the input.
                         return;
                     }
