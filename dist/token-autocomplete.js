@@ -55,7 +55,8 @@ var TokenAutocomplete = /** @class */ (function () {
             minCharactersForSuggestion: 1,
             allowCustomEntries: true,
             readonly: false,
-            optional: false
+            optional: false,
+            enableTabulator: true
         };
         this.options = __assign(__assign({}, this.defaults), options);
         var passedContainer = document.querySelector(this.options.selector);
@@ -233,14 +234,14 @@ var TokenAutocomplete = /** @class */ (function () {
             class_1.prototype.initEventListeners = function () {
                 var me = this;
                 var parent = this.parent;
-                if (this.parent.options.readonly) {
+                if (parent.options.readonly) {
                     return;
                 }
                 parent.textInput.addEventListener('keydown', function (event) {
-                    if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                    if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                         event.preventDefault();
                         var highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                        if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                        if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                             highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                         }
                         if (highlightedSuggestion !== null) {
@@ -295,7 +296,7 @@ var TokenAutocomplete = /** @class */ (function () {
             class_1.prototype.addToken = function (tokenValue, tokenText, tokenType, silent) {
                 var _a;
                 if (silent === void 0) { silent = false; }
-                if (tokenValue === null || tokenText === null) {
+                if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                     return;
                 }
                 this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
@@ -425,6 +426,7 @@ var TokenAutocomplete = /** @class */ (function () {
             this.container = parent.container;
             this.options = parent.options;
             this.container.classList.add('token-autocomplete-singleselect');
+            this.parent.textInput.tabIndex = 0;
             if (this.options.optional) {
                 var deleteToken = document.createElement('span');
                 deleteToken.classList.add('token-singleselect-token-delete');
@@ -479,7 +481,7 @@ var TokenAutocomplete = /** @class */ (function () {
             this.clear(true);
         };
         class_2.prototype.addToken = function (tokenValue, tokenText, tokenType, silent) {
-            if (tokenValue === null || tokenText === null) {
+            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                 return;
             }
             this.clear(true);
@@ -494,14 +496,14 @@ var TokenAutocomplete = /** @class */ (function () {
             var _a;
             var me = this;
             var parent = this.parent;
-            if (this.parent.options.readonly) {
+            if (parent.options.readonly) {
                 return;
             }
             parent.textInput.addEventListener('keydown', function (event) {
-                if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
                     var highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
-                    if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                    if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
                     if (highlightedSuggestion !== null) {
@@ -518,10 +520,22 @@ var TokenAutocomplete = /** @class */ (function () {
             });
             parent.textInput.addEventListener('click', function (event) {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.autocomplete.showSuggestions();
-                    parent.autocomplete.loadSuggestions();
                     parent.textInput.focus();
                 }
+            });
+            me.parent.textInput.addEventListener('focusin', function (event) {
+                if (!parent.autocomplete.areSuggestionsDisplayed()) {
+                    parent.autocomplete.showSuggestions();
+                    parent.autocomplete.loadSuggestions();
+                }
+                // move the cursor into the editable div
+                var selection = window.getSelection();
+                var range = document.createRange();
+                selection === null || selection === void 0 ? void 0 : selection.removeAllRanges();
+                range.selectNodeContents(parent.textInput);
+                range.collapse(false);
+                selection === null || selection === void 0 ? void 0 : selection.addRange(range);
+                parent.textInput.focus();
             });
             parent.textInput.addEventListener('focusout', function (event) {
                 // we use setTimeout here so we won't interfere with a user clicking on a suggestion
@@ -625,7 +639,7 @@ var TokenAutocomplete = /** @class */ (function () {
                         }
                         return;
                     }
-                    if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT) {
+                    if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT || event.key == me.parent.KEY_ENTER) {
                         // We dont want to retrigger the autocompletion when the user navigates the cursor inside the input.
                         return;
                     }

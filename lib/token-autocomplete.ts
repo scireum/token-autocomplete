@@ -28,7 +28,8 @@ interface Options {
     minCharactersForSuggestion: number,
     allowCustomEntries: boolean,
     readonly: boolean,
-    optional: boolean
+    optional: boolean,
+    enableTabulator: boolean
 }
 
 enum SelectModes {
@@ -130,7 +131,8 @@ class TokenAutocomplete {
         minCharactersForSuggestion: 1,
         allowCustomEntries: true,
         readonly: false,
-        optional: false
+        optional: false,
+        enableTabulator: true
     };
     log: any;
 
@@ -339,16 +341,16 @@ class TokenAutocomplete {
         initEventListeners(): void {
             const me = this;
             const parent = this.parent;
-            if (this.parent.options.readonly) {
+            if (parent.options.readonly) {
                 return;
             }
             parent.textInput.addEventListener('keydown', function (event) {
-                if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
 
                     let highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
 
-                    if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                    if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
 
@@ -401,7 +403,7 @@ class TokenAutocomplete {
          * @param {boolean} silent - whether an appropriate event should be triggered
          */
         addToken(tokenValue: string | null, tokenText: string | null, tokenType: string | null, silent: boolean = false) {
-            if (tokenValue === null || tokenText === null) {
+            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                 return;
             }
 
@@ -560,6 +562,7 @@ class TokenAutocomplete {
             this.options = parent.options;
 
             this.container.classList.add('token-autocomplete-singleselect');
+            this.parent.textInput.tabIndex = 0;
             if (this.options.optional) {
                 let deleteToken = document.createElement('span');
                 deleteToken.classList.add('token-singleselect-token-delete');
@@ -616,7 +619,7 @@ class TokenAutocomplete {
         }
 
         addToken(tokenValue: string | null, tokenText: string | null, tokenType: string | null, silent: boolean): void {
-            if (tokenValue === null || tokenText === null) {
+            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                 return;
             }
             this.clear(true);
@@ -632,16 +635,16 @@ class TokenAutocomplete {
         initEventListeners(): void {
             const me = this;
             const parent = this.parent;
-            if (this.parent.options.readonly) {
+            if (parent.options.readonly) {
                 return;
             }
             parent.textInput.addEventListener('keydown', function (event) {
-                if (event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB) {
+                if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
 
                     let highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
 
-                    if (highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
+                    if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
 
@@ -658,10 +661,22 @@ class TokenAutocomplete {
             });
             parent.textInput.addEventListener('click', function (event) {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.autocomplete.showSuggestions();
-                    parent.autocomplete.loadSuggestions();
                     parent.textInput.focus();
                 }
+            });
+            me.parent.textInput.addEventListener('focusin', function (event) {
+                if (!parent.autocomplete.areSuggestionsDisplayed()) {
+                    parent.autocomplete.showSuggestions();
+                    parent.autocomplete.loadSuggestions();
+                }
+                // move the cursor into the editable div
+                const selection = window.getSelection();
+                const range = document.createRange();
+                selection?.removeAllRanges();
+                range.selectNodeContents(parent.textInput);
+                range.collapse(false);
+                selection?.addRange(range);
+                parent.textInput.focus();
             });
             parent.textInput.addEventListener('focusout', function (event) {
                 // we use setTimeout here so we won't interfere with a user clicking on a suggestion
@@ -770,7 +785,7 @@ class TokenAutocomplete {
                     }
                     return;
                 }
-                if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT) {
+                if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT || event.key == me.parent.KEY_ENTER) {
                     // We dont want to retrigger the autocompletion when the user navigates the cursor inside the input.
                     return;
                 }
