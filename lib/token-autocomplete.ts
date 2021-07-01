@@ -357,9 +357,9 @@ class TokenAutocomplete {
                     if (highlightedSuggestion !== null) {
                         me.clearCurrentInput();
                         if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
-                            me.removeTokenWithText(highlightedSuggestion.dataset.text);
+                            me.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
                         } else {
-                            me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
+                            me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
                         }
                         parent.autocomplete.hideSuggestions();
                     } else {
@@ -581,7 +581,7 @@ class TokenAutocomplete {
             if (!me.options.optional) {
                 me.previousValue = hiddenOption?.dataset.value;
                 me.previousText = hiddenOption?.dataset.text;
-                me.previousType = hiddenOption?.dataset.text;
+                me.previousType = hiddenOption?.dataset.type;
             } else {
                 this.container.classList.remove('optional-singleselect-with-value');
             }
@@ -649,7 +649,7 @@ class TokenAutocomplete {
                     }
 
                     if (highlightedSuggestion !== null) {
-                        me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.text, highlightedSuggestion.dataset.type, false);
+                        me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
                         parent.autocomplete.hideSuggestions();
                     } else {
                         me.handleInputAsValue(parent.getCurrentInput());
@@ -951,6 +951,7 @@ class TokenAutocomplete {
 
             element.dataset.value = value;
             element.dataset.text = text;
+            element.dataset.tokenText = suggestion.fieldLabel;
             if (suggestion.type != null) {
                 element.dataset.type = suggestion.type;
             }
@@ -964,7 +965,7 @@ class TokenAutocomplete {
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
                         me.parent.select.clear(false);
                     } else {
-                        me.parent.select.addToken(value, text, suggestion.type, false);
+                        me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                     }
                 } else {
                     me.parent.select.clearCurrentInput();
@@ -972,7 +973,7 @@ class TokenAutocomplete {
                         let multiSelect = me.parent.select as MultiSelect;
                         multiSelect.removeTokenWithText(text);
                     } else {
-                        me.parent.select.addToken(value, text, suggestion.type, false);
+                        me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                     }
                 }
                 me.clearSuggestions();
