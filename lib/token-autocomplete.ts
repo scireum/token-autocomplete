@@ -971,7 +971,7 @@ class TokenAutocomplete {
                     me.parent.select.clearCurrentInput();
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
                         let multiSelect = me.parent.select as MultiSelect;
-                        multiSelect.removeTokenWithText(text);
+                        multiSelect.removeTokenWithText(suggestion.fieldLabel);
                     } else {
                         me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                     }
