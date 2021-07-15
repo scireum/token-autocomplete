@@ -244,7 +244,7 @@ class TokenAutocomplete {
 
     /**
      * Clears the currently present tokens and creates new ones from the given input value, returns new tokens afterwards.
-     * 
+     *
      * The current tokens are only overwritten (cleared and added) when a value parameter is given.
      * In addition to the possibility of setting the value of the input this method also returns the values of all present tokens.
      *
@@ -331,6 +331,7 @@ class TokenAutocomplete {
             this.log = console.log.bind(window.console);
         } else {
             this.log = function () {
+                // Intentionally left empty to only log when debugging is enabled.
             }
         }
     }
@@ -654,12 +655,12 @@ class TokenAutocomplete {
                     event.preventDefault();
                 }
             });
-            parent.textInput.addEventListener('click', function (event) {
+            parent.textInput.addEventListener('click', function () {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
                     parent.textInput.focus();
                 }
             });
-            me.parent.textInput.addEventListener('focusin', function (event) {
+            me.parent.textInput.addEventListener('focusin', function () {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
                     parent.autocomplete.showSuggestions();
                     parent.autocomplete.loadSuggestions();
@@ -673,8 +674,8 @@ class TokenAutocomplete {
                 selection?.addRange(range);
                 parent.textInput.focus();
             });
-            parent.textInput.addEventListener('focusout', function (event) {
-                // we use setTimeout here so we won't interfere with a user clicking on a suggestion
+            parent.textInput.addEventListener('focusout', function () {
+                // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
                     if (!me.options.optional && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
@@ -781,18 +782,18 @@ class TokenAutocomplete {
                     return;
                 }
                 if (event.key == me.parent.KEY_LEFT || event.key == me.parent.KEY_RIGHT || event.key == me.parent.KEY_ENTER) {
-                    // We dont want to retrigger the autocompletion when the user navigates the cursor inside the input.
+                    // We don't want to re-trigger the autocompletion when the user navigates the cursor inside the input.
                     return;
                 }
                 me.loadSuggestions();
             });
-            me.parent.textInput.addEventListener('focusout', function (event) {
-                // we use setTimeout here so we won't interfere with a user clicking on a suggestion
+            me.parent.textInput.addEventListener('focusout', function () {
+                // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
                     me.hideSuggestions();
                 }, 200);
             });
-            me.parent.textInput.addEventListener('focusin', function (event) {
+            me.parent.textInput.addEventListener('focusin', function () {
                 me.loadSuggestions();
             });
         }
@@ -819,12 +820,12 @@ class TokenAutocomplete {
 
                 me.parent.options.initialSuggestions.forEach(function (suggestion) {
                     if (typeof suggestion !== 'object') {
-                        // the suggestion is of wrong type and therefore ignored
+                        // The suggestion is of wrong type and therefore ignored.
                         return;
                     }
                     let text = suggestion.fieldLabel;
                     if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
-                        // The suggestion starts with the query text the user entered and will be displayed
+                        // The suggestion starts with the query text the user entered and will be displayed.
                         me.addSuggestion(suggestion);
                     }
                 });
@@ -905,7 +906,7 @@ class TokenAutocomplete {
                 me.clearSuggestions();
 
                 let answer = this.response;
-                //IE 11 doesnt properly respect content type header, need to parse json string by hand..
+                // IE 11 doesn't properly respect content type header, need to parse json string by hand.
                 if (typeof answer === 'string') {
                     answer = JSON.parse(answer);
                 }
