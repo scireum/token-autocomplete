@@ -243,24 +243,39 @@ class TokenAutocomplete {
     }
 
     /**
-     * Clears the currently present tokens and creates new ones from the given input value.
+     * Clears the currently present tokens and creates new ones from the given input value, returns new tokens afterwards.
+     * 
+     * The current tokens are only overwritten (cleared and added) when a value parameter is given.
+     * In addition to the possibility of setting the value of the input this method also returns the values of all present tokens.
      *
      * @param {(Array<Token>|string)} value - either the name of a single token or a list of tokens to create
      * @param {boolean} silent - whether appropriate events should be triggered when changing tokens or not
+     *
+     * @returns an array of the values of all current (after update) tokens of the input field
      */
-    val(value: Array<Token> | Token, silent: boolean = false) {
-        this.select.clear(silent);
+    val(value: Array<Token> | Token | null = null, silent: boolean = false): Array<string> {
+        if (typeof value !== 'undefined' && value !== null) {
+            this.select.clear(silent);
 
-        if (Array.isArray(value)) {
-            let me = this;
-            value.forEach(function (token) {
-                if (typeof token === 'object') {
-                    me.select.addToken(token.value, token.text, token.type, silent);
-                }
-            });
-        } else {
-            this.select.addToken(value.value, value.text, value.type, silent);
+            if (Array.isArray(value)) {
+                let me = this;
+                value.forEach(function (token) {
+                    if (typeof token === 'object') {
+                        me.select.addToken(token.value, token.text, token.type, silent);
+                    }
+                });
+            } else {
+                this.select.addToken(value.value, value.text, value.type, silent);
+            }
         }
+
+        let tokens: Array<string> = [];
+        this.hiddenSelect.querySelectorAll('option').forEach(option => {
+            if (option.dataset.value != null) {
+                tokens.push(option.dataset.value);
+            }
+        });
+        return tokens;
     }
 
     /**
@@ -427,7 +442,7 @@ class TokenAutocomplete {
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
                     detail: {
-                        tokens: this.currentTokens(),
+                        tokens: this.parent.val(),
                         added: addedToken
                     }
                 }));
@@ -481,13 +496,13 @@ class TokenAutocomplete {
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
                     detail: {
-                        tokens: this.currentTokens(),
+                        tokens: this.parent.val(),
                         removed: addedToken
                     }
                 }));
             }
 
-            if (this.currentTokens().length === 0) {
+            if (this.parent.val().length === 0) {
                 this.parent.addHiddenEmptyOption();
             }
 
@@ -502,16 +517,6 @@ class TokenAutocomplete {
             if (token !== null) {
                 this.removeToken(token);
             }
-        }
-
-        currentTokens() {
-            let tokens: string[] = [];
-            this.parent.hiddenSelect.querySelectorAll('option').forEach(function (option) {
-                if (option.dataset.value != null) {
-                    tokens.push(option.dataset.value);
-                }
-            })
-            return tokens;
         }
 
         static defaultRenderer: TokenRenderer = function (token: Token): HTMLElement {
@@ -604,16 +609,6 @@ class TokenAutocomplete {
             }
         }
 
-        currentTokens() {
-            let tokens: string[] = [];
-            this.parent.hiddenSelect.querySelectorAll('option').forEach(function (option) {
-                if (option.dataset.value != null) {
-                    tokens.push(option.dataset.value);
-                }
-            });
-            return tokens;
-        }
-
         clearCurrentInput(): void {
             this.clear(true);
         }
@@ -681,7 +676,7 @@ class TokenAutocomplete {
             parent.textInput.addEventListener('focusout', function (event) {
                 // we use setTimeout here so we won't interfere with a user clicking on a suggestion
                 setTimeout(function () {
-                    if (!me.options.optional && (me.currentTokens().length === 0 || me.currentTokens()[0] === '')) {
+                    if (!me.options.optional && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
                     }
                 }, 200);
