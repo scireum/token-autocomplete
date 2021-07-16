@@ -300,7 +300,10 @@ class TokenAutocomplete {
     }
 
     addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null) {
-        this.hiddenSelect.querySelector('.empty-token')?.remove();
+        let _emptyToken = this.hiddenSelect.querySelector('.empty-token');
+        if (_emptyToken) {
+            this.hiddenSelect.removeChild(_emptyToken);
+        }
         const option = document.createElement('option');
         option.text = tokenText;
         option.value = tokenValue;
@@ -573,7 +576,7 @@ class TokenAutocomplete {
                 let deleteToken = document.createElement('span');
                 deleteToken.classList.add('token-singleselect-token-delete');
                 deleteToken.textContent = '\u00D7';
-                this.container.append(deleteToken);
+                this.container.appendChild(deleteToken);
             }
         }
 
