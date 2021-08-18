@@ -68,7 +68,7 @@ interface Autocomplete {
 
     highlightSuggestionAtPosition(arg0: number): void;
 
-    addSuggestion(suggestion: Suggestion): void;
+    addSuggestion(suggestion: Suggestion, showSuggestions: boolean): void;
 
     clearSuggestions(): void;
 
@@ -275,7 +275,7 @@ class TokenAutocomplete {
 
         let tokens: Array<string> = [];
         this.hiddenSelect.querySelectorAll('option').forEach(option => {
-            if (option.dataset.value != null) {
+            if (option.dataset.value != null && option.dataset.value !== "") {
                 tokens.push(option.dataset.value);
             }
         });
@@ -919,6 +919,15 @@ class TokenAutocomplete {
                 }
 
                 if (Array.isArray(answer.completions)) {
+                    if (me.parent.val().length == 0 && answer.completions.length > 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
+                        answer.completions.forEach(function (suggestion: Suggestion) {
+                            me.addSuggestion(suggestion, false);
+                        });
+                        let firstSuggestion = answer.completions[0] as Suggestion;
+                        let value = firstSuggestion.id || firstSuggestion.value;
+                        me.parent.select.addToken(value, firstSuggestion.fieldLabel, firstSuggestion.type, true);
+                        return;
+                    }
                     answer.completions.forEach(function (suggestion: Suggestion) {
                         me.addSuggestion(suggestion);
                     });
@@ -931,10 +940,6 @@ class TokenAutocomplete {
                             completionDescription: null,
                             completionLabel: null
                         });
-                    } else if (me.parent.val().length == 0 && answer.completions.length > 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
-                        let firstSuggestion = answer.completions[0] as Suggestion;
-                        let value = firstSuggestion.id || firstSuggestion.value;
-                        me.parent.select.addToken(value, firstSuggestion.fieldLabel, firstSuggestion.type, true);
                     }
                 }
             };
@@ -949,8 +954,9 @@ class TokenAutocomplete {
          * Adds a suggestion with the given text matching the users input to the dropdown.
          *
          * @param {string} suggestion - the metadata of the suggestion that should be added
+         * @param showSuggestions - if the suggestions box should be shown, default true
          */
-        addSuggestion(suggestion: Suggestion) {
+        addSuggestion(suggestion: Suggestion, showSuggestions = true) {
             let element = this.renderer(suggestion);
 
             let value = suggestion.id || suggestion.value;
@@ -992,7 +998,9 @@ class TokenAutocomplete {
             }
 
             this.suggestions.appendChild(element);
-            this.showSuggestions();
+            if (showSuggestions) {
+                this.showSuggestions();
+            }
 
             me.parent.log('added suggestion', suggestion);
         }
