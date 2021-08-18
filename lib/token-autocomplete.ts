@@ -204,6 +204,10 @@ class TokenAutocomplete {
         }
 
         this.container.tokenAutocomplete = this as TokenAutocomplete;
+
+        if (this.options.selectMode == SelectModes.SINGLE && !this.options.optional && this.val().length == 0) {
+            this.autocomplete.loadSuggestions();
+        }
     }
 
     /**
@@ -927,6 +931,10 @@ class TokenAutocomplete {
                             completionDescription: null,
                             completionLabel: null
                         });
+                    } else if (me.parent.val().length == 0 && answer.completions.length > 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
+                        let firstSuggestion = answer.completions[0] as Suggestion;
+                        let value = firstSuggestion.id || firstSuggestion.value;
+                        me.parent.select.addToken(value, firstSuggestion.fieldLabel, firstSuggestion.type, true);
                     }
                 }
             };

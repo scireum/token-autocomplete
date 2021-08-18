@@ -2,12 +2,10 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -117,6 +115,9 @@ var TokenAutocomplete = /** @class */ (function () {
             this.val(this.options.initialTokens);
         }
         this.container.tokenAutocomplete = this;
+        if (this.options.selectMode == SelectModes.SINGLE && !this.options.optional && this.val().length == 0) {
+            this.autocomplete.loadSuggestions();
+        }
     }
     /**
      * Searches the element given as a container for option elements and creates active tokens (when the option is marked selected)
@@ -769,6 +770,11 @@ var TokenAutocomplete = /** @class */ (function () {
                                 completionDescription: null,
                                 completionLabel: null
                             });
+                        }
+                        else if (me.parent.val().length == 0 && answer.completions.length > 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
+                            var firstSuggestion = answer.completions[0];
+                            var value = firstSuggestion.id || firstSuggestion.value;
+                            me.parent.select.addToken(value, firstSuggestion.fieldLabel, firstSuggestion.type, true);
                         }
                     }
                 };
