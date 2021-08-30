@@ -824,14 +824,18 @@ class TokenAutocomplete {
             }
             if (Array.isArray(me.parent.options.initialSuggestions)) {
                 me.clearSuggestions();
-
                 me.parent.options.initialSuggestions.forEach(function (suggestion) {
                     if (typeof suggestion !== 'object') {
                         // The suggestion is of wrong type and therefore ignored.
                         return;
                     }
                     let text = suggestion.fieldLabel;
-                    if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
+                    if (value.length == 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
+                        me.addSuggestion(suggestion, false);
+                        if (me.parent.val().length == 0) {
+                            me.parent.select.addToken(suggestion.value, text, suggestion.type, true);
+                        }
+                    } else if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
                         // The suggestion starts with the query text the user entered and will be displayed.
                         me.addSuggestion(suggestion);
                     }
