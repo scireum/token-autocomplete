@@ -473,12 +473,18 @@ var TokenAutocomplete = /** @class */ (function () {
          * @param {string} input - the actual input the user entered
          */
         class_2.prototype.handleInputAsValue = function (input) {
+            if (this.parent.options.allowCustomEntries) {
+                this.clearCurrentInput();
+                this.addToken(input, input, null, false);
+                this.parent.autocomplete.hideSuggestions();
+                this.parent.autocomplete.clearSuggestions();
+                return;
+            }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
                 this.parent.autocomplete.suggestions.firstChild.click();
+                return;
             }
-            else {
-                this.clearCurrentInput();
-            }
+            this.clearCurrentInput();
         };
         class_2.prototype.clearCurrentInput = function () {
             this.clear(true);
