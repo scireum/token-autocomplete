@@ -669,12 +669,8 @@ class TokenAutocomplete {
                     event.preventDefault();
                 }
             });
-            parent.textInput.addEventListener('click', function () {
-                if (!parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.textInput.focus();
-                }
-            });
-            me.parent.textInput.addEventListener('focusin', function () {
+
+            function focusInput() {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
                     parent.autocomplete.showSuggestions();
                     parent.autocomplete.loadSuggestions();
@@ -687,6 +683,13 @@ class TokenAutocomplete {
                 range.collapse(false);
                 selection?.addRange(range);
                 parent.textInput.focus();
+            }
+
+            parent.textInput.addEventListener('click', function () {
+                focusInput();
+            });
+            me.parent.textInput.addEventListener('focusin', function () {
+                focusInput();
             });
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
@@ -819,6 +822,7 @@ class TokenAutocomplete {
             if (me.parent.options.selectMode == SelectModes.SINGLE) {
                 if (!me.parent.textInput.isContentEditable) {
                     me.parent.select.clear(true);
+                    value = "";
                 }
             } else if (value.length < me.parent.options.minCharactersForSuggestion) {
                 me.hideSuggestions();
