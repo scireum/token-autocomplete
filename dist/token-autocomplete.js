@@ -460,21 +460,28 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.container.appendChild(deleteToken);
             }
         }
-        class_2.prototype.clear = function (silent) {
+        class_2.prototype.clear = function (silent, keepPreviousValue) {
             var _a;
+            if (keepPreviousValue === void 0) { keepPreviousValue = true; }
             if (this.options.readonly) {
                 return;
             }
             var me = this;
             var tokenText = me.parent.textInput.textContent;
             var hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
-            if (!me.options.optional) {
+            if (me.options.optional) {
+                this.container.classList.remove('optional-singleselect-with-value');
+            }
+            if (keepPreviousValue) {
                 me.previousValue = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.value;
                 me.previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
                 me.previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.type;
+                if (this.previousText && this.previousText !== '') {
+                    me.parent.textInput.dataset.placeholder = this.previousText;
+                }
             }
-            else {
-                this.container.classList.remove('optional-singleselect-with-value');
+            else if (me.parent.options.placeholderText != null) {
+                me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
             }
             (_a = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
@@ -564,13 +571,16 @@ var TokenAutocomplete = /** @class */ (function () {
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
-                    if (!me.options.optional && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
+                    if (me.previousValue && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
                     }
                 }, 200);
             });
             (_a = parent.container.querySelector('.token-singleselect-token-delete')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
-                me.clear(false);
+                delete me.previousValue;
+                delete me.previousType;
+                delete me.previousText;
+                me.clear(false, false);
             });
         };
         return class_2;

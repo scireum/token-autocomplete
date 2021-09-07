@@ -598,19 +598,25 @@ class TokenAutocomplete {
             }
         }
 
-        clear(silent: boolean): void {
+        clear(silent: boolean, keepPreviousValue = true): void {
             if (this.options.readonly) {
                 return;
             }
             let me = this;
             let tokenText = me.parent.textInput.textContent;
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]') as HTMLElement;
-            if (!me.options.optional) {
+            if (me.options.optional) {
+                this.container.classList.remove('optional-singleselect-with-value');
+            }
+            if (keepPreviousValue) {
                 me.previousValue = hiddenOption?.dataset.value;
                 me.previousText = hiddenOption?.dataset.text;
                 me.previousType = hiddenOption?.dataset.type;
-            } else {
-                this.container.classList.remove('optional-singleselect-with-value');
+                if (this.previousText && this.previousText !== '') {
+                    me.parent.textInput.dataset.placeholder = this.previousText;
+                }
+            } else if (me.parent.options.placeholderText != null) {
+                me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
             }
             hiddenOption?.parentElement?.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
@@ -708,13 +714,16 @@ class TokenAutocomplete {
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
-                    if (!me.options.optional && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
+                    if (me.previousValue && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
                     }
                 }, 200);
             });
             parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
-                me.clear(false);
+                delete me.previousValue;
+                delete me.previousType;
+                delete me.previousText;
+                me.clear(false, false);
             });
         }
     }
