@@ -29,7 +29,8 @@ interface Options {
     allowCustomEntries: boolean,
     readonly: boolean,
     optional: boolean,
-    enableTabulator: boolean
+    enableTabulator: boolean,
+    requestDelay: number
 }
 
 enum SelectModes {
@@ -132,7 +133,8 @@ class TokenAutocomplete {
         allowCustomEntries: true,
         readonly: false,
         optional: false,
-        enableTabulator: true
+        enableTabulator: true,
+        requestDelay: 200
     };
     log: any;
 
@@ -260,17 +262,7 @@ class TokenAutocomplete {
     val(value: Array<Token> | Token | null = null, silent: boolean = false): Array<string> {
         if (typeof value !== 'undefined' && value !== null) {
             this.select.clear(silent);
-
-            if (Array.isArray(value)) {
-                let me = this;
-                value.forEach(function (token) {
-                    if (typeof token === 'object') {
-                        me.select.addToken(token.value, token.text, token.type, silent);
-                    }
-                });
-            } else {
-                this.select.addToken(value.value, value.text, value.type, silent);
-            }
+            this.addToken(value, silent);
         }
 
         let tokens: Array<string> = [];
@@ -280,6 +272,28 @@ class TokenAutocomplete {
             }
         });
         return tokens;
+    }
+
+
+    /**
+     * Adds the given tokens to the field.
+     *
+     * The current tokens are only added when a value parameter is given.
+     *
+     * @param {(Array<Token>|string)} value - either the name of a single token or a list of tokens to create
+     * @param {boolean} silent - whether appropriate events should be triggered when changing tokens or not
+     */
+    addToken(value: Array<Token> | Token, silent: boolean = false) {
+        if (Array.isArray(value)) {
+            let me = this;
+            value.forEach(function (token) {
+                if (typeof token === 'object') {
+                    me.select.addToken(token.value, token.text, token.type, silent);
+                }
+            });
+        } else {
+            this.select.addToken(value.value, value.text, value.type, silent);
+        }
     }
 
     /**
@@ -584,19 +598,31 @@ class TokenAutocomplete {
             }
         }
 
-        clear(silent: boolean): void {
+        /**
+         * Clears the current user input so new text can be entered.
+         *
+         * @param {boolean} silent - whether an appropriate event should be triggered
+         * @param {boolean} keepPreviousValue - if true, the previous value will be stored and shown as a placeholder
+         */
+        clear(silent: boolean, keepPreviousValue = true): void {
             if (this.options.readonly) {
                 return;
             }
             let me = this;
             let tokenText = me.parent.textInput.textContent;
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]') as HTMLElement;
-            if (!me.options.optional) {
+            if (me.options.optional) {
+                this.container.classList.remove('optional-singleselect-with-value');
+            }
+            if (keepPreviousValue) {
                 me.previousValue = hiddenOption?.dataset.value;
                 me.previousText = hiddenOption?.dataset.text;
                 me.previousType = hiddenOption?.dataset.type;
-            } else {
-                this.container.classList.remove('optional-singleselect-with-value');
+                if (this.previousText && this.previousText !== '') {
+                    me.parent.textInput.dataset.placeholder = this.previousText;
+                }
+            } else if (me.parent.options.placeholderText != null) {
+                me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
             }
             hiddenOption?.parentElement?.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
@@ -610,11 +636,18 @@ class TokenAutocomplete {
          * @param {string} input - the actual input the user entered
          */
         handleInputAsValue(input: string): void {
+            if (this.parent.options.allowCustomEntries) {
+                this.clearCurrentInput();
+                this.addToken(input, input, null, false);
+                this.parent.autocomplete.hideSuggestions();
+                this.parent.autocomplete.clearSuggestions();
+                return;
+            }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
                 this.parent.autocomplete.suggestions.firstChild.click();
-            } else {
-                this.clearCurrentInput();
+                return;
             }
+            this.clearCurrentInput();
         }
 
         clearCurrentInput(): void {
@@ -662,12 +695,8 @@ class TokenAutocomplete {
                     event.preventDefault();
                 }
             });
-            parent.textInput.addEventListener('click', function () {
-                if (!parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.textInput.focus();
-                }
-            });
-            me.parent.textInput.addEventListener('focusin', function () {
+
+            function focusInput() {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
                     parent.autocomplete.showSuggestions();
                     parent.autocomplete.loadSuggestions();
@@ -680,17 +709,27 @@ class TokenAutocomplete {
                 range.collapse(false);
                 selection?.addRange(range);
                 parent.textInput.focus();
+            }
+
+            parent.textInput.addEventListener('click', function () {
+                focusInput();
+            });
+            me.parent.textInput.addEventListener('focusin', function () {
+                focusInput();
             });
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
-                    if (!me.options.optional && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
+                    if (me.previousValue && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
                     }
                 }, 200);
             });
             parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
-                me.clear(false);
+                delete me.previousValue;
+                delete me.previousType;
+                delete me.previousText;
+                me.clear(false, false);
             });
         }
     }
@@ -719,6 +758,7 @@ class TokenAutocomplete {
         suggestions: HTMLUListElement;
         renderer: SuggestionRenderer;
         request: XMLHttpRequest | null;
+        timeout: number | undefined;
 
         constructor(parent: TokenAutocomplete) {
             this.parent = parent;
@@ -812,6 +852,7 @@ class TokenAutocomplete {
             if (me.parent.options.selectMode == SelectModes.SINGLE) {
                 if (!me.parent.textInput.isContentEditable) {
                     me.parent.select.clear(true);
+                    value = "";
                 }
             } else if (value.length < me.parent.options.minCharactersForSuggestion) {
                 me.hideSuggestions();
@@ -904,6 +945,23 @@ class TokenAutocomplete {
          * @param query the query to search suggestions for
          */
         requestSuggestions(query: string) {
+            let me = this;
+            clearTimeout(me.timeout);
+            if (!me.timeout) {
+                me.debouncedRequestSuggestions.call(me, query);
+                me.timeout = setTimeout(function () {
+                    delete me.timeout;
+                }, me.parent.options.requestDelay);
+            } else {
+                me.timeout = setTimeout(function () {
+                    delete me.timeout;
+                    me.debouncedRequestSuggestions.call(me, query);
+                }, me.parent.options.requestDelay);
+            }
+        }
+
+
+        debouncedRequestSuggestions(query: string) {
             let me = this;
 
             if (me.request != null && me.request.readyState) {
