@@ -282,17 +282,15 @@ class TokenAutocomplete {
      * @param {boolean} silent - whether appropriate events should be triggered when changing tokens or not
      */
     addToken(value: Array<Token> | Token, silent: boolean = false) {
-        if (typeof value !== 'undefined' && value !== null) {
-            if (Array.isArray(value)) {
-                let me = this;
-                value.forEach(function (token) {
-                    if (typeof token === 'object') {
-                        me.select.addToken(token.value, token.text, token.type, silent);
-                    }
-                });
-            } else {
-                this.select.addToken(value.value, value.text, value.type, silent);
-            }
+        if (Array.isArray(value)) {
+            let me = this;
+            value.forEach(function (token) {
+                if (typeof token === 'object') {
+                    me.select.addToken(token.value, token.text, token.type, silent);
+                }
+            });
+        } else {
+            this.select.addToken(value.value, value.text, value.type, silent);
         }
     }
 
