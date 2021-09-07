@@ -29,7 +29,8 @@ interface Options {
     allowCustomEntries: boolean,
     readonly: boolean,
     optional: boolean,
-    enableTabulator: boolean
+    enableTabulator: boolean,
+    requestDelay: number
 }
 
 enum SelectModes {
@@ -132,7 +133,8 @@ class TokenAutocomplete {
         allowCustomEntries: true,
         readonly: false,
         optional: false,
-        enableTabulator: true
+        enableTabulator: true,
+        requestDelay: 200
     };
     log: any;
 
@@ -756,6 +758,7 @@ class TokenAutocomplete {
         suggestions: HTMLUListElement;
         renderer: SuggestionRenderer;
         request: XMLHttpRequest | null;
+        timeout: number | undefined;
 
         constructor(parent: TokenAutocomplete) {
             this.parent = parent;
@@ -942,6 +945,23 @@ class TokenAutocomplete {
          * @param query the query to search suggestions for
          */
         requestSuggestions(query: string) {
+            let me = this;
+            clearTimeout(me.timeout);
+            if (!me.timeout) {
+                me.debouncedRequestSuggestions.call(me, query);
+                me.timeout = setTimeout(function () {
+                    delete me.timeout;
+                }, me.parent.options.requestDelay);
+            } else {
+                me.timeout = setTimeout(function () {
+                    delete me.timeout;
+                    me.debouncedRequestSuggestions.call(me, query);
+                }, me.parent.options.requestDelay);
+            }
+        }
+
+
+        debouncedRequestSuggestions(query: string) {
             let me = this;
 
             if (me.request != null && me.request.readyState) {

@@ -56,7 +56,8 @@ var TokenAutocomplete = /** @class */ (function () {
             allowCustomEntries: true,
             readonly: false,
             optional: false,
-            enableTabulator: true
+            enableTabulator: true,
+            typeDelay: 200
         };
         this.options = __assign(__assign({}, this.defaults), options);
         var passedContainer = document.querySelector(this.options.selector);
@@ -187,18 +188,16 @@ var TokenAutocomplete = /** @class */ (function () {
      */
     TokenAutocomplete.prototype.addToken = function (value, silent) {
         if (silent === void 0) { silent = false; }
-        if (typeof value !== 'undefined' && value !== null) {
-            if (Array.isArray(value)) {
-                var me_1 = this;
-                value.forEach(function (token) {
-                    if (typeof token === 'object') {
-                        me_1.select.addToken(token.value, token.text, token.type, silent);
-                    }
-                });
-            }
-            else {
-                this.select.addToken(value.value, value.text, value.type, silent);
-            }
+        if (Array.isArray(value)) {
+            var me_1 = this;
+            value.forEach(function (token) {
+                if (typeof token === 'object') {
+                    me_1.select.addToken(token.value, token.text, token.type, silent);
+                }
+            });
+        }
+        else {
+            this.select.addToken(value.value, value.text, value.type, silent);
         }
     };
     /**
@@ -460,6 +459,12 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.container.appendChild(deleteToken);
             }
         }
+        /**
+         * Clears the current user input so new text can be entered.
+         *
+         * @param {boolean} silent - whether an appropriate event should be triggered
+         * @param {boolean} keepPreviousValue - if true, the previous value will be stored and shown as a placeholder
+         */
         class_2.prototype.clear = function (silent, keepPreviousValue) {
             var _a;
             if (keepPreviousValue === void 0) { keepPreviousValue = true; }
@@ -782,6 +787,22 @@ var TokenAutocomplete = /** @class */ (function () {
              * @param query the query to search suggestions for
              */
             class_4.prototype.requestSuggestions = function (query) {
+                var me = this;
+                clearTimeout(me.timeout);
+                if (!me.timeout) {
+                    me.debouncedRequestSuggestions.call(me, query);
+                    me.timeout = setTimeout(function () {
+                        delete me.timeout;
+                    }, me.parent.options.typeDelay);
+                }
+                else {
+                    me.timeout = setTimeout(function () {
+                        delete me.timeout;
+                        me.debouncedRequestSuggestions.call(me, query);
+                    }, me.parent.options.typeDelay);
+                }
+            };
+            class_4.prototype.debouncedRequestSuggestions = function (query) {
                 var me = this;
                 if (me.request != null && me.request.readyState) {
                     me.request.abort();
