@@ -596,6 +596,12 @@ class TokenAutocomplete {
             }
         }
 
+        /**
+         * Clears the current user input so new text can be entered.
+         *
+         * @param {boolean} silent - whether an appropriate event should be triggered
+         * @param {boolean} keepPreviousValue - if true, the previous value will be stored and shown as a placeholder
+         */
         clear(silent: boolean, keepPreviousValue = true): void {
             if (this.options.readonly) {
                 return;
