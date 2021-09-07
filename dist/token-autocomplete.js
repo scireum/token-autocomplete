@@ -167,6 +167,27 @@ var TokenAutocomplete = /** @class */ (function () {
         if (silent === void 0) { silent = false; }
         if (typeof value !== 'undefined' && value !== null) {
             this.select.clear(silent);
+            this.addToken(value, silent);
+        }
+        var tokens = [];
+        this.hiddenSelect.querySelectorAll('option').forEach(function (option) {
+            if (option.dataset.value != null && option.dataset.value !== "") {
+                tokens.push(option.dataset.value);
+            }
+        });
+        return tokens;
+    };
+    /**
+     * Adds the given tokens to the field.
+     *
+     * The current tokens are only added when a value parameter is given.
+     *
+     * @param {(Array<Token>|string)} value - either the name of a single token or a list of tokens to create
+     * @param {boolean} silent - whether appropriate events should be triggered when changing tokens or not
+     */
+    TokenAutocomplete.prototype.addToken = function (value, silent) {
+        if (silent === void 0) { silent = false; }
+        if (typeof value !== 'undefined' && value !== null) {
             if (Array.isArray(value)) {
                 var me_1 = this;
                 value.forEach(function (token) {
@@ -179,13 +200,6 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.select.addToken(value.value, value.text, value.type, silent);
             }
         }
-        var tokens = [];
-        this.hiddenSelect.querySelectorAll('option').forEach(function (option) {
-            if (option.dataset.value != null && option.dataset.value !== "") {
-                tokens.push(option.dataset.value);
-            }
-        });
-        return tokens;
     };
     /**
      * Returns the current text the user has input which is not converted into a token.

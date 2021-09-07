@@ -260,7 +260,29 @@ class TokenAutocomplete {
     val(value: Array<Token> | Token | null = null, silent: boolean = false): Array<string> {
         if (typeof value !== 'undefined' && value !== null) {
             this.select.clear(silent);
+            this.addToken(value, silent);
+        }
 
+        let tokens: Array<string> = [];
+        this.hiddenSelect.querySelectorAll('option').forEach(option => {
+            if (option.dataset.value != null && option.dataset.value !== "") {
+                tokens.push(option.dataset.value);
+            }
+        });
+        return tokens;
+    }
+
+
+    /**
+     * Adds the given tokens to the field.
+     *
+     * The current tokens are only added when a value parameter is given.
+     *
+     * @param {(Array<Token>|string)} value - either the name of a single token or a list of tokens to create
+     * @param {boolean} silent - whether appropriate events should be triggered when changing tokens or not
+     */
+    addToken(value: Array<Token> | Token, silent: boolean = false) {
+        if (typeof value !== 'undefined' && value !== null) {
             if (Array.isArray(value)) {
                 let me = this;
                 value.forEach(function (token) {
@@ -272,14 +294,6 @@ class TokenAutocomplete {
                 this.select.addToken(value.value, value.text, value.type, silent);
             }
         }
-
-        let tokens: Array<string> = [];
-        this.hiddenSelect.querySelectorAll('option').forEach(option => {
-            if (option.dataset.value != null && option.dataset.value !== "") {
-                tokens.push(option.dataset.value);
-            }
-        });
-        return tokens;
     }
 
     /**
