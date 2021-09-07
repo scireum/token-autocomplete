@@ -57,7 +57,7 @@ var TokenAutocomplete = /** @class */ (function () {
             readonly: false,
             optional: false,
             enableTabulator: true,
-            typeDelay: 200
+            requestDelay: 200
         };
         this.options = __assign(__assign({}, this.defaults), options);
         var passedContainer = document.querySelector(this.options.selector);
@@ -793,13 +793,13 @@ var TokenAutocomplete = /** @class */ (function () {
                     me.debouncedRequestSuggestions.call(me, query);
                     me.timeout = setTimeout(function () {
                         delete me.timeout;
-                    }, me.parent.options.typeDelay);
+                    }, me.parent.options.requestDelay);
                 }
                 else {
                     me.timeout = setTimeout(function () {
                         delete me.timeout;
                         me.debouncedRequestSuggestions.call(me, query);
-                    }, me.parent.options.typeDelay);
+                    }, me.parent.options.requestDelay);
                 }
             };
             class_4.prototype.debouncedRequestSuggestions = function (query) {
