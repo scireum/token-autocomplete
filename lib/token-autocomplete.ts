@@ -618,8 +618,12 @@ class TokenAutocomplete {
                 me.previousValue = hiddenOption?.dataset.value;
                 me.previousText = hiddenOption?.dataset.text;
                 me.previousType = hiddenOption?.dataset.type;
-                if (this.previousText && this.previousText !== '') {
-                    me.parent.textInput.dataset.placeholder = this.previousText;
+                if (hiddenOption == null && me.options.allowCustomEntries) {
+                    me.previousValue = tokenText;
+                    me.previousText = tokenText;
+                }
+                if (me.previousText && me.previousText !== '') {
+                    me.parent.textInput.dataset.placeholder = me.previousText;
                 }
             } else if (me.parent.options.placeholderText != null) {
                 me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
@@ -636,7 +640,7 @@ class TokenAutocomplete {
          * @param {string} input - the actual input the user entered
          */
         handleInputAsValue(input: string): void {
-            if (this.parent.options.allowCustomEntries) {
+            if (input != '' && this.parent.options.allowCustomEntries) {
                 this.clearCurrentInput();
                 this.addToken(input, input, null, false);
                 this.parent.autocomplete.hideSuggestions();
@@ -645,6 +649,10 @@ class TokenAutocomplete {
             }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
                 this.parent.autocomplete.suggestions.firstChild.click();
+                return;
+            }
+            if (this.previousValue && (this.parent.val().length === 0 || this.parent.val()[0] === '')) {
+                this.addToken(this.previousValue, this.previousText, this.previousType, true);
                 return;
             }
             this.clearCurrentInput();
@@ -720,9 +728,7 @@ class TokenAutocomplete {
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
-                    if (me.previousValue && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
-                        me.addToken(me.previousValue, me.previousText, me.previousType, true);
-                    }
+                    me.handleInputAsValue(parent.getCurrentInput());
                 }, 200);
             });
             parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
