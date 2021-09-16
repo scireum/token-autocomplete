@@ -239,11 +239,11 @@ var TokenAutocomplete = /** @class */ (function () {
             _emptyToken.setAttribute('selected', 'true');
         }
         else {
-            var newOption = document.createElement('option');
-            newOption.text = '';
-            newOption.value = '';
-            newOption.classList.add('empty-token');
-            this.hiddenSelect.add(newOption);
+            var _newOption = document.createElement('option');
+            _newOption.text = '';
+            _newOption.value = '';
+            _newOption.classList.add('empty-token');
+            this.hiddenSelect.add(_newOption);
         }
     };
     TokenAutocomplete.prototype.setPlaceholderText = function (placeholderText) {

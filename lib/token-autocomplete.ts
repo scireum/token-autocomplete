@@ -339,11 +339,11 @@ class TokenAutocomplete {
         if (_emptyToken) {
             _emptyToken.setAttribute('selected', 'true');
         } else {
-            const newOption = document.createElement('option');
-            newOption.text = '';
-            newOption.value = '';
-            newOption.classList.add('empty-token');
-            this.hiddenSelect.add(newOption);
+            const _newOption = document.createElement('option');
+            _newOption.text = '';
+            _newOption.value = '';
+            _newOption.classList.add('empty-token');
+            this.hiddenSelect.add(_newOption);
         }
     }
 
