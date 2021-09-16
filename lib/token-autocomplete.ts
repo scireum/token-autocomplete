@@ -728,6 +728,11 @@ class TokenAutocomplete {
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
+                    const input = me.parent.getCurrentInput();
+                    if (input != '' && me.parent.options.allowCustomEntries) {
+                        me.handleInputAsValue(input);
+                        return;
+                    }
                     if (me.previousValue && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
                         return;
