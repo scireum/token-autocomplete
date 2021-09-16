@@ -335,12 +335,16 @@ class TokenAutocomplete {
     }
 
     addHiddenEmptyOption() {
-        const option = document.createElement('option');
-        option.text = '';
-        option.value = '';
-        option.setAttribute('selected', 'true');
-        option.classList.add('empty-token');
-        this.hiddenSelect.add(option);
+        let _emptyToken = this.hiddenSelect.querySelector('.empty-token');
+        if (_emptyToken) {
+            _emptyToken.setAttribute('selected', 'true');
+        } else {
+            const newOption = document.createElement('option');
+            newOption.text = '';
+            newOption.value = '';
+            newOption.classList.add('empty-token');
+            this.hiddenSelect.add(newOption);
+        }
     }
 
     setPlaceholderText(placeholderText: string | undefined) {
@@ -651,10 +655,6 @@ class TokenAutocomplete {
                 this.parent.autocomplete.suggestions.firstChild.click();
                 return;
             }
-            if (this.previousValue && (this.parent.val().length === 0 || this.parent.val()[0] === '')) {
-                this.addToken(this.previousValue, this.previousText, this.previousType, true);
-                return;
-            }
             this.clearCurrentInput();
         }
 
@@ -728,7 +728,10 @@ class TokenAutocomplete {
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
-                    me.handleInputAsValue(parent.getCurrentInput());
+                    if (me.previousValue && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
+                        me.addToken(me.previousValue, me.previousText, me.previousType, true);
+                        return;
+                    }
                 }, 200);
             });
             parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
