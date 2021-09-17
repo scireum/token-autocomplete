@@ -157,6 +157,7 @@ class TokenAutocomplete {
         this.hiddenSelect.id = this.container.id + '-select';
         this.hiddenSelect.name = this.options.name;
         this.hiddenSelect.setAttribute('multiple', 'true');
+        this.hiddenSelect.setAttribute('autocomplete', 'off');
         this.hiddenSelect.style.display = 'none';
 
         if (this.options.readonly && this.options.tokenRenderer === TokenAutocomplete.MultiSelect.defaultRenderer) {
