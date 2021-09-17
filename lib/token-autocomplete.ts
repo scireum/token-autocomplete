@@ -336,12 +336,16 @@ class TokenAutocomplete {
     }
 
     addHiddenEmptyOption() {
-        const option = document.createElement('option');
-        option.text = '';
-        option.value = '';
-        option.setAttribute('selected', 'true');
-        option.classList.add('empty-token');
-        this.hiddenSelect.add(option);
+        let _emptyToken = this.hiddenSelect.querySelector('.empty-token');
+        if (_emptyToken) {
+            _emptyToken.setAttribute('selected', 'true');
+        } else {
+            const _newOption = document.createElement('option');
+            _newOption.text = '';
+            _newOption.value = '';
+            _newOption.classList.add('empty-token');
+            this.hiddenSelect.add(_newOption);
+        }
     }
 
     setPlaceholderText(placeholderText: string | undefined) {
@@ -619,8 +623,12 @@ class TokenAutocomplete {
                 me.previousValue = hiddenOption?.dataset.value;
                 me.previousText = hiddenOption?.dataset.text;
                 me.previousType = hiddenOption?.dataset.type;
-                if (this.previousText && this.previousText !== '') {
-                    me.parent.textInput.dataset.placeholder = this.previousText;
+                if (hiddenOption == null && me.options.allowCustomEntries) {
+                    me.previousValue = tokenText;
+                    me.previousText = tokenText;
+                }
+                if (me.previousText && me.previousText !== '') {
+                    me.parent.textInput.dataset.placeholder = me.previousText;
                 }
             } else if (me.parent.options.placeholderText != null) {
                 me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
@@ -637,7 +645,7 @@ class TokenAutocomplete {
          * @param {string} input - the actual input the user entered
          */
         handleInputAsValue(input: string): void {
-            if (this.parent.options.allowCustomEntries) {
+            if (input != '' && this.parent.options.allowCustomEntries) {
                 this.clearCurrentInput();
                 this.addToken(input, input, null, false);
                 this.parent.autocomplete.hideSuggestions();
@@ -721,8 +729,14 @@ class TokenAutocomplete {
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
+                    const input = me.parent.getCurrentInput();
+                    if (input != '' && me.parent.options.allowCustomEntries) {
+                        me.handleInputAsValue(input);
+                        return;
+                    }
                     if (me.previousValue && (me.parent.val().length === 0 || me.parent.val()[0] === '')) {
                         me.addToken(me.previousValue, me.previousText, me.previousType, true);
+                        return;
                     }
                 }, 200);
             });
