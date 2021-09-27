@@ -13,6 +13,11 @@ interface Suggestion {
     completionDescription: string | null
 }
 
+interface ErrorMessages {
+    duplicateToken: string;
+    emptyInput: string
+}
+
 interface Options {
     name: string,
     selector: string,
@@ -25,12 +30,17 @@ interface Options {
     suggestionsUri: string,
     suggestionsUriBuilder: SuggestionUriBuilder,
     suggestionRenderer: SuggestionRenderer,
+    tokenInputValidator: TokenInputValidator,
+    tokenAddValidator: TokenAddValidator,
     minCharactersForSuggestion: number,
     allowCustomEntries: boolean,
     readonly: boolean,
     optional: boolean,
+    allowDuplicates: boolean,
     enableTabulator: boolean,
-    requestDelay: number
+    requestDelay: number,
+    searchWithin: boolean,
+    errorMessages: ErrorMessages
 }
 
 enum SelectModes {
@@ -53,6 +63,9 @@ interface SingleSelect extends SelectMode {
 }
 
 interface MultiSelect extends SelectMode {
+    parent: TokenAutocomplete;
+    options: Options;
+
     removeToken(token: HTMLSpanElement): void;
 
     removeLastToken(): void;
@@ -96,6 +109,22 @@ interface SuggestionUriBuilder {
     (query: string): string;
 }
 
+interface TokenInputValidator {
+    (msel: MultiSelect, suggestion: string): TokenInputError|null;
+}
+
+class TokenInputError {
+    message: string;
+
+    constructor(message: string) {
+        this.message = message;
+    }
+}
+
+interface TokenAddValidator {
+    (msel: MultiSelect, newtoken: Token): TokenInputError|null;
+}
+
 class TokenAutocomplete {
 
     KEY_BACKSPACE = 'Backspace';
@@ -111,6 +140,7 @@ class TokenAutocomplete {
     container: any;
     hiddenSelect: HTMLSelectElement;
     textInput: HTMLSpanElement;
+    errorContainer: HTMLDivElement;
 
     select: SelectMode;
     autocomplete: Autocomplete;
@@ -129,12 +159,20 @@ class TokenAutocomplete {
             return this.suggestionsUri + '?query=' + query
         },
         suggestionRenderer: TokenAutocomplete.Autocomplete.defaultRenderer,
+        tokenInputValidator: TokenAutocomplete.Autocomplete.defaultInputValidator,
+        tokenAddValidator: TokenAutocomplete.Autocomplete.defaultAddValidator,
         minCharactersForSuggestion: 1,
         allowCustomEntries: true,
         readonly: false,
         optional: false,
+        allowDuplicates: true,
         enableTabulator: true,
-        requestDelay: 200
+        requestDelay: 200,
+        searchWithin: false,
+        errorMessages: {
+            emptyInput: 'Enter a value',
+            duplicateToken: 'This value is already in the list'
+        }
     };
     log: any;
 
@@ -183,6 +221,12 @@ class TokenAutocomplete {
         }
         this.container.appendChild(this.textInput);
 
+        if (!this.options.readonly) {
+            this.errorContainer = document.createElement('div');
+            this.errorContainer.id = this.container.id + '-error';
+            this.errorContainer.classList.add('token-autocomplete-error');
+            this.container.appendChild(this.errorContainer);
+        }
 
         this.container.appendChild(this.hiddenSelect);
         this.addHiddenEmptyOption();
@@ -410,6 +454,8 @@ class TokenAutocomplete {
                 } else if (parent.getCurrentInput() === '' && event.key == parent.KEY_BACKSPACE) {
                     event.preventDefault();
                     me.removeLastToken();
+                } else {
+                    me.clearError();
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
@@ -425,8 +471,15 @@ class TokenAutocomplete {
          */
         handleInputAsValue(input: string): void {
             if (this.parent.options.allowCustomEntries) {
-                this.clearCurrentInput();
-                this.addToken(input, input, null);
+                const check = this.options.tokenInputValidator(this, input);
+                if (check === null) {
+                    // token is valid and can be added
+                    this.clearCurrentInput();
+                    this.addToken(input, input, null);
+                } else {
+                    // show error
+                    this.showError(check.message);
+                }
                 return;
             }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
@@ -449,13 +502,20 @@ class TokenAutocomplete {
                 return;
             }
 
-            this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
-
             let addedToken = {
                 value: tokenValue,
                 text: tokenText,
                 type: tokenType
             };
+
+            const tokenError = this.options.tokenAddValidator(this, addedToken);
+            if (tokenError !== null) {
+                // show error
+                this.showError(tokenError.message);
+                return;
+            }
+
+            this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
 
             let element = this.renderer(addedToken);
 
@@ -534,6 +594,13 @@ class TokenAutocomplete {
             }
 
             this.parent.log('removed token', token.textContent);
+        }
+
+        showError(message: string) {
+            this.parent.errorContainer.innerText = message;
+        }
+        clearError() {
+            this.parent.errorContainer.innerText = '';
         }
 
         removeTokenWithText(tokenText: string | null) {
@@ -897,6 +964,13 @@ class TokenAutocomplete {
                     } else if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
                         // The suggestion starts with the query text the user entered and will be displayed.
                         me.addSuggestion(suggestion);
+                    } else if (me.options.searchWithin) {
+                        const localeValue = value.toLocaleLowerCase();
+                        const localeText = text.toLocaleLowerCase();
+                        if (localeText.indexOf(localeValue) >=0 ) {
+                            // The suggestion contains the query text the user entered and will be displayed.
+                            me.addSuggestion(suggestion);
+                        }
                     }
                 });
                 if (me.suggestions.childNodes.length == 0 && me.parent.options.noMatchesText) {
@@ -1097,6 +1171,40 @@ class TokenAutocomplete {
             }
 
             return option;
+        }
+
+        static isDuplicate(msel: MultiSelect, input: string): boolean {
+            // check for duplcates and reject existing values
+            const options = msel.parent.hiddenSelect.options;
+            for (let i = 0; i < options.length; ++i) {
+                if (options[i].value === input) {
+                    // duplicate value
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static defaultInputValidator: TokenInputValidator = function (msel: MultiSelect, input: string) : TokenInputError|null {
+            if (input === '') {
+                return new TokenInputError(msel.options.errorMessages.emptyInput);
+            }
+            if (TokenAutocomplete.Autocomplete.isDuplicate(msel, input)) {
+                // duplicate value
+                return new TokenInputError(msel.options.errorMessages.duplicateToken);
+            }
+            return null;
+        }
+
+        static defaultAddValidator: TokenAddValidator = function(msel: MultiSelect, token: Token) : TokenInputError|null {
+            if (! msel.options.allowDuplicates) {
+                // check for duplcates and reject existing values
+                if (TokenAutocomplete.Autocomplete.isDuplicate(msel, token.value)) {
+                    // duplicate value
+                    return new TokenInputError(msel.options.errorMessages.duplicateToken);
+                }
+            }
+            return null;
         }
     }
 }

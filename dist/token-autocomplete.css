@@ -34,6 +34,10 @@
     color: rgba(0, 0, 0, 0.6);
 }
 
+.token-autocomplete-container .token-autocomplete-error {
+    color: #c00;
+}
+
 .token-autocomplete-container .token-autocomplete-token {
     font-size: 16px;
     line-height: 32px;
