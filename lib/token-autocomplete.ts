@@ -1190,7 +1190,6 @@ class TokenAutocomplete {
                 // duplicate value
                 return new TokenInputError(msel.options.errorMessages.duplicateToken);
             }
-            console.log("TODO: validate suggestion: " + input);
             return null;
         }
 
