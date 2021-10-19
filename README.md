@@ -18,3 +18,19 @@ Small demo: [click here](https://sabieber.github.io/token-autocomplete/)
 | suggestionsUri | An optional URI which when defined is called to provide suggestions for the text entered by the user | '' |
 | suggestionsUriBuilder | A function which is called before sending the suggestions request so the URI can be altered/updated. | (query) -> return this.suggestionsUri + '?query=' + query |
 | suggestionRenderer | Function which creates the DOM element for each displayed suggestion. | TokenAutocomplete.Autocomplete.defaultRenderer |
+
+## Build / Development
+
+Install typescript:
+
+```
+brew install typescript
+```
+
+Change .ts file as necessary.
+
+Run TypeScript build in the main project directory:
+
+```
+tsc
+```
