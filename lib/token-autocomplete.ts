@@ -343,6 +343,7 @@ class TokenAutocomplete {
             const _newOption = document.createElement('option');
             _newOption.text = '';
             _newOption.value = '';
+            _newOption.selected = true;
             _newOption.classList.add('empty-token');
             this.hiddenSelect.add(_newOption);
         }
