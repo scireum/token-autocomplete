@@ -518,8 +518,8 @@ class TokenAutocomplete {
             let addedToken = {
                 value: token.dataset.value,
                 text: tokenText,
-                type: token.dataset.type
-            }
+                type: token.dataset.type || null
+            };
 
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
