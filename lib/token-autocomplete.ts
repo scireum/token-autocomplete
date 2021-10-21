@@ -343,6 +343,7 @@ class TokenAutocomplete {
             const _newOption = document.createElement('option');
             _newOption.text = '';
             _newOption.value = '';
+            _newOption.selected = true;
             _newOption.classList.add('empty-token');
             this.hiddenSelect.add(_newOption);
         }
@@ -517,8 +518,8 @@ class TokenAutocomplete {
             let addedToken = {
                 value: token.dataset.value,
                 text: tokenText,
-                type: token.dataset.type
-            }
+                type: token.dataset.type || null
+            };
 
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
