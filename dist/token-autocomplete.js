@@ -228,7 +228,7 @@ var TokenAutocomplete = /** @class */ (function () {
         var option = document.createElement('option');
         option.text = tokenText;
         option.value = tokenValue;
-        option.setAttribute('selected', 'true');
+        option.selected = true;
         option.dataset.text = tokenText;
         option.dataset.value = tokenValue;
         if (tokenType != null) {
@@ -295,11 +295,11 @@ var TokenAutocomplete = /** @class */ (function () {
                             else {
                                 me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
                             }
-                            parent.autocomplete.hideSuggestions();
                         }
                         else {
                             me.handleInputAsValue(parent.getCurrentInput());
                         }
+                        parent.autocomplete.hideSuggestions();
                     }
                     else if (parent.getCurrentInput() === '' && event.key == parent.KEY_BACKSPACE) {
                         event.preventDefault();
