@@ -580,6 +580,20 @@ var TokenAutocomplete = /** @class */ (function () {
                 selection === null || selection === void 0 ? void 0 : selection.addRange(range);
                 parent.textInput.focus();
             }
+            function handleInputOnFocusLoss() {
+                var input = me.parent.getCurrentInput();
+                if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
+                    return;
+                }
+                if (input != '' && me.parent.options.allowCustomEntries) {
+                    me.handleInputAsValue(input);
+                    return;
+                }
+                if (me.previousValue) {
+                    me.addToken(me.previousValue, me.previousText, me.previousType, true);
+                    return;
+                }
+            }
             parent.textInput.addEventListener('click', function () {
                 focusInput();
             });
@@ -588,21 +602,25 @@ var TokenAutocomplete = /** @class */ (function () {
             });
             parent.textInput.addEventListener('focusout', function () {
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
-                setTimeout(function () {
-                    var input = me.parent.getCurrentInput();
-                    if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
-                        return;
+                setTimeout(handleInputOnFocusLoss, 200);
+            }, true);
+            // Checks, if the token-autocomplete is part of a form and adds a listener for its 'submit' event
+            function findParentForm() {
+                var _parent = me.container;
+                while (_parent != null) {
+                    if (_parent.nodeName.toUpperCase() === 'FORM') {
+                        return _parent;
                     }
-                    if (input != '' && me.parent.options.allowCustomEntries) {
-                        me.handleInputAsValue(input);
-                        return;
+                    else {
+                        _parent = _parent.parentNode;
                     }
-                    if (me.previousValue) {
-                        me.addToken(me.previousValue, me.previousText, me.previousType, true);
-                        return;
-                    }
-                }, 200);
-            });
+                }
+                return null;
+            }
+            var parentForm = findParentForm();
+            if (parentForm) {
+                parentForm.addEventListener('submit', handleInputOnFocusLoss);
+            }
             (_a = parent.container.querySelector('.token-singleselect-token-delete')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
                 delete me.previousValue;
                 delete me.previousType;
