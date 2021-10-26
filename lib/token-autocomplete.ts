@@ -727,12 +727,14 @@ class TokenAutocomplete {
                 }
             });
 
-            parent.textInput.addEventListener('keyup', function (event) {
-                if (parent.options.allowCustomEntries && !(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
-                    event.preventDefault();
-                    parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
-                }
-            });
+            if (parent.options.allowCustomEntries) {
+                parent.textInput.addEventListener('keyup', function (event) {
+                    if (!(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
+                        event.preventDefault();
+                        parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
+                    }
+                });
+            }
 
             function focusInput() {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
