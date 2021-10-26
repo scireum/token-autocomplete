@@ -232,6 +232,10 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.hiddenSelect.removeChild(_existingCustomEntry);
             }
         }
+        var _existingOption = this.findOptionWithValue(tokenValue);
+        if (_existingOption) {
+            this.hiddenSelect.removeChild(_existingOption);
+        }
         var option = document.createElement('option');
         option.text = tokenText;
         option.value = tokenValue;
@@ -245,6 +249,15 @@ var TokenAutocomplete = /** @class */ (function () {
             option.classList.add('custom-entry');
         }
         this.hiddenSelect.add(option);
+    };
+    TokenAutocomplete.prototype.findOptionWithValue = function (optionValue) {
+        for (var i = 0; i < this.hiddenSelect.options.length; i++) {
+            var option = this.hiddenSelect.options[i];
+            if (option.value === optionValue) {
+                return option;
+            }
+        }
+        return null;
     };
     TokenAutocomplete.prototype.addHiddenEmptyOption = function () {
         var _emptyToken = this.hiddenSelect.querySelector('.empty-token');

@@ -329,6 +329,10 @@ class TokenAutocomplete {
                 this.hiddenSelect.removeChild(_existingCustomEntry);
             }
         }
+        let _existingOption = this.findOptionWithValue(tokenValue);
+        if(_existingOption) {
+            this.hiddenSelect.removeChild(_existingOption);
+        }
         const option = document.createElement('option');
         option.text = tokenText;
         option.value = tokenValue;
@@ -342,6 +346,16 @@ class TokenAutocomplete {
             option.classList.add('custom-entry');
         }
         this.hiddenSelect.add(option);
+    }
+
+    findOptionWithValue(optionValue: string) {
+        for (let i = 0; i < this.hiddenSelect.options.length; i++) {
+            let option = this.hiddenSelect.options[i];
+            if(option.value === optionValue) {
+                return option;
+            }
+        }
+        return null;
     }
 
     addHiddenEmptyOption() {
