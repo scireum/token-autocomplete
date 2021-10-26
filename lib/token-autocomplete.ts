@@ -323,14 +323,12 @@ class TokenAutocomplete {
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
         }
-        if (isCustomEntry) {
-            let _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
-            if (_existingCustomEntry) {
-                this.hiddenSelect.removeChild(_existingCustomEntry);
-            }
+        let _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
+        if (_existingCustomEntry) {
+            this.hiddenSelect.removeChild(_existingCustomEntry);
         }
         let _existingOption = this.findOptionWithValue(tokenValue);
-        if(_existingOption) {
+        if (_existingOption) {
             this.hiddenSelect.removeChild(_existingOption);
         }
         const option = document.createElement('option');
@@ -351,7 +349,7 @@ class TokenAutocomplete {
     findOptionWithValue(optionValue: string) {
         for (let i = 0; i < this.hiddenSelect.options.length; i++) {
             let option = this.hiddenSelect.options[i];
-            if(option.value === optionValue) {
+            if (option.value === optionValue) {
                 return option;
             }
         }

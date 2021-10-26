@@ -226,11 +226,9 @@ var TokenAutocomplete = /** @class */ (function () {
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
         }
-        if (isCustomEntry) {
-            var _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
-            if (_existingCustomEntry) {
-                this.hiddenSelect.removeChild(_existingCustomEntry);
-            }
+        var _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
+        if (_existingCustomEntry) {
+            this.hiddenSelect.removeChild(_existingCustomEntry);
         }
         var _existingOption = this.findOptionWithValue(tokenValue);
         if (_existingOption) {
