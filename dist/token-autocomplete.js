@@ -220,15 +220,15 @@ var TokenAutocomplete = /** @class */ (function () {
             }
         }));
     };
-    TokenAutocomplete.prototype.addHiddenOption = function (tokenValue, tokenText, tokenType, isCustomEntry) {
-        if (isCustomEntry === void 0) { isCustomEntry = false; }
+    TokenAutocomplete.prototype.addHiddenOption = function (tokenValue, tokenText, tokenType, isLiveEntry) {
+        if (isLiveEntry === void 0) { isLiveEntry = false; }
         var _emptyToken = this.hiddenSelect.querySelector('.empty-token');
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
         }
-        var _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
-        if (_existingCustomEntry) {
-            this.hiddenSelect.removeChild(_existingCustomEntry);
+        var _existingLiveEntry = this.hiddenSelect.querySelector('.live-entry');
+        if (_existingLiveEntry) {
+            this.hiddenSelect.removeChild(_existingLiveEntry);
         }
         var _existingOption = this.findOptionWithValue(tokenValue);
         if (_existingOption) {
@@ -243,8 +243,8 @@ var TokenAutocomplete = /** @class */ (function () {
         if (tokenType != null) {
             option.dataset.type = tokenType;
         }
-        if (isCustomEntry) {
-            option.classList.add('custom-entry');
+        if (isLiveEntry) {
+            option.classList.add('live-entry');
         }
         this.hiddenSelect.add(option);
     };

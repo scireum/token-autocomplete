@@ -318,14 +318,14 @@ class TokenAutocomplete {
         }));
     }
 
-    addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null, isCustomEntry: boolean = false) {
+    addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null, isLiveEntry: boolean = false) {
         let _emptyToken = this.hiddenSelect.querySelector('.empty-token');
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
         }
-        let _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
-        if (_existingCustomEntry) {
-            this.hiddenSelect.removeChild(_existingCustomEntry);
+        let _existingLiveEntry = this.hiddenSelect.querySelector('.live-entry');
+        if (_existingLiveEntry) {
+            this.hiddenSelect.removeChild(_existingLiveEntry);
         }
         let _existingOption = this.findOptionWithValue(tokenValue);
         if (_existingOption) {
@@ -340,8 +340,8 @@ class TokenAutocomplete {
         if (tokenType != null) {
             option.dataset.type = tokenType;
         }
-        if (isCustomEntry) {
-            option.classList.add('custom-entry');
+        if (isLiveEntry) {
+            option.classList.add('live-entry');
         }
         this.hiddenSelect.add(option);
     }
