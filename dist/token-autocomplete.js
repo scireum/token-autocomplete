@@ -220,10 +220,17 @@ var TokenAutocomplete = /** @class */ (function () {
             }
         }));
     };
-    TokenAutocomplete.prototype.addHiddenOption = function (tokenValue, tokenText, tokenType) {
+    TokenAutocomplete.prototype.addHiddenOption = function (tokenValue, tokenText, tokenType, isCustomEntry) {
+        if (isCustomEntry === void 0) { isCustomEntry = false; }
         var _emptyToken = this.hiddenSelect.querySelector('.empty-token');
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
+        }
+        if (isCustomEntry) {
+            var _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
+            if (_existingCustomEntry) {
+                this.hiddenSelect.removeChild(_existingCustomEntry);
+            }
         }
         var option = document.createElement('option');
         option.text = tokenText;
@@ -233,6 +240,9 @@ var TokenAutocomplete = /** @class */ (function () {
         option.dataset.value = tokenValue;
         if (tokenType != null) {
             option.dataset.type = tokenType;
+        }
+        if (isCustomEntry) {
+            option.classList.add('custom-entry');
         }
         this.hiddenSelect.add(option);
     };
@@ -307,6 +317,12 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                     if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                         event.preventDefault();
+                    }
+                });
+                parent.textInput.addEventListener('keyup', function (event) {
+                    if (parent.options.allowCustomEntries && !(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
+                        event.preventDefault();
+                        parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
                     }
                 });
             };
@@ -564,6 +580,12 @@ var TokenAutocomplete = /** @class */ (function () {
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
+                }
+            });
+            parent.textInput.addEventListener('keyup', function (event) {
+                if (parent.options.allowCustomEntries && !(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
+                    event.preventDefault();
+                    parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
                 }
             });
             function focusInput() {

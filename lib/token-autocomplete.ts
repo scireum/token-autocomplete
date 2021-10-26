@@ -318,10 +318,16 @@ class TokenAutocomplete {
         }));
     }
 
-    addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null) {
+    addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null, isCustomEntry: boolean = false) {
         let _emptyToken = this.hiddenSelect.querySelector('.empty-token');
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
+        }
+        if (isCustomEntry) {
+            let _existingCustomEntry = this.hiddenSelect.querySelector('.custom-entry');
+            if (_existingCustomEntry) {
+                this.hiddenSelect.removeChild(_existingCustomEntry);
+            }
         }
         const option = document.createElement('option');
         option.text = tokenText;
@@ -331,6 +337,9 @@ class TokenAutocomplete {
         option.dataset.value = tokenValue;
         if (tokenType != null) {
             option.dataset.type = tokenType;
+        }
+        if (isCustomEntry) {
+            option.classList.add('custom-entry');
         }
         this.hiddenSelect.add(option);
     }
@@ -414,6 +423,13 @@ class TokenAutocomplete {
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
+                }
+            });
+
+            parent.textInput.addEventListener('keyup', function (event) {
+                if (parent.options.allowCustomEntries && !(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
+                    event.preventDefault();
+                    parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
                 }
             });
         }
@@ -703,6 +719,13 @@ class TokenAutocomplete {
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
+                }
+            });
+
+            parent.textInput.addEventListener('keyup', function (event) {
+                if (parent.options.allowCustomEntries && !(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
+                    event.preventDefault();
+                    parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
                 }
             });
 
