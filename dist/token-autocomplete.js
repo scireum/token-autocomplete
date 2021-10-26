@@ -330,12 +330,6 @@ var TokenAutocomplete = /** @class */ (function () {
                         event.preventDefault();
                     }
                 });
-                parent.textInput.addEventListener('keyup', function (event) {
-                    if (parent.options.allowCustomEntries && !(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
-                        event.preventDefault();
-                        parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
-                    }
-                });
             };
             /**
              * Adds the current user input as a net token and resets the input area so new text can be entered.

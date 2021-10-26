@@ -437,13 +437,6 @@ class TokenAutocomplete {
                     event.preventDefault();
                 }
             });
-
-            parent.textInput.addEventListener('keyup', function (event) {
-                if (parent.options.allowCustomEntries && !(event.key == parent.KEY_ENTER || event.key == parent.KEY_TAB || event.key == parent.KEY_DOWN || event.key == parent.KEY_UP)) {
-                    event.preventDefault();
-                    parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
-                }
-            });
         }
 
 
