@@ -318,10 +318,18 @@ class TokenAutocomplete {
         }));
     }
 
-    addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null) {
+    addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null, isLiveEntry: boolean = false) {
         let _emptyToken = this.hiddenSelect.querySelector('.empty-token');
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
+        }
+        let _existingLiveEntry = this.hiddenSelect.querySelector('.live-entry');
+        if (_existingLiveEntry) {
+            this.hiddenSelect.removeChild(_existingLiveEntry);
+        }
+        let _existingOption = this.findOptionWithValue(tokenValue);
+        if (_existingOption) {
+            this.hiddenSelect.removeChild(_existingOption);
         }
         const option = document.createElement('option');
         option.text = tokenText;
@@ -332,7 +340,20 @@ class TokenAutocomplete {
         if (tokenType != null) {
             option.dataset.type = tokenType;
         }
+        if (isLiveEntry) {
+            option.classList.add('live-entry');
+        }
         this.hiddenSelect.add(option);
+    }
+
+    findOptionWithValue(optionValue: string) {
+        for (let i = 0; i < this.hiddenSelect.options.length; i++) {
+            let option = this.hiddenSelect.options[i];
+            if (option.value === optionValue) {
+                return option;
+            }
+        }
+        return null;
     }
 
     addHiddenEmptyOption() {
@@ -705,6 +726,15 @@ class TokenAutocomplete {
                     event.preventDefault();
                 }
             });
+
+            if (parent.options.allowCustomEntries) {
+                parent.textInput.addEventListener('keyup', function (event) {
+                    if (event.key != parent.KEY_ENTER && event.key != parent.KEY_TAB && event.key != parent.KEY_DOWN && event.key != parent.KEY_UP) {
+                        event.preventDefault();
+                        parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
+                    }
+                });
+            }
 
             function focusInput() {
                 if (!parent.autocomplete.areSuggestionsDisplayed()) {
