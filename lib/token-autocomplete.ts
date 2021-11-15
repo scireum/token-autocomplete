@@ -533,7 +533,7 @@ class TokenAutocomplete {
             this.container.removeChild(token);
 
             let tokenText = token.dataset.text;
-            let hiddenOption = this.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]');
+            let hiddenOption = this.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]');
             hiddenOption?.parentElement?.removeChild(hiddenOption);
 
             let addedToken = {
@@ -562,7 +562,7 @@ class TokenAutocomplete {
             if (tokenText === null) {
                 return;
             }
-            let token = this.container.querySelector('.token-autocomplete-token[data-text="' + tokenText + '"]');
+            let token = this.container.querySelector('.token-autocomplete-token[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]');
             if (token !== null) {
                 this.removeToken(token);
             }
@@ -637,7 +637,7 @@ class TokenAutocomplete {
             }
             let me = this;
             let tokenText = me.parent.textInput.textContent;
-            let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + tokenText + '"]') as HTMLElement;
+            let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]') as HTMLElement;
             if (me.options.optional) {
                 this.container.classList.remove('optional-singleselect-with-value');
             }
@@ -1129,5 +1129,9 @@ class TokenAutocomplete {
 
             return option;
         }
+    }
+
+    static escapeQuotes(text: string | null | undefined): string {
+        return text?.replace(/\x22/g, '\\\x22') ?? '';
     }
 }
