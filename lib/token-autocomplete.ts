@@ -255,7 +255,7 @@ class TokenAutocomplete {
      * The current tokens are only overwritten (cleared and added) when a value parameter is given.
      * In addition to the possibility of setting the value of the input this method also returns the values of all present tokens.
      *
-     * @param {(Array<Token>|string)} value - either the name of a single token or a list of tokens to create
+     * @param {(Array<Token>|Token)} value - either the name of a single token or a list of tokens to create
      * @param {boolean} silent - whether appropriate events should be triggered when changing tokens or not
      *
      * @returns an array of the values of all current (after update) tokens of the input field
@@ -281,7 +281,7 @@ class TokenAutocomplete {
      *
      * The current tokens are only added when a value parameter is given.
      *
-     * @param {(Array<Token>|string)} value - either the name of a single token or a list of tokens to create
+     * @param {(Array<Token>|Token)} value - either the name of a single token or a list of tokens to create
      * @param {boolean} silent - whether appropriate events should be triggered when changing tokens or not
      */
     addToken(value: Array<Token> | Token, silent: boolean = false) {
