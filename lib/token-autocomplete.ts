@@ -1132,10 +1132,6 @@ class TokenAutocomplete {
     }
 
     static escapeQuotes(text: string | null | undefined): string {
-        if (text === null || text === undefined) {
-            return '';
-        }
-
-        return text.replace(/\x22/g, '\\\x22');
+        return text?.replace(/\x22/g, '\\\x22') ?? '';
     }
 }
