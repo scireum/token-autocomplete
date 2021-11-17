@@ -581,11 +581,11 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                     if (highlightedSuggestion !== null) {
                         me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
-                        parent.autocomplete.hideSuggestions();
                     }
                     else {
                         me.handleInputAsValue(parent.getCurrentInput());
                     }
+                    parent.autocomplete.hideSuggestions();
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
