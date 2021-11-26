@@ -652,8 +652,15 @@ class TokenAutocomplete {
                 if (me.previousText && me.previousText !== '') {
                     me.parent.textInput.dataset.placeholder = me.previousText;
                 }
-            } else if (me.parent.options.placeholderText != null) {
-                me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
+            } else {
+                // We should reset these fields, so they are not used to restore the previously selected value
+                // when the focusout event is handled after the click event on the suggestion.
+                delete me.previousValue;
+                delete me.previousText;
+                delete me.previousType;
+                if (me.parent.options.placeholderText != null) {
+                    me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
+                }
             }
             hiddenOption?.parentElement?.removeChild(hiddenOption);
             me.parent.addHiddenEmptyOption();
@@ -689,7 +696,7 @@ class TokenAutocomplete {
             if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
                 return;
             }
-            this.clear(true);
+            this.clear(true, false);
             this.parent.textInput.textContent = tokenText;
             this.parent.textInput.contentEditable = 'false';
             if (this.options.optional && tokenText !== '') {
@@ -775,9 +782,6 @@ class TokenAutocomplete {
                 }, 200);
             });
             parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
-                delete me.previousValue;
-                delete me.previousType;
-                delete me.previousText;
                 me.clear(false, false);
             });
         }
@@ -998,11 +1002,11 @@ class TokenAutocomplete {
             clearTimeout(me.timeout);
             if (!me.timeout) {
                 me.debouncedRequestSuggestions.call(me, query);
-                me.timeout = setTimeout(function () {
+                me.timeout = window.setTimeout(function () {
                     delete me.timeout;
                 }, me.parent.options.requestDelay);
             } else {
-                me.timeout = setTimeout(function () {
+                me.timeout = window.setTimeout(function () {
                     delete me.timeout;
                     me.debouncedRequestSuggestions.call(me, query);
                 }, me.parent.options.requestDelay);
