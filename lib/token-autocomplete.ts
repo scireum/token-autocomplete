@@ -234,7 +234,7 @@ class TokenAutocomplete {
                     value: option.value,
                     fieldLabel: option.text,
                     type: null,
-                    completionDescription: null,
+                    completionDescription: option.dataset.description || null,
                     completionLabel: null
                 });
             }
