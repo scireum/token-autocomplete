@@ -627,6 +627,9 @@ var TokenAutocomplete = /** @class */ (function () {
                 focusInput();
             });
             parent.textInput.addEventListener('focusout', function () {
+                if (parent.autocomplete.areSuggestionsHighlighted()) {
+                    return;
+                }
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
                     var input = me.parent.getCurrentInput();
@@ -744,6 +747,9 @@ var TokenAutocomplete = /** @class */ (function () {
                     me.loadSuggestions();
                 });
                 me.parent.textInput.addEventListener('focusout', function () {
+                    if (me.areSuggestionsHighlighted()) {
+                        return;
+                    }
                     // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                     setTimeout(function () {
                         me.hideSuggestions();
@@ -833,6 +839,9 @@ var TokenAutocomplete = /** @class */ (function () {
                     suggestionElement.classList.remove('token-autocomplete-suggestion-highlighted');
                 });
                 suggestion.classList.add('token-autocomplete-suggestion-highlighted');
+            };
+            class_4.prototype.areSuggestionsHighlighted = function () {
+                return !!this.suggestions.querySelector('li:hover,li.token-autocomplete-suggestion-highlighted');
             };
             /**
              * Removes all previous suggestions from the dropdown.

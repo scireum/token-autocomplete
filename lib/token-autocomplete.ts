@@ -80,6 +80,8 @@ interface Autocomplete {
     loadSuggestions(): void;
 
     areSuggestionsDisplayed(): boolean;
+    
+    areSuggestionsHighlighted(): boolean;
 
     highlightSuggestion(arg0: Element): void;
 }
@@ -765,6 +767,9 @@ class TokenAutocomplete {
                 focusInput();
             });
             parent.textInput.addEventListener('focusout', function () {
+                if (parent.autocomplete.areSuggestionsHighlighted()) {
+                    return;
+                }
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
                     const input = me.parent.getCurrentInput();
@@ -888,6 +893,9 @@ class TokenAutocomplete {
                 me.loadSuggestions();
             });
             me.parent.textInput.addEventListener('focusout', function () {
+                if (me.areSuggestionsHighlighted()) {
+                    return;
+                }
                 // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
                 setTimeout(function () {
                     me.hideSuggestions();
@@ -983,6 +991,13 @@ class TokenAutocomplete {
                 suggestionElement.classList.remove('token-autocomplete-suggestion-highlighted');
             })
             suggestion.classList.add('token-autocomplete-suggestion-highlighted');
+        }
+
+        /**
+         * Checks for the presence of highlighted suggestions via mouse (hover) or keyboard (marker class).
+         */
+        areSuggestionsHighlighted() {
+            return !!this.suggestions.querySelector('li:hover,li.token-autocomplete-suggestion-highlighted');
         }
 
         /**
