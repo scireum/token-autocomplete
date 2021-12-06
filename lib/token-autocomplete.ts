@@ -954,9 +954,9 @@ class TokenAutocomplete {
         hideSuggestions() {
             this.suggestions.style.display = '';
 
-            let suggestions = this.suggestions.querySelectorAll('li');
-            suggestions.forEach(function (suggestion) {
-                suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
+            let _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
+            _highlightedSuggestions.forEach(function (_suggestion) {
+                _suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
             })
         }
 
@@ -972,18 +972,18 @@ class TokenAutocomplete {
         }
 
         highlightSuggestionAtPosition(index: number) {
-            let suggestions = this.suggestions.querySelectorAll('li');
-            suggestions.forEach(function (suggestion) {
-                suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
+            let _suggestions = this.suggestions.querySelectorAll('li');
+            _suggestions.forEach(function (_suggestion) {
+                _suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
             })
-            suggestions[index].classList.add('token-autocomplete-suggestion-highlighted');
+            _suggestions[index].classList.add('token-autocomplete-suggestion-highlighted');
         }
 
-        highlightSuggestion(suggestion: Element) {
-            this.suggestions.querySelectorAll('li').forEach(function (suggestionElement) {
-                suggestionElement.classList.remove('token-autocomplete-suggestion-highlighted');
+        highlightSuggestion(_suggestion: Element) {
+            this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted').forEach(function (_highlightedSuggestion) {
+                _highlightedSuggestion.classList.remove('token-autocomplete-suggestion-highlighted');
             })
-            suggestion.classList.add('token-autocomplete-suggestion-highlighted');
+            _suggestion.classList.add('token-autocomplete-suggestion-highlighted');
         }
 
         /**
