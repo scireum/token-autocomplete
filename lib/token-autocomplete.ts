@@ -80,7 +80,7 @@ interface Autocomplete {
     loadSuggestions(): void;
 
     areSuggestionsDisplayed(): boolean;
-    
+
     areSuggestionsHighlighted(): boolean;
 
     highlightSuggestion(arg0: Element): void;
@@ -770,21 +770,17 @@ class TokenAutocomplete {
                 if (parent.autocomplete.areSuggestionsHighlighted()) {
                     return;
                 }
-                // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
-                setTimeout(function () {
-                    const input = me.parent.getCurrentInput();
-                    if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
-                        return;
-                    }
-                    if (input != '' && me.parent.options.allowCustomEntries) {
-                        me.handleInputAsValue(input);
-                        return;
-                    }
-                    if (me.previousValue) {
-                        me.addToken(me.previousValue, me.previousText, me.previousType, true);
-                        return;
-                    }
-                }, 200);
+                const input = me.parent.getCurrentInput();
+                if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
+                    return;
+                }
+                if (input != '' && me.parent.options.allowCustomEntries) {
+                    me.handleInputAsValue(input);
+                    return;
+                }
+                if (me.previousValue) {
+                    me.addToken(me.previousValue, me.previousText, me.previousType, true);
+                }
             });
             parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
                 me.clear(false, false);
@@ -896,10 +892,7 @@ class TokenAutocomplete {
                 if (me.areSuggestionsHighlighted()) {
                     return;
                 }
-                // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
-                setTimeout(function () {
-                    me.hideSuggestions();
-                }, 200);
+                me.hideSuggestions();
             });
             me.parent.textInput.addEventListener('focusin', function () {
                 me.loadSuggestions();

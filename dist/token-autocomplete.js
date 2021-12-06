@@ -630,21 +630,17 @@ var TokenAutocomplete = /** @class */ (function () {
                 if (parent.autocomplete.areSuggestionsHighlighted()) {
                     return;
                 }
-                // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
-                setTimeout(function () {
-                    var input = me.parent.getCurrentInput();
-                    if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
-                        return;
-                    }
-                    if (input != '' && me.parent.options.allowCustomEntries) {
-                        me.handleInputAsValue(input);
-                        return;
-                    }
-                    if (me.previousValue) {
-                        me.addToken(me.previousValue, me.previousText, me.previousType, true);
-                        return;
-                    }
-                }, 200);
+                var input = me.parent.getCurrentInput();
+                if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
+                    return;
+                }
+                if (input != '' && me.parent.options.allowCustomEntries) {
+                    me.handleInputAsValue(input);
+                    return;
+                }
+                if (me.previousValue) {
+                    me.addToken(me.previousValue, me.previousText, me.previousType, true);
+                }
             });
             (_a = parent.container.querySelector('.token-singleselect-token-delete')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
                 me.clear(false, false);
@@ -750,10 +746,7 @@ var TokenAutocomplete = /** @class */ (function () {
                     if (me.areSuggestionsHighlighted()) {
                         return;
                     }
-                    // We use setTimeout here, so we won't interfere with a user clicking on a suggestion.
-                    setTimeout(function () {
-                        me.hideSuggestions();
-                    }, 200);
+                    me.hideSuggestions();
                 });
                 me.parent.textInput.addEventListener('focusin', function () {
                     me.loadSuggestions();
@@ -840,6 +833,9 @@ var TokenAutocomplete = /** @class */ (function () {
                 });
                 suggestion.classList.add('token-autocomplete-suggestion-highlighted');
             };
+            /**
+             * Checks for the presence of highlighted suggestions via mouse (hover) or keyboard (marker class).
+             */
             class_4.prototype.areSuggestionsHighlighted = function () {
                 return !!this.suggestions.querySelector('li:hover,li.token-autocomplete-suggestion-highlighted');
             };
