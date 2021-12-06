@@ -806,9 +806,9 @@ var TokenAutocomplete = /** @class */ (function () {
              */
             class_4.prototype.hideSuggestions = function () {
                 this.suggestions.style.display = '';
-                var suggestions = this.suggestions.querySelectorAll('li');
-                suggestions.forEach(function (suggestion) {
-                    suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
+                var _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
+                _highlightedSuggestions.forEach(function (_suggestion) {
+                    _suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
                 });
             };
             /**
@@ -821,17 +821,17 @@ var TokenAutocomplete = /** @class */ (function () {
                 return this.suggestions.style.display === 'block';
             };
             class_4.prototype.highlightSuggestionAtPosition = function (index) {
-                var suggestions = this.suggestions.querySelectorAll('li');
-                suggestions.forEach(function (suggestion) {
-                    suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
+                var _suggestions = this.suggestions.querySelectorAll('li');
+                _suggestions.forEach(function (_suggestion) {
+                    _suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
                 });
-                suggestions[index].classList.add('token-autocomplete-suggestion-highlighted');
+                _suggestions[index].classList.add('token-autocomplete-suggestion-highlighted');
             };
-            class_4.prototype.highlightSuggestion = function (suggestion) {
-                this.suggestions.querySelectorAll('li').forEach(function (suggestionElement) {
-                    suggestionElement.classList.remove('token-autocomplete-suggestion-highlighted');
+            class_4.prototype.highlightSuggestion = function (_suggestion) {
+                this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted').forEach(function (_highlightedSuggestion) {
+                    _highlightedSuggestion.classList.remove('token-autocomplete-suggestion-highlighted');
                 });
-                suggestion.classList.add('token-autocomplete-suggestion-highlighted');
+                _suggestion.classList.add('token-autocomplete-suggestion-highlighted');
             };
             /**
              * Checks for the presence of highlighted suggestions via mouse (hover) or keyboard (marker class).
