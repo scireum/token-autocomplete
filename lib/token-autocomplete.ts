@@ -30,6 +30,7 @@ interface Options {
     readonly: boolean,
     optional: boolean,
     enableTabulator: boolean,
+    showSuggestionsOnFocus: boolean,
     requestDelay: number
 }
 
@@ -136,6 +137,7 @@ class TokenAutocomplete {
         readonly: false,
         optional: false,
         enableTabulator: true,
+        showSuggestionsOnFocus: true,
         requestDelay: 200
     };
     log: any;
@@ -746,7 +748,7 @@ class TokenAutocomplete {
             }
 
             function focusInput() {
-                if (!parent.autocomplete.areSuggestionsDisplayed()) {
+                if (!parent.autocomplete.areSuggestionsDisplayed() && parent.options.showSuggestionsOnFocus) {
                     parent.autocomplete.showSuggestions();
                     parent.autocomplete.loadSuggestions();
                 }
@@ -895,7 +897,9 @@ class TokenAutocomplete {
                 me.hideSuggestions();
             });
             me.parent.textInput.addEventListener('focusin', function () {
-                me.loadSuggestions();
+                if (me.options.showSuggestionsOnFocus) {
+                    me.loadSuggestions();
+                }
             });
         }
 
