@@ -44,6 +44,8 @@ interface SelectMode {
 
     initEventListeners(): void;
 
+    handleFocusIn(): void
+
     clear(silent: boolean): void;
 
     clearCurrentInput(): void;
@@ -441,6 +443,9 @@ class TokenAutocomplete {
             });
         }
 
+        handleFocusIn(): void {
+            this.parent.autocomplete.loadSuggestions();
+        }
 
         /**
          * Adds the current user input as a net token and resets the input area so new text can be entered.
@@ -745,27 +750,8 @@ class TokenAutocomplete {
                 });
             }
 
-            function focusInput() {
-                if (!parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.autocomplete.showSuggestions();
-                    parent.autocomplete.loadSuggestions();
-                }
-                // move the cursor into the editable div
-                const selection = window.getSelection();
-                const range = document.createRange();
-                selection?.removeAllRanges();
-                range.selectNodeContents(parent.textInput);
-                range.collapse(false);
-                selection?.addRange(range);
-                parent.textInput.focus();
-            }
+            parent.textInput.addEventListener('click', this.handleFocusIn);
 
-            parent.textInput.addEventListener('click', function () {
-                focusInput();
-            });
-            me.parent.textInput.addEventListener('focusin', function () {
-                focusInput();
-            });
             parent.textInput.addEventListener('focusout', function () {
                 if (parent.autocomplete.areSuggestionsHighlighted()) {
                     return;
@@ -786,6 +772,22 @@ class TokenAutocomplete {
                 me.clear(false, false);
             });
         }
+
+        handleFocusIn(): void {
+            if (!this.parent.autocomplete.areSuggestionsDisplayed()) {
+                this.parent.autocomplete.showSuggestions();
+                this.parent.autocomplete.loadSuggestions();
+            }
+
+            // move the cursor into the editable div
+            const selection = window.getSelection();
+            const range = document.createRange();
+            selection?.removeAllRanges();
+            range.selectNodeContents(this.parent.textInput);
+            range.collapse(false);
+            selection?.addRange(range);
+            this.parent.textInput.focus();
+        }
     }
 
     static SearchMultiSelect = class extends TokenAutocomplete.MultiSelect {
@@ -801,6 +803,10 @@ class TokenAutocomplete {
                     query: input
                 }
             }));
+        }
+
+        handleFocusIn() {
+            // Do nothing as we don't want to load the suggestions on focusin
         }
     }
 
@@ -894,9 +900,8 @@ class TokenAutocomplete {
                 }
                 me.hideSuggestions();
             });
-            me.parent.textInput.addEventListener('focusin', function () {
-                me.loadSuggestions();
-            });
+
+            me.parent.textInput.addEventListener('focusin', me.parent.select.handleFocusIn);
         }
 
         loadSuggestions() {

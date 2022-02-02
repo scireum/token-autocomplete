@@ -335,6 +335,9 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                 });
             };
+            class_1.prototype.handleFocusIn = function () {
+                this.parent.autocomplete.loadSuggestions();
+            };
             /**
              * Adds the current user input as a net token and resets the input area so new text can be entered.
              *
@@ -606,26 +609,7 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                 });
             }
-            function focusInput() {
-                if (!parent.autocomplete.areSuggestionsDisplayed()) {
-                    parent.autocomplete.showSuggestions();
-                    parent.autocomplete.loadSuggestions();
-                }
-                // move the cursor into the editable div
-                var selection = window.getSelection();
-                var range = document.createRange();
-                selection === null || selection === void 0 ? void 0 : selection.removeAllRanges();
-                range.selectNodeContents(parent.textInput);
-                range.collapse(false);
-                selection === null || selection === void 0 ? void 0 : selection.addRange(range);
-                parent.textInput.focus();
-            }
-            parent.textInput.addEventListener('click', function () {
-                focusInput();
-            });
-            me.parent.textInput.addEventListener('focusin', function () {
-                focusInput();
-            });
+            parent.textInput.addEventListener('click', this.handleFocusIn);
             parent.textInput.addEventListener('focusout', function () {
                 if (parent.autocomplete.areSuggestionsHighlighted()) {
                     return;
@@ -646,6 +630,20 @@ var TokenAutocomplete = /** @class */ (function () {
                 me.clear(false, false);
             });
         };
+        class_2.prototype.handleFocusIn = function () {
+            if (!this.parent.autocomplete.areSuggestionsDisplayed()) {
+                this.parent.autocomplete.showSuggestions();
+                this.parent.autocomplete.loadSuggestions();
+            }
+            // move the cursor into the editable div
+            var selection = window.getSelection();
+            var range = document.createRange();
+            selection === null || selection === void 0 ? void 0 : selection.removeAllRanges();
+            range.selectNodeContents(this.parent.textInput);
+            range.collapse(false);
+            selection === null || selection === void 0 ? void 0 : selection.addRange(range);
+            this.parent.textInput.focus();
+        };
         return class_2;
     }());
     TokenAutocomplete.SearchMultiSelect = /** @class */ (function (_super) {
@@ -665,6 +663,9 @@ var TokenAutocomplete = /** @class */ (function () {
                     query: input
                 }
             }));
+        };
+        class_3.prototype.handleFocusIn = function () {
+            // Do nothing as we don't want to load the suggestions on focusin
         };
         return class_3;
     }(TokenAutocomplete.MultiSelect));
@@ -748,9 +749,7 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                     me.hideSuggestions();
                 });
-                me.parent.textInput.addEventListener('focusin', function () {
-                    me.loadSuggestions();
-                });
+                me.parent.textInput.addEventListener('focusin', me.parent.select.handleFocusIn);
             };
             class_4.prototype.loadSuggestions = function () {
                 var me = this;
