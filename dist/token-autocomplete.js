@@ -846,6 +846,10 @@ var TokenAutocomplete = /** @class */ (function () {
              * Removes all previous suggestions from the dropdown.
              */
             class_4.prototype.clearSuggestions = function () {
+                var _a;
+                // we also want to abort any pending requests, so they don't end up filling the suggestions up again
+                (_a = this.request) === null || _a === void 0 ? void 0 : _a.abort();
+                clearTimeout(this.timeout);
                 this.suggestions.innerHTML = '';
             };
             /**

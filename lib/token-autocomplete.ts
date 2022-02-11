@@ -1001,6 +1001,9 @@ class TokenAutocomplete {
          * Removes all previous suggestions from the dropdown.
          */
         clearSuggestions() {
+            // we also want to abort any pending requests, so they don't end up filling the suggestions up again
+            this.request?.abort();
+            clearTimeout(this.timeout);
             this.suggestions.innerHTML = '';
         }
 
