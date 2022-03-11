@@ -945,7 +945,7 @@ class TokenAutocomplete {
                     if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
                         me.addSuggestion({
                             id: null,
-                            value: '_no_match_',
+                            value: value,
                             fieldLabel: value,
                             type: '_no_match_',
                             completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
@@ -1087,7 +1087,7 @@ class TokenAutocomplete {
                         if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
                             me.addSuggestion({
                                 id: null,
-                                value: '_no_match_',
+                                value: query,
                                 fieldLabel: query,
                                 type: '_no_match_',
                                 completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
