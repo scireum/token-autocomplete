@@ -456,7 +456,7 @@ class TokenAutocomplete {
                 this.addToken(input, input, null);
                 return;
             }
-            if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
             } else {
                 this.clearCurrentInput();
@@ -686,7 +686,7 @@ class TokenAutocomplete {
                 this.parent.autocomplete.clearSuggestions();
                 return;
             }
-            if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
                 return;
             }
@@ -777,7 +777,7 @@ class TokenAutocomplete {
                 if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
                     return;
                 }
-                if (input != '' && me.parent.options.allowCustomEntries) {
+                if (input != '') {
                     me.handleInputAsValue(input);
                     return;
                 }
@@ -1110,7 +1110,7 @@ class TokenAutocomplete {
 
             let me = this;
             element.addEventListener('click', function (_event: Event) {
-                if (text == me.options.noMatchesText) {
+                if (value == '_no_match_') {
                     return;
                 }
                 if (me.parent.options.selectMode == SelectModes.SINGLE) {
