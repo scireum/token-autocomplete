@@ -17,6 +17,7 @@ interface Options {
     name: string,
     selector: string,
     noMatchesText: string | null,
+    noMatchesCustomEntriesDescription: string | null,
     placeholderText: string | null,
     initialTokens: Array<Token> | null,
     initialSuggestions: Array<Suggestion> | null,
@@ -122,6 +123,7 @@ class TokenAutocomplete {
         name: '',
         selector: '',
         noMatchesText: null,
+        noMatchesCustomEntriesDescription: null,
         placeholderText: 'enter some text',
         initialTokens: null,
         initialSuggestions: null,
@@ -455,7 +457,7 @@ class TokenAutocomplete {
                 this.addToken(input, input, null);
                 return;
             }
-            if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
             } else {
                 this.clearCurrentInput();
@@ -685,7 +687,7 @@ class TokenAutocomplete {
                 this.parent.autocomplete.clearSuggestions();
                 return;
             }
-            if (this.parent.autocomplete.suggestions.childNodes.length === 1) {
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
                 return;
             }
@@ -776,7 +778,7 @@ class TokenAutocomplete {
                 if (me.parent.val().length !== 0 && me.parent.val()[0] !== '') {
                     return;
                 }
-                if (input != '' && me.parent.options.allowCustomEntries) {
+                if (input != '') {
                     me.handleInputAsValue(input);
                     return;
                 }
@@ -939,15 +941,27 @@ class TokenAutocomplete {
                         me.addSuggestion(suggestion);
                     }
                 });
-                if (me.suggestions.childNodes.length == 0 && me.parent.options.noMatchesText) {
-                    me.addSuggestion({
-                        id: null,
-                        value: '_no_match_',
-                        fieldLabel: me.parent.options.noMatchesText,
-                        type: '_no_match_',
-                        completionDescription: null,
-                        completionLabel: null
-                    });
+                if (me.suggestions.childNodes.length == 0) {
+                    if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
+                        me.addSuggestion({
+                            id: null,
+                            value: value,
+                            fieldLabel: value,
+                            type: '_no_match_',
+                            completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
+                            completionLabel: null
+                        });
+
+                    } else if (me.parent.options.noMatchesText) {
+                        me.addSuggestion({
+                            id: null,
+                            value: '_no_match_',
+                            fieldLabel: me.parent.options.noMatchesText,
+                            type: '_no_match_',
+                            completionDescription: null,
+                            completionLabel: null
+                        });
+                    }
                 }
             }
         }
@@ -956,6 +970,8 @@ class TokenAutocomplete {
          * Hides the suggestions dropdown from the user.
          */
         hideSuggestions() {
+            // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
+            this.abortPendingRequest();
             this.suggestions.style.display = '';
 
             let _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
@@ -1001,7 +1017,16 @@ class TokenAutocomplete {
          * Removes all previous suggestions from the dropdown.
          */
         clearSuggestions() {
+            this.abortPendingRequest();
             this.suggestions.innerHTML = '';
+        }
+
+        /**
+         * Aborts currently in progress or scheduled suggestions requests.
+         */
+        abortPendingRequest() {
+            this.request?.abort();
+            clearTimeout(this.timeout);
         }
 
         /**
@@ -1058,15 +1083,27 @@ class TokenAutocomplete {
                     answer.completions.forEach(function (suggestion: Suggestion) {
                         me.addSuggestion(suggestion);
                     });
-                    if (me.suggestions.childNodes.length == 0 && me.options.noMatchesText) {
-                        me.addSuggestion({
-                            id: null,
-                            value: '_no_match_',
-                            fieldLabel: me.options.noMatchesText,
-                            type: '_no_match_',
-                            completionDescription: null,
-                            completionLabel: null
-                        });
+                    if (me.suggestions.childNodes.length == 0) {
+                        if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
+                            me.addSuggestion({
+                                id: null,
+                                value: query,
+                                fieldLabel: query,
+                                type: '_no_match_',
+                                completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
+                                completionLabel: null
+                            });
+
+                        } else if (me.parent.options.noMatchesText) {
+                            me.addSuggestion({
+                                id: null,
+                                value: '_no_match_',
+                                fieldLabel: me.parent.options.noMatchesText,
+                                type: '_no_match_',
+                                completionDescription: null,
+                                completionLabel: null
+                            });
+                        }
                     }
                 }
             };
@@ -1098,7 +1135,7 @@ class TokenAutocomplete {
 
             let me = this;
             element.addEventListener('click', function (_event: Event) {
-                if (text == me.options.noMatchesText) {
+                if (value == '_no_match_') {
                     return;
                 }
                 if (me.parent.options.selectMode == SelectModes.SINGLE) {
