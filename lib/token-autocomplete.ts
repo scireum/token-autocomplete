@@ -17,6 +17,7 @@ interface Options {
     name: string,
     selector: string,
     noMatchesText: string | null,
+    noMatchesCustomEntriesDescription: string | null,
     placeholderText: string | null,
     initialTokens: Array<Token> | null,
     initialSuggestions: Array<Suggestion> | null,
@@ -956,6 +957,8 @@ class TokenAutocomplete {
          * Hides the suggestions dropdown from the user.
          */
         hideSuggestions() {
+            // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
+            this.abortPendingRequest();
             this.suggestions.style.display = '';
 
             let _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
@@ -1001,10 +1004,16 @@ class TokenAutocomplete {
          * Removes all previous suggestions from the dropdown.
          */
         clearSuggestions() {
-            // we also want to abort any pending requests, so they don't end up filling the suggestions up again
+            this.abortPendingRequest();
+            this.suggestions.innerHTML = '';
+        }
+
+        /**
+         * Aborts currently in progress or scheduled suggestions requests.
+         */
+        abortPendingRequest() {
             this.request?.abort();
             clearTimeout(this.timeout);
-            this.suggestions.innerHTML = '';
         }
 
         /**
