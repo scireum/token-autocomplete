@@ -123,6 +123,7 @@ class TokenAutocomplete {
         name: '',
         selector: '',
         noMatchesText: null,
+        noMatchesCustomEntriesDescription: null,
         placeholderText: 'enter some text',
         initialTokens: null,
         initialSuggestions: null,
@@ -940,15 +941,27 @@ class TokenAutocomplete {
                         me.addSuggestion(suggestion);
                     }
                 });
-                if (me.suggestions.childNodes.length == 0 && me.parent.options.noMatchesText) {
-                    me.addSuggestion({
-                        id: null,
-                        value: '_no_match_',
-                        fieldLabel: me.parent.options.noMatchesText,
-                        type: '_no_match_',
-                        completionDescription: null,
-                        completionLabel: null
-                    });
+                if (me.suggestions.childNodes.length == 0) {
+                    if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
+                        me.addSuggestion({
+                            id: null,
+                            value: '_no_match_',
+                            fieldLabel: value,
+                            type: '_no_match_',
+                            completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
+                            completionLabel: null
+                        });
+
+                    } else if (me.parent.options.noMatchesText) {
+                        me.addSuggestion({
+                            id: null,
+                            value: '_no_match_',
+                            fieldLabel: me.parent.options.noMatchesText,
+                            type: '_no_match_',
+                            completionDescription: null,
+                            completionLabel: null
+                        });
+                    }
                 }
             }
         }
@@ -1070,15 +1083,27 @@ class TokenAutocomplete {
                     answer.completions.forEach(function (suggestion: Suggestion) {
                         me.addSuggestion(suggestion);
                     });
-                    if (me.suggestions.childNodes.length == 0 && me.options.noMatchesText) {
-                        me.addSuggestion({
-                            id: null,
-                            value: '_no_match_',
-                            fieldLabel: me.options.noMatchesText,
-                            type: '_no_match_',
-                            completionDescription: null,
-                            completionLabel: null
-                        });
+                    if (me.suggestions.childNodes.length == 0) {
+                        if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
+                            me.addSuggestion({
+                                id: null,
+                                value: '_no_match_',
+                                fieldLabel: query,
+                                type: '_no_match_',
+                                completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
+                                completionLabel: null
+                            });
+
+                        } else if (me.parent.options.noMatchesText) {
+                            me.addSuggestion({
+                                id: null,
+                                value: '_no_match_',
+                                fieldLabel: me.parent.options.noMatchesText,
+                                type: '_no_match_',
+                                completionDescription: null,
+                                completionLabel: null
+                            });
+                        }
                     }
                 }
             };
