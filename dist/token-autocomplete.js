@@ -557,7 +557,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.parent.autocomplete.suggestions.firstChild.click();
                 return;
             }
-            this.clearCurrentInput();
+            this.clear(true, false);
         };
         class_2.prototype.clearCurrentInput = function () {
             this.clear(true);

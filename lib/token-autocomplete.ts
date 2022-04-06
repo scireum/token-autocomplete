@@ -691,7 +691,7 @@ class TokenAutocomplete {
                 this.parent.autocomplete.suggestions.firstChild.click();
                 return;
             }
-            this.clearCurrentInput();
+            this.clear(true, false);
         }
 
         clearCurrentInput(): void {
