@@ -452,12 +452,12 @@ class TokenAutocomplete {
          * @param {string} input - the actual input the user entered
          */
         handleInputAsValue(input: string): void {
-            if (this.parent.options.allowCustomEntries) {
+            if (input != '' && this.parent.options.allowCustomEntries) {
                 this.clearCurrentInput();
                 this.addToken(input, input, null);
                 return;
             }
-            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
             } else {
                 this.clearCurrentInput();
@@ -473,7 +473,7 @@ class TokenAutocomplete {
          * @param {boolean} silent - whether an appropriate event should be triggered
          */
         addToken(tokenValue: string | null, tokenText: string | null, tokenType: string | null, silent: boolean = false) {
-            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
+            if (tokenValue === null || tokenText === null || tokenValue === '_no_match_') {
                 return;
             }
 
@@ -687,7 +687,7 @@ class TokenAutocomplete {
                 this.parent.autocomplete.clearSuggestions();
                 return;
             }
-            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
                 return;
             }
@@ -699,7 +699,7 @@ class TokenAutocomplete {
         }
 
         addToken(tokenValue: string | null, tokenText: string | null, tokenType: string | null, silent: boolean): void {
-            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
+            if (tokenValue === null || tokenText === null || tokenValue === '_no_match_') {
                 return;
             }
             this.clear(true, false);

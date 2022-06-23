@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Token Autocomplete Sample</title>
 
-    <script src="http://localhost:5500/dist/token-autocomplete.js"></script>
-    <link href="http://localhost:5500/dist/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/dist/token-autocomplete.js"></script>
+    <link href="/dist/token-autocomplete.css" rel="stylesheet" type="text/css" media="all">
 
     <script>
         if (window.NodeList && !NodeList.prototype.forEach) {
@@ -139,6 +139,7 @@
         name: 'sample',
         selector: '#sample',
         noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
         initialTokens: [
             {value: 'apple', text: 'Apple'},
             {value: 'banana', text: 'Banana'},
@@ -158,7 +159,8 @@
     let tokenAutocomplete2 = new TokenAutocomplete({
         name: 'sample2',
         selector: '#sample2',
-        noMatchesText: 'No matching results...'
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...'
     });
     tokenAutocomplete2.debug(true);
 
@@ -166,6 +168,7 @@
         name: 'sample3',
         selector: '#sample3',
         noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
         suggestionsUri: 'https://run.mocky.io/v3/370a7bae-d0bd-448e-9868-d4e8d46d61c2'
     });
     tokenAutocomplete3.debug(true);
@@ -174,6 +177,7 @@
         name: 'sample4',
         selector: '#sample4',
         noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
         initialTokens: [
             {value: 'apple', text: 'Apple'},
             {value: 'banana', text: 'Banana'},
@@ -209,6 +213,7 @@
         name: 'sample5',
         selector: '#sample5',
         noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
         selectMode: 0
     });
 
@@ -240,6 +245,7 @@
         name: 'sample7',
         selector: '#sample7',
         noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
         selectMode: 0,
         readonly: true
     });
@@ -250,6 +256,7 @@
         name: 'sample8',
         selector: '#sample8',
         noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
         allowCustomEntries: false,
         readonly: true,
         initialTokens: [
@@ -273,6 +280,7 @@
         name: 'sample9',
         selector: '#sample9',
         noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
         selectMode: 0,
         optional: true
     });
