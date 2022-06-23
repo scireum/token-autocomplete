@@ -348,7 +348,7 @@ var TokenAutocomplete = /** @class */ (function () {
                     this.addToken(input, input, null);
                     return;
                 }
-                if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
+                if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                     this.parent.autocomplete.suggestions.firstChild.click();
                 }
                 else {
@@ -366,7 +366,7 @@ var TokenAutocomplete = /** @class */ (function () {
             class_1.prototype.addToken = function (tokenValue, tokenText, tokenType, silent) {
                 var _a;
                 if (silent === void 0) { silent = false; }
-                if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
+                if (tokenValue === null || tokenText === null || tokenValue === '_no_match_') {
                     return;
                 }
                 this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
@@ -553,7 +553,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.parent.autocomplete.clearSuggestions();
                 return;
             }
-            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.type != '_no_match_') {
+            if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
                 return;
             }
@@ -563,7 +563,7 @@ var TokenAutocomplete = /** @class */ (function () {
             this.clear(true);
         };
         class_2.prototype.addToken = function (tokenValue, tokenText, tokenType, silent) {
-            if (tokenValue === null || tokenText === null || tokenType === '_no_match_') {
+            if (tokenValue === null || tokenText === null || tokenValue === '_no_match_') {
                 return;
             }
             this.clear(true, false);
