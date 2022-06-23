@@ -343,7 +343,7 @@ var TokenAutocomplete = /** @class */ (function () {
              * @param {string} input - the actual input the user entered
              */
             class_1.prototype.handleInputAsValue = function (input) {
-                if (this.parent.options.allowCustomEntries) {
+                if (input != '' && this.parent.options.allowCustomEntries) {
                     this.clearCurrentInput();
                     this.addToken(input, input, null);
                     return;

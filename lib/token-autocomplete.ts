@@ -452,7 +452,7 @@ class TokenAutocomplete {
          * @param {string} input - the actual input the user entered
          */
         handleInputAsValue(input: string): void {
-            if (this.parent.options.allowCustomEntries) {
+            if (input != '' && this.parent.options.allowCustomEntries) {
                 this.clearCurrentInput();
                 this.addToken(input, input, null);
                 return;
