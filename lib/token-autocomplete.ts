@@ -83,7 +83,7 @@ interface Autocomplete {
 
     areSuggestionsDisplayed(): boolean;
 
-    areSuggestionsHighlighted(): boolean;
+    areSuggestionsActive(): boolean;
 
     highlightSuggestion(arg0: Element): void;
 }
@@ -773,7 +773,7 @@ class TokenAutocomplete {
                 focusInput();
             });
             parent.textInput.addEventListener('focusout', function () {
-                if (parent.autocomplete.areSuggestionsHighlighted()) {
+                if (parent.autocomplete.areSuggestionsActive()) {
                     return;
                 }
                 const input = me.parent.getCurrentInput();
@@ -895,7 +895,7 @@ class TokenAutocomplete {
                 me.loadSuggestions();
             });
             me.parent.textInput.addEventListener('focusout', function () {
-                if (me.areSuggestionsHighlighted()) {
+                if (me.areSuggestionsActive()) {
                     return;
                 }
                 me.hideSuggestions();
@@ -1009,10 +1009,10 @@ class TokenAutocomplete {
         }
 
         /**
-         * Checks for the presence of highlighted suggestions via mouse (hover) or keyboard (marker class).
+         * Checks for the presence of a suggestion that is currently clicked via mouse (active).
          */
-        areSuggestionsHighlighted() {
-            return !!this.suggestions.querySelector('li:hover,li.token-autocomplete-suggestion-highlighted');
+        areSuggestionsActive() {
+            return !!this.suggestions.querySelector('li:active');
         }
 
         /**
