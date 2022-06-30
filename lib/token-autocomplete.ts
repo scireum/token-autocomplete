@@ -434,6 +434,7 @@ class TokenAutocomplete {
                     } else {
                         me.handleInputAsValue(parent.getCurrentInput());
                     }
+                    parent.autocomplete.clearSuggestions();
                     parent.autocomplete.hideSuggestions();
                 } else if (parent.getCurrentInput() === '' && event.key == parent.KEY_BACKSPACE) {
                     event.preventDefault();
@@ -683,8 +684,8 @@ class TokenAutocomplete {
             if (input != '' && this.parent.options.allowCustomEntries) {
                 this.clearCurrentInput();
                 this.addToken(input, input, null, false);
-                this.parent.autocomplete.hideSuggestions();
                 this.parent.autocomplete.clearSuggestions();
+                this.parent.autocomplete.hideSuggestions();
                 return;
             }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
@@ -733,6 +734,7 @@ class TokenAutocomplete {
                     } else {
                         me.handleInputAsValue(parent.getCurrentInput());
                     }
+                    parent.autocomplete.clearSuggestions();
                     parent.autocomplete.hideSuggestions();
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
@@ -915,8 +917,8 @@ class TokenAutocomplete {
                     value = "";
                 }
             } else if (value.length < me.parent.options.minCharactersForSuggestion) {
-                me.hideSuggestions();
                 me.clearSuggestions();
+                me.hideSuggestions();
                 return;
             }
             if (me.parent.options.suggestionsUri.length > 0) {
@@ -942,7 +944,7 @@ class TokenAutocomplete {
                     }
                 });
                 if (me.suggestions.childNodes.length == 0) {
-                    if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
+                    if (me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
                         me.addSuggestion({
                             id: null,
                             value: value,
@@ -1084,7 +1086,7 @@ class TokenAutocomplete {
                         me.addSuggestion(suggestion);
                     });
                     if (me.suggestions.childNodes.length == 0) {
-                        if(me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
+                        if (me.parent.options.allowCustomEntries && me.parent.options.noMatchesCustomEntriesDescription) {
                             me.addSuggestion({
                                 id: null,
                                 value: query,
