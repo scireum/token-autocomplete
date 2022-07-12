@@ -314,20 +314,7 @@ var TokenAutocomplete = /** @class */ (function () {
                         if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                             highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                         }
-                        if (highlightedSuggestion !== null) {
-                            me.clearCurrentInput();
-                            if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
-                                me.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
-                            }
-                            else {
-                                me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
-                            }
-                        }
-                        else {
-                            me.handleInputAsValue(parent.getCurrentInput());
-                        }
-                        parent.autocomplete.clearSuggestions();
-                        parent.autocomplete.hideSuggestions();
+                        me.handleInput(highlightedSuggestion);
                     }
                     else if (parent.getCurrentInput() === '' && event.key == parent.KEY_BACKSPACE) {
                         event.preventDefault();
@@ -337,6 +324,22 @@ var TokenAutocomplete = /** @class */ (function () {
                         event.preventDefault();
                     }
                 });
+            };
+            class_1.prototype.handleInput = function (highlightedSuggestion) {
+                if (highlightedSuggestion !== null) {
+                    this.clearCurrentInput();
+                    if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
+                        this.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
+                    }
+                    else {
+                        this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+                    }
+                }
+                else {
+                    this.handleInputAsValue(this.parent.getCurrentInput());
+                }
+                this.parent.autocomplete.clearSuggestions();
+                this.parent.autocomplete.hideSuggestions();
             };
             /**
              * Adds the current user input as a net token and resets the input area so new text can be entered.
@@ -589,14 +592,7 @@ var TokenAutocomplete = /** @class */ (function () {
                     if (parent.options.enableTabulator && highlightedSuggestion == null && event.key == parent.KEY_TAB && parent.autocomplete.areSuggestionsDisplayed()) {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
-                    if (highlightedSuggestion !== null) {
-                        me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
-                    }
-                    else {
-                        me.handleInputAsValue(parent.getCurrentInput());
-                    }
-                    parent.autocomplete.clearSuggestions();
-                    parent.autocomplete.hideSuggestions();
+                    me.handleInput(highlightedSuggestion);
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
@@ -655,6 +651,16 @@ var TokenAutocomplete = /** @class */ (function () {
             (_a = parent.container.querySelector('.token-singleselect-token-delete')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
                 me.clear(false, false);
             });
+        };
+        class_2.prototype.handleInput = function (highlightedSuggestion) {
+            if (highlightedSuggestion !== null) {
+                this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+            }
+            else {
+                this.handleInputAsValue(this.parent.getCurrentInput());
+            }
+            this.parent.autocomplete.clearSuggestions();
+            this.parent.autocomplete.hideSuggestions();
         };
         return class_2;
     }());

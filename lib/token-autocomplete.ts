@@ -414,6 +414,7 @@ class TokenAutocomplete {
             if (parent.options.readonly) {
                 return;
             }
+
             parent.textInput.addEventListener('keydown', function (event) {
                 if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
@@ -424,18 +425,7 @@ class TokenAutocomplete {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
 
-                    if (highlightedSuggestion !== null) {
-                        me.clearCurrentInput();
-                        if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
-                            me.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
-                        } else {
-                            me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
-                        }
-                    } else {
-                        me.handleInputAsValue(parent.getCurrentInput());
-                    }
-                    parent.autocomplete.clearSuggestions();
-                    parent.autocomplete.hideSuggestions();
+                    me.handleInput(highlightedSuggestion);
                 } else if (parent.getCurrentInput() === '' && event.key == parent.KEY_BACKSPACE) {
                     event.preventDefault();
                     me.removeLastToken();
@@ -446,6 +436,20 @@ class TokenAutocomplete {
             });
         }
 
+        handleInput(highlightedSuggestion: any): void {
+            if (highlightedSuggestion !== null) {
+                this.clearCurrentInput();
+                if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
+                    this.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
+                } else {
+                    this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+                }
+            } else {
+                this.handleInputAsValue(this.parent.getCurrentInput());
+            }
+            this.parent.autocomplete.clearSuggestions();
+            this.parent.autocomplete.hideSuggestions();
+        }
 
         /**
          * Adds the current user input as a net token and resets the input area so new text can be entered.
@@ -719,6 +723,7 @@ class TokenAutocomplete {
             if (parent.options.readonly) {
                 return;
             }
+
             parent.textInput.addEventListener('keydown', function (event) {
                 if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
@@ -729,13 +734,7 @@ class TokenAutocomplete {
                         highlightedSuggestion = parent.autocomplete.suggestions.firstChild;
                     }
 
-                    if (highlightedSuggestion !== null) {
-                        me.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
-                    } else {
-                        me.handleInputAsValue(parent.getCurrentInput());
-                    }
-                    parent.autocomplete.clearSuggestions();
-                    parent.autocomplete.hideSuggestions();
+                    me.handleInput(highlightedSuggestion);
                 }
                 if ((event.key == parent.KEY_DOWN || event.key == parent.KEY_UP) && parent.autocomplete.suggestions.childNodes.length > 0) {
                     event.preventDefault();
@@ -798,6 +797,16 @@ class TokenAutocomplete {
             parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
                 me.clear(false, false);
             });
+        }
+
+        handleInput(highlightedSuggestion: any): void {
+            if (highlightedSuggestion !== null) {
+                this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+            } else {
+                this.handleInputAsValue(this.parent.getCurrentInput());
+            }
+            this.parent.autocomplete.clearSuggestions();
+            this.parent.autocomplete.hideSuggestions();
         }
     }
 
