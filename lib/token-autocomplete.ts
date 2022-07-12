@@ -415,6 +415,15 @@ class TokenAutocomplete {
                 return;
             }
 
+            parent.textInput.addEventListener('compositionend', function (event) {
+                // handles hitting ENTER on GBoard, which uses composition events instead of individual key triggers
+                let inputString = event.data;
+                if (inputString.charAt(inputString.length - 1) === "\n") {
+                    event.preventDefault();
+                    me.handleInput(parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted'));
+                }
+            })
+
             parent.textInput.addEventListener('keydown', function (event) {
                 if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
@@ -723,6 +732,15 @@ class TokenAutocomplete {
             if (parent.options.readonly) {
                 return;
             }
+
+            parent.textInput.addEventListener('compositionend', function (event) {
+                // handles hitting ENTER on GBoard, which uses composition events instead of individual key triggers
+                let inputString = event.data;
+                if (inputString.charAt(inputString.length - 1) === "\n") {
+                    event.preventDefault();
+                    me.handleInput(parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted'));
+                }
+            })
 
             parent.textInput.addEventListener('keydown', function (event) {
                 if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {

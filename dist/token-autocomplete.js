@@ -307,6 +307,14 @@ var TokenAutocomplete = /** @class */ (function () {
                 if (parent.options.readonly) {
                     return;
                 }
+                parent.textInput.addEventListener('compositionend', function (event) {
+                    // handles hitting ENTER on GBoard, which uses composition events instead of individual key triggers
+                    var inputString = event.data;
+                    if (inputString.charAt(inputString.length - 1) === "\n") {
+                        event.preventDefault();
+                        me.handleInput(parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted'));
+                    }
+                });
                 parent.textInput.addEventListener('keydown', function (event) {
                     if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                         event.preventDefault();
@@ -585,6 +593,14 @@ var TokenAutocomplete = /** @class */ (function () {
             if (parent.options.readonly) {
                 return;
             }
+            parent.textInput.addEventListener('compositionend', function (event) {
+                // handles hitting ENTER on GBoard, which uses composition events instead of individual key triggers
+                var inputString = event.data;
+                if (inputString.charAt(inputString.length - 1) === "\n") {
+                    event.preventDefault();
+                    me.handleInput(parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted'));
+                }
+            });
             parent.textInput.addEventListener('keydown', function (event) {
                 if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator)) {
                     event.preventDefault();
