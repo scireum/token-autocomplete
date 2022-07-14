@@ -693,6 +693,14 @@ class TokenAutocomplete {
             me.parent.addHiddenEmptyOption();
             me.parent.textInput.textContent = '';
             me.parent.textInput.contentEditable = 'true';
+
+            if (!silent) {
+                this.container.dispatchEvent(new CustomEvent('tokens-changed', {
+                    detail: {
+                        tokens: this.parent.val(),
+                    }
+                }));
+            }
         }
 
         /**
@@ -732,6 +740,19 @@ class TokenAutocomplete {
             }
 
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
+
+            if (!silent) {
+                this.container.dispatchEvent(new CustomEvent('tokens-changed', {
+                    detail: {
+                        tokens: this.parent.val(),
+                        added: {
+                            value: tokenValue,
+                            text: tokenText,
+                            type: tokenType
+                        }
+                    }
+                }));
+            }
         }
 
         initEventListeners(): void {
