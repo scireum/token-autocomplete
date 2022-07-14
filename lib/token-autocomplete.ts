@@ -247,11 +247,18 @@ class TokenAutocomplete {
             me.container.removeChild(option);
         });
 
-        if (initialTokens.length > 0) {
-            this.options.initialTokens = initialTokens;
-        }
         if (initialSuggestions.length > 0) {
             this.options.initialSuggestions = initialSuggestions;
+            if (!this.options.optional && initialTokens.length == 0) {
+                let firstSuggestion = initialSuggestions[0];
+                initialTokens.push({
+                    value: firstSuggestion.value, text: firstSuggestion.fieldLabel, type: firstSuggestion.type
+                });
+            }
+        }
+
+        if (initialTokens.length > 0) {
+            this.options.initialTokens = initialTokens;
         }
     }
 
@@ -975,9 +982,6 @@ class TokenAutocomplete {
                     let text = suggestion.fieldLabel;
                     if (value.length == 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
                         me.addSuggestion(suggestion, false);
-                        if (me.parent.val().length == 0) {
-                            me.parent.select.addToken(suggestion.value, text, suggestion.type, true);
-                        }
                     } else if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
                         // The suggestion starts with the query text the user entered and will be displayed.
                         me.addSuggestion(suggestion);
