@@ -726,6 +726,7 @@ class TokenAutocomplete {
             this.clear(true, false);
             this.parent.textInput.textContent = tokenText;
             this.parent.textInput.contentEditable = 'false';
+            this.parent.textInput.blur();
             if (this.options.optional && tokenText !== '') {
                 this.container.classList.add('optional-singleselect-with-value');
             }
