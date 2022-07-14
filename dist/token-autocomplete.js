@@ -645,9 +645,6 @@ var TokenAutocomplete = /** @class */ (function () {
             parent.textInput.addEventListener('click', function () {
                 focusInput();
             });
-            me.parent.textInput.addEventListener('focusin', function () {
-                focusInput();
-            });
             parent.textInput.addEventListener('focusout', function () {
                 // Using setTimeout here seems hacky on first sight but ensures proper order of events / handling.
                 // We first want to handle a click on a suggestion (when one is made) before hiding the suggestions on focusout of the input.
