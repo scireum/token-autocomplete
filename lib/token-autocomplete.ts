@@ -332,6 +332,8 @@ class TokenAutocomplete {
     }
 
     addHiddenOption(tokenValue: string, tokenText: string, tokenType: string | null, isLiveEntry: boolean = false) {
+        tokenValue = tokenValue.trim();
+        tokenText = tokenText.trim();
         let _emptyToken = this.hiddenSelect.querySelector('.empty-token');
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
@@ -497,6 +499,9 @@ class TokenAutocomplete {
             if (tokenValue === null || tokenText === null || tokenValue === '_no_match_') {
                 return;
             }
+
+            tokenValue = tokenValue.trim();
+            tokenText = tokenText.trim();
 
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
 
@@ -731,6 +736,10 @@ class TokenAutocomplete {
             if (tokenValue === null || tokenText === null || tokenValue === '_no_match_') {
                 return;
             }
+
+            tokenValue = tokenValue.trim();
+            tokenText = tokenText.trim();
+
             this.clear(true, false);
             this.parent.textInput.textContent = tokenText;
             this.parent.textInput.contentEditable = 'false';
