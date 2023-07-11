@@ -181,8 +181,16 @@ class TokenAutocomplete {
             this.textInput.contentEditable = 'true';
             this.textInput.addEventListener("paste", function (event) {
                 event.preventDefault();
-                const text = event.clipboardData?.getData("text/plain");
-                document.execCommand("insertHTML", false, text);
+                if (event.hasOwnProperty('clipboardData')) {
+                    //  Normal handling for modern browsers
+                    const text = event.clipboardData?.getData("text/plain");
+                    document.execCommand("insertHTML", false, text);
+                } else {
+                    // Fallback logic for IE11
+                    const globalText = window.clipboardData?.getData("Text");
+                    const range = document.getSelection()?.getRangeAt(0);
+                    range?.insertNode(document.createTextNode(globalText));
+                }
             });
         } else {
             this.container.classList.add('token-autocomplete-readonly');
