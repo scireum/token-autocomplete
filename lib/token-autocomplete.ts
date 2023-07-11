@@ -181,7 +181,7 @@ class TokenAutocomplete {
             this.textInput.contentEditable = 'true';
             this.textInput.addEventListener("paste", function (event) {
                 event.preventDefault();
-                if (event.hasOwnProperty('clipboardData')) {
+                if (event.clipboardData) {
                     //  Normal handling for modern browsers
                     const text = event.clipboardData?.getData("text/plain");
                     document.execCommand("insertHTML", false, text);
