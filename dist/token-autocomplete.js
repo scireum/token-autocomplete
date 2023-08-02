@@ -361,7 +361,16 @@ var TokenAutocomplete = /** @class */ (function () {
                         this.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
                     }
                     else {
-                        this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+                        if (highlightedSuggestion.dataset.becomesToken !== 'false') {
+                            this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+                        }
+                        highlightedSuggestion.dispatchEvent(new CustomEvent('suggestion-selected', {
+                            detail: {
+                                value: highlightedSuggestion.dataset.value,
+                                text: highlightedSuggestion.tokenText,
+                                type: highlightedSuggestion.dataset.type || null
+                            }
+                        }));
                     }
                 }
                 else {
@@ -1053,7 +1062,16 @@ var TokenAutocomplete = /** @class */ (function () {
                             me.parent.select.clear(false);
                         }
                         else {
-                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                            if (element.dataset.becomesToken !== 'false') {
+                                me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                            }
+                            element.dispatchEvent(new CustomEvent('suggestion-selected', {
+                                detail: {
+                                    value: element.dataset.value,
+                                    text: element.dataset.text,
+                                    type: element.dataset.type || null
+                                }
+                            }));
                         }
                     }
                     else {
@@ -1063,7 +1081,16 @@ var TokenAutocomplete = /** @class */ (function () {
                             multiSelect.removeTokenWithText(suggestion.fieldLabel);
                         }
                         else {
-                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                            if (element.dataset.becomesToken !== 'false') {
+                                me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                            }
+                            element.dispatchEvent(new CustomEvent('suggestion-selected', {
+                                detail: {
+                                    value: element.dataset.value,
+                                    text: element.dataset.text,
+                                    type: element.dataset.type || null
+                                }
+                            }));
                         }
                     }
                     me.clearSuggestions();
