@@ -364,13 +364,7 @@ var TokenAutocomplete = /** @class */ (function () {
                         if (highlightedSuggestion.dataset.becomesToken !== 'false') {
                             this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
                         }
-                        highlightedSuggestion.dispatchEvent(new CustomEvent('suggestion-selected', {
-                            detail: {
-                                value: highlightedSuggestion.dataset.value,
-                                text: highlightedSuggestion.tokenText,
-                                type: highlightedSuggestion.dataset.type || null
-                            }
-                        }));
+                        this.parent.autocomplete.dispatchSuggestionSelectedEvent(highlightedSuggestion);
                     }
                 }
                 else {
@@ -978,6 +972,15 @@ var TokenAutocomplete = /** @class */ (function () {
                     }, me.parent.options.requestDelay);
                 }
             };
+            class_4.prototype.dispatchSuggestionSelectedEvent = function (_suggestion) {
+                _suggestion.dispatchEvent(new CustomEvent('suggestion-selected', {
+                    detail: {
+                        value: _suggestion.dataset.value,
+                        text: _suggestion.dataset.text,
+                        type: _suggestion.dataset.type || null
+                    }
+                }));
+            };
             class_4.prototype.debouncedRequestSuggestions = function (query) {
                 var me = this;
                 if (me.request != null && me.request.readyState) {
@@ -1065,13 +1068,7 @@ var TokenAutocomplete = /** @class */ (function () {
                             if (element.dataset.becomesToken !== 'false') {
                                 me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                             }
-                            element.dispatchEvent(new CustomEvent('suggestion-selected', {
-                                detail: {
-                                    value: element.dataset.value,
-                                    text: element.dataset.text,
-                                    type: element.dataset.type || null
-                                }
-                            }));
+                            me.dispatchSuggestionSelectedEvent(element);
                         }
                     }
                     else {
@@ -1084,13 +1081,7 @@ var TokenAutocomplete = /** @class */ (function () {
                             if (element.dataset.becomesToken !== 'false') {
                                 me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                             }
-                            element.dispatchEvent(new CustomEvent('suggestion-selected', {
-                                detail: {
-                                    value: element.dataset.value,
-                                    text: element.dataset.text,
-                                    type: element.dataset.type || null
-                                }
-                            }));
+                            me.dispatchSuggestionSelectedEvent(element);
                         }
                     }
                     me.clearSuggestions();

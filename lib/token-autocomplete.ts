@@ -86,6 +86,8 @@ interface Autocomplete {
     areSuggestionsActive(): boolean;
 
     highlightSuggestion(arg0: Element): void;
+
+    dispatchSuggestionSelectedEvent(_suggestion: HTMLElement): void;
 }
 
 interface TokenRenderer {
@@ -471,13 +473,7 @@ class TokenAutocomplete {
                     if (highlightedSuggestion.dataset.becomesToken !== 'false') {
                         this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
                     }
-                    highlightedSuggestion.dispatchEvent(new CustomEvent('suggestion-selected', {
-                        detail: {
-                            value: highlightedSuggestion.dataset.value,
-                            text: highlightedSuggestion.tokenText,
-                            type: highlightedSuggestion.dataset.type || null
-                        }
-                    }));
+                    this.parent.autocomplete.dispatchSuggestionSelectedEvent(highlightedSuggestion);
                 }
             } else {
                 this.handleInputAsValue(this.parent.getCurrentInput());
@@ -1142,6 +1138,15 @@ class TokenAutocomplete {
             }
         }
 
+        dispatchSuggestionSelectedEvent(_suggestion: HTMLElement) {
+            _suggestion.dispatchEvent(new CustomEvent('suggestion-selected', {
+                detail: {
+                    value: _suggestion.dataset.value,
+                    text: _suggestion.dataset.text,
+                    type: _suggestion.dataset.type || null
+                }
+            }));
+        }
 
         debouncedRequestSuggestions(query: string) {
             let me = this;
@@ -1237,13 +1242,7 @@ class TokenAutocomplete {
                         if (element.dataset.becomesToken !== 'false') {
                             me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                         }
-                        element.dispatchEvent(new CustomEvent('suggestion-selected', {
-                            detail: {
-                                value: element.dataset.value,
-                                text: element.dataset.text,
-                                type: element.dataset.type || null
-                            }
-                        }));
+                        me.dispatchSuggestionSelectedEvent(element);
                     }
                 } else {
                     me.parent.select.clearCurrentInput();
@@ -1254,13 +1253,7 @@ class TokenAutocomplete {
                         if (element.dataset.becomesToken !== 'false') {
                             me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                         }
-                        element.dispatchEvent(new CustomEvent('suggestion-selected', {
-                            detail: {
-                                value: element.dataset.value,
-                                text: element.dataset.text,
-                                type: element.dataset.type || null
-                            }
-                        }));
+                        me.dispatchSuggestionSelectedEvent(element);
                     }
                 }
                 me.clearSuggestions();
