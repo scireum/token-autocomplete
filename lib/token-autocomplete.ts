@@ -86,6 +86,8 @@ interface Autocomplete {
     areSuggestionsActive(): boolean;
 
     highlightSuggestion(arg0: Element): void;
+
+    dispatchSuggestionSelectedEvent(_suggestion: HTMLElement): void;
 }
 
 interface TokenRenderer {
@@ -468,7 +470,10 @@ class TokenAutocomplete {
                 if (highlightedSuggestion.classList.contains('token-autocomplete-suggestion-active')) {
                     this.removeTokenWithText(highlightedSuggestion.dataset.tokenText);
                 } else {
-                    this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+                    if (highlightedSuggestion.dataset.becomesToken !== 'false') {
+                        this.addToken(highlightedSuggestion.dataset.value, highlightedSuggestion.dataset.tokenText, highlightedSuggestion.dataset.type, false);
+                    }
+                    this.parent.autocomplete.dispatchSuggestionSelectedEvent(highlightedSuggestion);
                 }
             } else {
                 this.handleInputAsValue(this.parent.getCurrentInput());
@@ -1133,6 +1138,15 @@ class TokenAutocomplete {
             }
         }
 
+        dispatchSuggestionSelectedEvent(_suggestion: HTMLElement) {
+            _suggestion.dispatchEvent(new CustomEvent('suggestion-selected', {
+                detail: {
+                    value: _suggestion.dataset.value,
+                    text: _suggestion.dataset.text,
+                    type: _suggestion.dataset.type || null
+                }
+            }));
+        }
 
         debouncedRequestSuggestions(query: string) {
             let me = this;
@@ -1225,7 +1239,10 @@ class TokenAutocomplete {
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
                         me.parent.select.clear(false);
                     } else {
-                        me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                        if (element.dataset.becomesToken !== 'false') {
+                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                        }
+                        me.dispatchSuggestionSelectedEvent(element);
                     }
                 } else {
                     me.parent.select.clearCurrentInput();
@@ -1233,7 +1250,10 @@ class TokenAutocomplete {
                         let multiSelect = me.parent.select as MultiSelect;
                         multiSelect.removeTokenWithText(suggestion.fieldLabel);
                     } else {
-                        me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                        if (element.dataset.becomesToken !== 'false') {
+                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                        }
+                        me.dispatchSuggestionSelectedEvent(element);
                     }
                 }
                 me.clearSuggestions();
