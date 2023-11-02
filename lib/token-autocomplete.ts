@@ -992,6 +992,7 @@ class TokenAutocomplete {
             me.parent.textInput.addEventListener('focusin', function () {
                 if (me.options.showSuggestionsOnFocus) {
                     me.loadSuggestions();
+                    me.showSuggestions();
                 }
             });
         }
