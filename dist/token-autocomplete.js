@@ -158,7 +158,8 @@ var TokenAutocomplete = /** @class */ (function () {
                     fieldLabel: option.text,
                     type: null,
                     completionDescription: option.dataset.description || null,
-                    completionLabel: null
+                    completionLabel: null,
+                    disabled: option.disabled || false
                 });
             }
             me.container.removeChild(option);
@@ -881,7 +882,8 @@ var TokenAutocomplete = /** @class */ (function () {
                                 fieldLabel: value,
                                 type: '_no_match_',
                                 completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
-                                completionLabel: null
+                                completionLabel: null,
+                                disabled: true
                             });
                         }
                         else if (me.parent.options.noMatchesText) {
@@ -891,7 +893,8 @@ var TokenAutocomplete = /** @class */ (function () {
                                 fieldLabel: me.parent.options.noMatchesText,
                                 type: '_no_match_',
                                 completionDescription: null,
-                                completionLabel: null
+                                completionLabel: null,
+                                disabled: true
                             });
                         }
                     }
@@ -1017,7 +1020,8 @@ var TokenAutocomplete = /** @class */ (function () {
                                     fieldLabel: query,
                                     type: '_no_match_',
                                     completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
-                                    completionLabel: null
+                                    completionLabel: null,
+                                    disabled: true
                                 });
                             }
                             else if (me.parent.options.noMatchesText) {
@@ -1027,7 +1031,8 @@ var TokenAutocomplete = /** @class */ (function () {
                                     fieldLabel: me.parent.options.noMatchesText,
                                     type: '_no_match_',
                                     completionDescription: null,
-                                    completionLabel: null
+                                    completionLabel: null,
+                                    disabled: true
                                 });
                             }
                         }
@@ -1058,7 +1063,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 }
                 var me = this;
                 element.addEventListener('click', function (_event) {
-                    if (value == '_no_match_') {
+                    if (value == '_no_match_' || suggestion.disabled) {
                         return;
                     }
                     if (me.parent.options.selectMode == SelectModes.SINGLE) {
@@ -1088,6 +1093,9 @@ var TokenAutocomplete = /** @class */ (function () {
                     me.clearSuggestions();
                     me.hideSuggestions();
                 });
+                if (suggestion.disabled) {
+                    element.classList.add('token-autocomplete-suggestion-disabled');
+                }
                 if (this.container.querySelector('.token-autocomplete-token[data-value="' + value + '"]') !== null) {
                     element.classList.add('token-autocomplete-suggestion-active');
                 }

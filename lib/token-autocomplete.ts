@@ -10,7 +10,8 @@ interface Suggestion {
     fieldLabel: string,
     type: string | null,
     completionLabel: string | null,
-    completionDescription: string | null
+    completionDescription: string | null,
+    disabled: boolean | null
 }
 
 interface Options {
@@ -251,7 +252,8 @@ class TokenAutocomplete {
                     fieldLabel: option.text,
                     type: null,
                     completionDescription: option.dataset.description || null,
-                    completionLabel: null
+                    completionLabel: null,
+                    disabled: option.disabled || false
                 });
             }
             me.container.removeChild(option);
@@ -1038,7 +1040,8 @@ class TokenAutocomplete {
                             fieldLabel: value,
                             type: '_no_match_',
                             completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
-                            completionLabel: null
+                            completionLabel: null,
+                            disabled: true
                         });
 
                     } else if (me.parent.options.noMatchesText) {
@@ -1048,7 +1051,8 @@ class TokenAutocomplete {
                             fieldLabel: me.parent.options.noMatchesText,
                             type: '_no_match_',
                             completionDescription: null,
-                            completionLabel: null
+                            completionLabel: null,
+                            disabled: true
                         });
                     }
                 }
@@ -1189,7 +1193,8 @@ class TokenAutocomplete {
                                 fieldLabel: query,
                                 type: '_no_match_',
                                 completionDescription: me.parent.options.noMatchesCustomEntriesDescription,
-                                completionLabel: null
+                                completionLabel: null,
+                                disabled: true
                             });
 
                         } else if (me.parent.options.noMatchesText) {
@@ -1199,7 +1204,8 @@ class TokenAutocomplete {
                                 fieldLabel: me.parent.options.noMatchesText,
                                 type: '_no_match_',
                                 completionDescription: null,
-                                completionLabel: null
+                                completionLabel: null,
+                                disabled: true
                             });
                         }
                     }
@@ -1233,7 +1239,7 @@ class TokenAutocomplete {
 
             let me = this;
             element.addEventListener('click', function (_event: Event) {
-                if (value == '_no_match_') {
+                if (value == '_no_match_' || suggestion.disabled) {
                     return;
                 }
                 if (me.parent.options.selectMode == SelectModes.SINGLE) {
@@ -1260,6 +1266,10 @@ class TokenAutocomplete {
                 me.clearSuggestions();
                 me.hideSuggestions();
             });
+
+            if (suggestion.disabled) {
+                element.classList.add('token-autocomplete-suggestion-disabled');
+            }
 
             if (this.container.querySelector('.token-autocomplete-token[data-value="' + value + '"]') !== null) {
                 element.classList.add('token-autocomplete-suggestion-active');
