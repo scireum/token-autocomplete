@@ -18,7 +18,7 @@
             if (typeof window.CustomEvent === 'function') return false;
 
             function CustomEvent(event, params) {
-                params = params || { bubbles: false, cancelable: false, detail: undefined };
+                params = params || {bubbles: false, cancelable: false, detail: undefined};
                 var evt = document.createEvent('CustomEvent');
                 evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
                 return evt;
@@ -107,8 +107,18 @@
             Pancake
         </option>
     </div>
+    <div style="margin-top: 1rem;">
+        <div id="sample7-2">
+            <option value="apple">
+                Apple
+            </option>
+        </div>
+    </div>
     <h1>Multiselect readonly:</h1>
     <div id="sample8"></div>
+    <div style="margin-top: 1rem;">
+        <div id="sample8-2"></div>
+    </div>
     <h1>Single select optional:</h1>
     <div id="sample9">
         <option value="apple">
@@ -252,6 +262,18 @@
 
     tokenAutocomplete7.debug(true);
 
+    let tokenAutocomplete72 = new TokenAutocomplete({
+        name: 'sample7-2',
+        selector: '#sample7-2',
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
+        optional: true,
+        selectMode: 0,
+        readonly: true
+    });
+
+    tokenAutocomplete72.debug(true);
+
     let tokenAutocomplete8 = new TokenAutocomplete({
         name: 'sample8',
         selector: '#sample8',
@@ -275,6 +297,22 @@
     });
 
     tokenAutocomplete8.debug(true);
+
+    let tokenAutocomplete82 = new TokenAutocomplete({
+        name: 'sample8-2',
+        selector: '#sample8-2',
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
+        allowCustomEntries: false,
+        optional: true,
+        readonly: true,
+        initialTokens: [],
+        initialSuggestions: [
+            {value: 'apple', fieldLabel: 'Apple', completionDescription: 'Fruit'},
+        ]
+    });
+
+    tokenAutocomplete82.debug(true);
 
     let tokenAutocomplete9 = new TokenAutocomplete({
         name: 'sample9',
