@@ -329,7 +329,12 @@ var TokenAutocomplete = /** @class */ (function () {
                 if (parent.options.readonly) {
                     return;
                 }
+                var isComposing = false;
+                parent.textInput.addEventListener('compositionstart', function (event) {
+                    isComposing = true;
+                });
                 parent.textInput.addEventListener('compositionend', function (event) {
+                    isComposing = false;
                     // handles hitting ENTER on GBoard, which uses composition events instead of individual key triggers
                     var inputString = event.data;
                     if (inputString.charAt(inputString.length - 1) === "\n") {
@@ -338,6 +343,8 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                 });
                 parent.textInput.addEventListener('keydown', function (event) {
+                    if (isComposing)
+                        return;
                     if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator && parent.autocomplete.areSuggestionsDisplayed() && parent.autocomplete.suggestions.childNodes.length == 1)) {
                         event.preventDefault();
                         var highlightedSuggestion = parent.autocomplete.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
