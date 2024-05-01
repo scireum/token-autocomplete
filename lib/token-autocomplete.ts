@@ -148,7 +148,7 @@ class TokenAutocomplete {
     log: any;
 
     constructor(options: Options) {
-        this.options = {...this.defaults, ...options};
+        this.options = { ...this.defaults, ...options };
 
         let passedContainer = document.querySelector(this.options.selector);
         if (!passedContainer) {
@@ -244,7 +244,7 @@ class TokenAutocomplete {
         options.forEach(function (option) {
             if (option.text != null) {
                 if (option.hasAttribute('selected')) {
-                    initialTokens.push({value: option.value, text: option.text, type: null});
+                    initialTokens.push({ value: option.value, text: option.text, type: null });
                 }
                 initialSuggestions.push({
                     id: null,
@@ -436,7 +436,13 @@ class TokenAutocomplete {
                 return;
             }
 
+            let isComposing = false;
+            parent.textInput.addEventListener('compositionstart', function (event) {
+                isComposing = true;
+            })
             parent.textInput.addEventListener('compositionend', function (event) {
+                isComposing = false;
+
                 // handles hitting ENTER on GBoard, which uses composition events instead of individual key triggers
                 let inputString = event.data;
                 if (inputString.charAt(inputString.length - 1) === "\n") {
@@ -446,6 +452,8 @@ class TokenAutocomplete {
             })
 
             parent.textInput.addEventListener('keydown', function (event) {
+                if (isComposing) return;
+
                 if (event.key == parent.KEY_ENTER || (event.key == parent.KEY_TAB && parent.options.enableTabulator && parent.autocomplete.areSuggestionsDisplayed() && parent.autocomplete.suggestions.childNodes.length == 1)) {
                     event.preventDefault();
 
@@ -1027,7 +1035,7 @@ class TokenAutocomplete {
                     let text = suggestion.fieldLabel;
                     if (value.length == 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
                         me.addSuggestion(suggestion, false);
-                    } else if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
+                    } else if (value.localeCompare(text.slice(0, value.length), undefined, { sensitivity: 'base' }) === 0) {
                         // The suggestion starts with the query text the user entered and will be displayed.
                         me.addSuggestion(suggestion);
                     }
