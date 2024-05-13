@@ -696,10 +696,13 @@ class TokenAutocomplete {
             if (me.options.optional) {
                 this.container.classList.remove('optional-singleselect-with-value');
             }
+            const previousValue = hiddenOption?.dataset.value;
+            const previousText = hiddenOption?.dataset.text;
+            const previousType = hiddenOption?.dataset.type;
             if (keepPreviousValue) {
-                me.previousValue = hiddenOption?.dataset.value;
-                me.previousText = hiddenOption?.dataset.text;
-                me.previousType = hiddenOption?.dataset.type;
+                me.previousValue = previousValue;
+                me.previousText = previousText;
+                me.previousType = previousType;
                 if (hiddenOption == null && me.options.allowCustomEntries) {
                     me.previousValue = tokenText;
                     me.previousText = tokenText;
@@ -726,6 +729,11 @@ class TokenAutocomplete {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
                     detail: {
                         tokens: this.parent.val(),
+                        removed: {
+                            value: previousValue,
+                            text: previousText,
+                            type: previousType
+                        }
                     }
                 }));
             }
