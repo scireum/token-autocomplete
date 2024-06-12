@@ -512,7 +512,6 @@ var TokenAutocomplete = /** @class */ (function () {
             chip.textContent = token.text;
             var deleteToken = document.createElement('span');
             deleteToken.classList.add('token-autocomplete-token-delete');
-            deleteToken.textContent = '\u00D7';
             chip.appendChild(deleteToken);
             return chip;
         },

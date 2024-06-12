@@ -635,7 +635,6 @@ class TokenAutocomplete {
 
             let deleteToken = document.createElement('span');
             deleteToken.classList.add('token-autocomplete-token-delete');
-            deleteToken.textContent = '\u00D7';
             chip.appendChild(deleteToken);
 
             return chip;
