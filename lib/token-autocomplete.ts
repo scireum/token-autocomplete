@@ -148,7 +148,7 @@ class TokenAutocomplete {
     log: any;
 
     constructor(options: Options) {
-        this.options = { ...this.defaults, ...options };
+        this.options = {...this.defaults, ...options};
 
         let passedContainer = document.querySelector(this.options.selector);
         if (!passedContainer) {
@@ -244,7 +244,7 @@ class TokenAutocomplete {
         options.forEach(function (option) {
             if (option.text != null) {
                 if (option.hasAttribute('selected')) {
-                    initialTokens.push({ value: option.value, text: option.text, type: null });
+                    initialTokens.push({value: option.value, text: option.text, type: null});
                 }
                 initialSuggestions.push({
                     id: null,
@@ -1042,7 +1042,7 @@ class TokenAutocomplete {
                     let text = suggestion.fieldLabel;
                     if (value.length == 0 && me.options.selectMode == SelectModes.SINGLE && !me.options.optional && !me.areSuggestionsDisplayed()) {
                         me.addSuggestion(suggestion, false);
-                    } else if (value.localeCompare(text.slice(0, value.length), undefined, { sensitivity: 'base' }) === 0) {
+                    } else if (value.localeCompare(text.slice(0, value.length), undefined, {sensitivity: 'base'}) === 0) {
                         // The suggestion starts with the query text the user entered and will be displayed.
                         me.addSuggestion(suggestion);
                     }
@@ -1093,6 +1093,16 @@ class TokenAutocomplete {
          */
         showSuggestions() {
             this.suggestions.style.display = 'block';
+
+            const inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;
+            const suggestionsHeight = this.suggestions.offsetHeight;
+            const viewportHeight = window.innerHeight;
+            const spaceBelow = viewportHeight - inputBottomPosition;
+            if (spaceBelow < suggestionsHeight) {
+                this.suggestions.classList.add('token-autocomplete-suggestions-above');
+            } else {
+                this.suggestions.classList.remove('token-autocomplete-suggestions-above');
+            }
         }
 
         areSuggestionsDisplayed() {

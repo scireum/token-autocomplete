@@ -125,6 +125,11 @@
     overflow-y: auto;
 }
 
+.token-autocomplete-container .token-autocomplete-suggestions.token-autocomplete-suggestions-above {
+    top: auto;
+    bottom: 100%;
+}
+
 .token-autocomplete-container .token-autocomplete-suggestions li {
     width: 100%;
     padding: 8px;
