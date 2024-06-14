@@ -20,6 +20,7 @@
     color: black;
     font-size: 16px;
     line-height: 32px;
+    height: 32px;
     outline: none;
     margin: 4px 2px;
     padding: 0 8px;
@@ -61,7 +62,6 @@
 .token-autocomplete-container.token-autocomplete-readonly .token-autocomplete-input {
     display: inherit;
     cursor: default;
-    height: 1.5rem;
 }
 
 .token-autocomplete-container.token-autocomplete-singleselect .token-autocomplete-input[contenteditable="true"] {
