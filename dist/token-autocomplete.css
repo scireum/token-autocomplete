@@ -83,13 +83,9 @@
     border-color: #cccccc transparent transparent transparent;
 }
 
-.token-autocomplete-container.token-autocomplete-singleselect.select-arrow-active:after {
+.token-autocomplete-container.token-autocomplete-singleselect.select-arrow-active .token-autocomplete-input:after {
     border-color: transparent transparent #000 transparent;
     top: 7px;
-}
-
-.token-autocomplete-container.token-autocomplete-readonly.token-autocomplete-singleselect.select-arrow-active:after {
-    border-color: transparent transparent #cccccc transparent;
 }
 
 .token-autocomplete-container .token-autocomplete-token:hover {

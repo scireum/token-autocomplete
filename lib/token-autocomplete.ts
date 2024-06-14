@@ -1080,6 +1080,7 @@ class TokenAutocomplete {
         hideSuggestions() {
             // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
             this.abortPendingRequest();
+            this.container.classList.remove('select-arrow-active');
             this.suggestions.style.display = '';
 
             let _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
@@ -1092,6 +1093,7 @@ class TokenAutocomplete {
          * Shows the suggestions dropdown to the user.
          */
         showSuggestions() {
+            this.container.classList.add('select-arrow-active');
             this.suggestions.style.display = 'block';
 
             const inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;
