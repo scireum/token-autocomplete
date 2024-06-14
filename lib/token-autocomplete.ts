@@ -537,7 +537,7 @@ class TokenAutocomplete {
             let element = this.renderer(addedToken);
 
             let me = this;
-            element.querySelector('.token-autocomplete-token-delete')?.addEventListener('click', function () {
+            element.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', function () {
                 me.removeToken(element);
             });
 
@@ -634,7 +634,7 @@ class TokenAutocomplete {
             chip.textContent = token.text;
 
             let deleteToken = document.createElement('span');
-            deleteToken.classList.add('token-autocomplete-token-delete');
+            deleteToken.classList.add('token-autocomplete-delete-button');
             chip.appendChild(deleteToken);
 
             return chip;
@@ -672,10 +672,9 @@ class TokenAutocomplete {
             this.container.classList.add('token-autocomplete-singleselect');
             this.parent.textInput.tabIndex = 0;
             if (this.options.optional) {
-                let deleteToken = document.createElement('span');
-                deleteToken.classList.add('token-singleselect-token-delete');
-                deleteToken.textContent = '\u00D7';
-                this.container.appendChild(deleteToken);
+                let clearButton = document.createElement('span');
+                clearButton.classList.add('token-autocomplete-delete-button');
+                this.container.appendChild(clearButton);
             }
         }
 
@@ -878,7 +877,7 @@ class TokenAutocomplete {
                 }, 0);
 
             });
-            parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
+            parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', function () {
                 me.clear(false, false);
             });
         }

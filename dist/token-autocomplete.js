@@ -423,7 +423,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 };
                 var element = this.renderer(addedToken);
                 var me = this;
-                (_c = element.querySelector('.token-autocomplete-token-delete')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () {
+                (_c = element.querySelector('.token-autocomplete-delete-button')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () {
                     me.removeToken(element);
                 });
                 this.container.insertBefore(element, this.parent.textInput);
@@ -511,7 +511,7 @@ var TokenAutocomplete = /** @class */ (function () {
             }
             chip.textContent = token.text;
             var deleteToken = document.createElement('span');
-            deleteToken.classList.add('token-autocomplete-token-delete');
+            deleteToken.classList.add('token-autocomplete-delete-button');
             chip.appendChild(deleteToken);
             return chip;
         },
@@ -535,10 +535,9 @@ var TokenAutocomplete = /** @class */ (function () {
             this.container.classList.add('token-autocomplete-singleselect');
             this.parent.textInput.tabIndex = 0;
             if (this.options.optional) {
-                var deleteToken = document.createElement('span');
-                deleteToken.classList.add('token-singleselect-token-delete');
-                deleteToken.textContent = '\u00D7';
-                this.container.appendChild(deleteToken);
+                var clearButton = document.createElement('span');
+                clearButton.classList.add('token-autocomplete-delete-button');
+                this.container.appendChild(clearButton);
             }
         }
         /**
@@ -725,7 +724,7 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                 }, 0);
             });
-            (_c = parent.container.querySelector('.token-singleselect-token-delete')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () {
+            (_c = parent.container.querySelector('.token-autocomplete-delete-button')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () {
                 me.clear(false, false);
             });
         };
@@ -920,6 +919,7 @@ var TokenAutocomplete = /** @class */ (function () {
             class_4.prototype.hideSuggestions = function () {
                 // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
                 this.abortPendingRequest();
+                this.container.classList.remove('select-arrow-active');
                 this.suggestions.style.display = '';
                 var _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
                 _highlightedSuggestions.forEach(function (_suggestion) {
@@ -930,6 +930,7 @@ var TokenAutocomplete = /** @class */ (function () {
              * Shows the suggestions dropdown to the user.
              */
             class_4.prototype.showSuggestions = function () {
+                this.container.classList.add('select-arrow-active');
                 this.suggestions.style.display = 'block';
                 var inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;
                 var suggestionsHeight = this.suggestions.offsetHeight;
