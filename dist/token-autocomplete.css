@@ -1,8 +1,10 @@
 .token-autocomplete-container {
+    position: relative;
     display: inline-flex;
     flex-wrap: wrap;
     border: 1px solid #E6E6E6;
     background-color: #FFFFFF;
+    min-width: 200px;
 }
 
 .token-autocomplete-container.token-autocomplete-readonly {
@@ -110,10 +112,22 @@
 
 .token-autocomplete-container .token-autocomplete-suggestions {
     display: none;
-    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     list-style-type: none;
     padding: 0;
     margin: 0;
+    border: 1px solid #E6E6E6;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.token-autocomplete-container .token-autocomplete-suggestions.token-autocomplete-suggestions-above {
+    top: auto;
+    bottom: 100%;
 }
 
 .token-autocomplete-container .token-autocomplete-suggestions li {
