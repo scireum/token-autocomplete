@@ -31,6 +31,7 @@ interface Options {
     allowCustomEntries: boolean,
     readonly: boolean,
     optional: boolean,
+    showClearButton: boolean,
     enableTabulator: boolean,
     showSuggestionsOnFocus: boolean,
     requestDelay: number
@@ -141,6 +142,7 @@ class TokenAutocomplete {
         allowCustomEntries: true,
         readonly: false,
         optional: false,
+        showClearButton: false,
         enableTabulator: true,
         showSuggestionsOnFocus: true,
         requestDelay: 200
@@ -423,6 +425,12 @@ class TokenAutocomplete {
             this.container = parent.container;
             this.options = parent.options;
             this.renderer = parent.options.tokenRenderer;
+
+            if (this.options.showClearButton) {
+                let clearButton = document.createElement('span');
+                clearButton.classList.add('token-autocomplete-delete-button');
+                this.container.appendChild(clearButton);
+            }
         }
 
         clearCurrentInput(): void {
@@ -472,6 +480,20 @@ class TokenAutocomplete {
                     event.preventDefault();
                 }
             });
+
+            parent.textInput.addEventListener('keyup', function (event) {
+                me.updateHasValue();
+            });
+
+            if (this.options.showClearButton) {
+                parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', function () {
+                    me.clear(true);
+                    me.clearCurrentInput();
+                    me.updateHasValue();
+
+                    me.container.dispatchEvent(new CustomEvent('cleared'));
+                });
+            }
         }
 
         handleInput(highlightedSuggestion: any): void {
@@ -490,6 +512,17 @@ class TokenAutocomplete {
             }
             this.parent.autocomplete.clearSuggestions();
             this.parent.autocomplete.hideSuggestions();
+        }
+
+        /**
+         * Updates the 'has-value' class of this MultiSelect autocomplete.
+         */
+        updateHasValue(): void {
+            if (this.parent.getCurrentInput() === '' && this.parent.val().length === 0) {
+                this.container.classList.remove('has-value');
+            } else {
+                this.container.classList.add('has-value');
+            }
         }
 
         /**
@@ -542,6 +575,7 @@ class TokenAutocomplete {
             });
 
             this.container.insertBefore(element, this.parent.textInput);
+            this.updateHasValue();
 
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
@@ -609,6 +643,8 @@ class TokenAutocomplete {
             if (this.parent.val().length === 0) {
                 this.parent.addHiddenEmptyOption();
             }
+
+            this.updateHasValue();
 
             this.parent.log('removed token', token.textContent);
         }

@@ -22,6 +22,7 @@ Small demo: [click here](https://sabieber.github.io/token-autocomplete/)
 | allowCustomEntries                | If true, the user can enter custom values which are not part of the suggestions.                                         | true                                                      |
 | readonly                          | If true, the user can not enter any text or select any suggestions.                                                      | false                                                     |
 | optional                          | If true, the user can clear the field and no value will be submitted.                                                    | false                                                     |
+| showClearButton                   | If true, the user can clear all tokens and the input area by using a clear button (only selectMode MULTI and SEARCH).    | false                                                     |
 | enableTabulator                   | If true, the user can select a suggestion by pressing the tab key.                                                       | true                                                      |
 | showSuggestionsOnFocus            | If true, the suggestions are shown when the input field receives focus.                                                  | true                                                      |
 | requestDelay                      | The delay in milliseconds before a request for suggestions is sent after the user entered text                           | 200                                                       |
@@ -61,6 +62,10 @@ This event is emitted when a suggestion is selected by the user. The event detai
 | value | string         | The raw value of the selected suggestion     |
 | text  | string         | The display label of the selected suggestion |
 | type  | string or null | The type of the selected suggestion          |
+
+### cleared
+
+This event is emitted when the whole input is cleared by the user using the clear button.
 
 ## Build / Development
 
