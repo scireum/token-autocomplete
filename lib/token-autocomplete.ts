@@ -691,9 +691,9 @@ class TokenAutocomplete {
             let me = this;
             let tokenText = me.parent.textInput.textContent;
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]') as HTMLElement;
-            if (me.options.optional) {
-                this.container.classList.remove('optional-singleselect-with-value');
-            }
+
+            this.container.classList.remove('has-value');
+
             const previousValue = hiddenOption?.dataset.value;
             const previousText = hiddenOption?.dataset.text;
             const previousType = hiddenOption?.dataset.type;
@@ -773,8 +773,8 @@ class TokenAutocomplete {
             this.parent.textInput.textContent = tokenText;
             this.parent.textInput.contentEditable = 'false';
             this.parent.textInput.blur();
-            if (this.options.optional && tokenText !== '') {
-                this.container.classList.add('optional-singleselect-with-value');
+            if (tokenText !== '') {
+                this.container.classList.add('has-value');
             }
 
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);

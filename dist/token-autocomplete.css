@@ -111,8 +111,13 @@
 
 .token-autocomplete-container > .token-autocomplete-delete-button {
     margin-top: 8px;
+    margin-right: 6px;
     display: none;
     background-color: #E6E6E6;
+}
+
+.token-autocomplete-container.has-value > .token-autocomplete-delete-button {
+    display: block;
 }
 
 .token-autocomplete-container .token-autocomplete-suggestions {
@@ -163,12 +168,11 @@
     color: #808080;
 }
 
-.token-autocomplete-container.optional-singleselect-with-value .token-autocomplete-input {
+.token-autocomplete-container.token-autocomplete-singleselect.has-value .token-autocomplete-input {
     padding-right: 50px;
 }
 
-.token-autocomplete-container.token-autocomplete-singleselect.optional-singleselect-with-value .token-autocomplete-delete-button {
+.token-autocomplete-container.token-autocomplete-singleselect.has-value .token-autocomplete-delete-button {
     position: absolute;
-    right: 24px;
-    display: block;
+    right: 18px;
 }
