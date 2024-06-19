@@ -63,7 +63,7 @@ This event is emitted when a suggestion is selected by the user. The event detai
 | text  | string         | The display label of the selected suggestion |
 | type  | string or null | The type of the selected suggestion          |
 
-### cleared
+### input-cleared
 
 This event is emitted when the whole input is cleared by the user using the clear button.
 

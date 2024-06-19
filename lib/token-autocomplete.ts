@@ -491,7 +491,7 @@ class TokenAutocomplete {
                     me.clearCurrentInput();
                     me.updateHasValue();
 
-                    me.container.dispatchEvent(new CustomEvent('cleared'));
+                    me.container.dispatchEvent(new CustomEvent('input-cleared'));
                 });
             }
         }
