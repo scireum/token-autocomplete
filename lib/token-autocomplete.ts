@@ -352,7 +352,7 @@ class TokenAutocomplete {
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
         }
-        let _existingLiveEntry = this.hiddenSelect.querySelector('.live-entry');
+        let _existingLiveEntry = this.hiddenSelect.querySelector('.token-autocomplete-live-entry');
         if (_existingLiveEntry) {
             this.hiddenSelect.removeChild(_existingLiveEntry);
         }
@@ -370,7 +370,7 @@ class TokenAutocomplete {
             option.dataset.type = tokenType;
         }
         if (isLiveEntry) {
-            option.classList.add('live-entry');
+            option.classList.add('token-autocomplete-live-entry');
         }
         this.hiddenSelect.add(option);
     }
@@ -515,13 +515,13 @@ class TokenAutocomplete {
         }
 
         /**
-         * Updates the 'has-value' class of this MultiSelect autocomplete.
+         * Updates the 'token-autocomplete-has-value' class of this MultiSelect autocomplete.
          */
         updateHasValue(): void {
             if (this.parent.getCurrentInput() === '' && this.parent.val().length === 0) {
-                this.container.classList.remove('has-value');
+                this.container.classList.remove('token-autocomplete-has-value');
             } else {
-                this.container.classList.add('has-value');
+                this.container.classList.add('token-autocomplete-has-value');
             }
         }
 
@@ -728,7 +728,7 @@ class TokenAutocomplete {
             let tokenText = me.parent.textInput.textContent;
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]') as HTMLElement;
 
-            this.container.classList.remove('has-value');
+            this.container.classList.remove('token-autocomplete-has-value');
 
             const previousValue = hiddenOption?.dataset.value;
             const previousText = hiddenOption?.dataset.text;
@@ -810,7 +810,7 @@ class TokenAutocomplete {
             this.parent.textInput.contentEditable = 'false';
             this.parent.textInput.blur();
             if (tokenText !== '') {
-                this.container.classList.add('has-value');
+                this.container.classList.add('token-autocomplete-has-value');
             }
 
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
@@ -1115,7 +1115,7 @@ class TokenAutocomplete {
         hideSuggestions() {
             // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
             this.abortPendingRequest();
-            this.container.classList.remove('select-arrow-active');
+            this.container.classList.remove('token-autocomplete-suggestions-displayed');
             this.suggestions.style.display = '';
 
             let _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
@@ -1128,7 +1128,7 @@ class TokenAutocomplete {
          * Shows the suggestions dropdown to the user.
          */
         showSuggestions() {
-            this.container.classList.add('select-arrow-active');
+            this.container.classList.add('token-autocomplete-suggestions-displayed');
             this.suggestions.style.display = 'block';
 
             const inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;

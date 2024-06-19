@@ -251,7 +251,7 @@ var TokenAutocomplete = /** @class */ (function () {
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
         }
-        var _existingLiveEntry = this.hiddenSelect.querySelector('.live-entry');
+        var _existingLiveEntry = this.hiddenSelect.querySelector('.token-autocomplete-live-entry');
         if (_existingLiveEntry) {
             this.hiddenSelect.removeChild(_existingLiveEntry);
         }
@@ -269,7 +269,7 @@ var TokenAutocomplete = /** @class */ (function () {
             option.dataset.type = tokenType;
         }
         if (isLiveEntry) {
-            option.classList.add('live-entry');
+            option.classList.add('token-autocomplete-live-entry');
         }
         this.hiddenSelect.add(option);
     };
@@ -400,14 +400,14 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.parent.autocomplete.hideSuggestions();
             };
             /**
-             * Updates the 'has-value' class of this MultiSelect autocomplete.
+             * Updates the 'token-autocomplete-has-value' class of this MultiSelect autocomplete.
              */
             class_1.prototype.updateHasValue = function () {
                 if (this.parent.getCurrentInput() === '' && this.parent.val().length === 0) {
-                    this.container.classList.remove('has-value');
+                    this.container.classList.remove('token-autocomplete-has-value');
                 }
                 else {
-                    this.container.classList.add('has-value');
+                    this.container.classList.add('token-autocomplete-has-value');
                 }
             };
             /**
@@ -586,7 +586,7 @@ var TokenAutocomplete = /** @class */ (function () {
             var me = this;
             var tokenText = me.parent.textInput.textContent;
             var hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]');
-            this.container.classList.remove('has-value');
+            this.container.classList.remove('token-autocomplete-has-value');
             var previousValue = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.value;
             var previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
             var previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.type;
@@ -662,7 +662,7 @@ var TokenAutocomplete = /** @class */ (function () {
             this.parent.textInput.contentEditable = 'false';
             this.parent.textInput.blur();
             if (tokenText !== '') {
-                this.container.classList.add('has-value');
+                this.container.classList.add('token-autocomplete-has-value');
             }
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
             if (!silent) {
@@ -948,7 +948,7 @@ var TokenAutocomplete = /** @class */ (function () {
             class_4.prototype.hideSuggestions = function () {
                 // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
                 this.abortPendingRequest();
-                this.container.classList.remove('select-arrow-active');
+                this.container.classList.remove('token-autocomplete-suggestions-displayed');
                 this.suggestions.style.display = '';
                 var _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
                 _highlightedSuggestions.forEach(function (_suggestion) {
@@ -959,7 +959,7 @@ var TokenAutocomplete = /** @class */ (function () {
              * Shows the suggestions dropdown to the user.
              */
             class_4.prototype.showSuggestions = function () {
-                this.container.classList.add('select-arrow-active');
+                this.container.classList.add('token-autocomplete-suggestions-displayed');
                 this.suggestions.style.display = 'block';
                 var inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;
                 var suggestionsHeight = this.suggestions.offsetHeight;

@@ -83,7 +83,7 @@
     border-color: #cccccc transparent transparent transparent;
 }
 
-.token-autocomplete-container.token-autocomplete-singleselect.select-arrow-active .token-autocomplete-input:after {
+.token-autocomplete-container.token-autocomplete-singleselect.token-autocomplete-suggestions-displayed .token-autocomplete-input:after {
     border-color: transparent transparent #000 transparent;
     top: 7px;
 }
@@ -116,7 +116,7 @@
     background-color: #E6E6E6;
 }
 
-.token-autocomplete-container.has-value > .token-autocomplete-delete-button {
+.token-autocomplete-container.token-autocomplete-has-value > .token-autocomplete-delete-button {
     display: block;
 }
 
@@ -168,11 +168,11 @@
     color: #808080;
 }
 
-.token-autocomplete-container.token-autocomplete-singleselect.has-value .token-autocomplete-input {
+.token-autocomplete-container.token-autocomplete-singleselect.token-autocomplete-has-value .token-autocomplete-input {
     padding-right: 50px;
 }
 
-.token-autocomplete-container.token-autocomplete-singleselect.has-value .token-autocomplete-delete-button {
+.token-autocomplete-container.token-autocomplete-singleselect.token-autocomplete-has-value .token-autocomplete-delete-button {
     position: absolute;
     right: 18px;
 }
