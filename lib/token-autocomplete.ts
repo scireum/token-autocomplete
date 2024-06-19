@@ -31,6 +31,7 @@ interface Options {
     allowCustomEntries: boolean,
     readonly: boolean,
     optional: boolean,
+    showClearButton: boolean,
     enableTabulator: boolean,
     showSuggestionsOnFocus: boolean,
     requestDelay: number
@@ -141,6 +142,7 @@ class TokenAutocomplete {
         allowCustomEntries: true,
         readonly: false,
         optional: false,
+        showClearButton: false,
         enableTabulator: true,
         showSuggestionsOnFocus: true,
         requestDelay: 200
@@ -350,7 +352,7 @@ class TokenAutocomplete {
         if (_emptyToken) {
             this.hiddenSelect.removeChild(_emptyToken);
         }
-        let _existingLiveEntry = this.hiddenSelect.querySelector('.live-entry');
+        let _existingLiveEntry = this.hiddenSelect.querySelector('.token-autocomplete-live-entry');
         if (_existingLiveEntry) {
             this.hiddenSelect.removeChild(_existingLiveEntry);
         }
@@ -368,7 +370,7 @@ class TokenAutocomplete {
             option.dataset.type = tokenType;
         }
         if (isLiveEntry) {
-            option.classList.add('live-entry');
+            option.classList.add('token-autocomplete-live-entry');
         }
         this.hiddenSelect.add(option);
     }
@@ -423,6 +425,12 @@ class TokenAutocomplete {
             this.container = parent.container;
             this.options = parent.options;
             this.renderer = parent.options.tokenRenderer;
+
+            if (this.options.showClearButton) {
+                let clearButton = document.createElement('span');
+                clearButton.classList.add('token-autocomplete-delete-button');
+                this.container.appendChild(clearButton);
+            }
         }
 
         clearCurrentInput(): void {
@@ -472,6 +480,20 @@ class TokenAutocomplete {
                     event.preventDefault();
                 }
             });
+
+            parent.textInput.addEventListener('keyup', function (event) {
+                me.updateHasValue();
+            });
+
+            if (this.options.showClearButton) {
+                parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', function () {
+                    me.clear(true);
+                    me.clearCurrentInput();
+                    me.updateHasValue();
+
+                    me.container.dispatchEvent(new CustomEvent('input-cleared'));
+                });
+            }
         }
 
         handleInput(highlightedSuggestion: any): void {
@@ -490,6 +512,17 @@ class TokenAutocomplete {
             }
             this.parent.autocomplete.clearSuggestions();
             this.parent.autocomplete.hideSuggestions();
+        }
+
+        /**
+         * Updates the 'token-autocomplete-has-value' class of this MultiSelect autocomplete.
+         */
+        updateHasValue(): void {
+            if (this.parent.getCurrentInput() === '' && this.parent.val().length === 0) {
+                this.container.classList.remove('token-autocomplete-has-value');
+            } else {
+                this.container.classList.add('token-autocomplete-has-value');
+            }
         }
 
         /**
@@ -537,11 +570,12 @@ class TokenAutocomplete {
             let element = this.renderer(addedToken);
 
             let me = this;
-            element.querySelector('.token-autocomplete-token-delete')?.addEventListener('click', function () {
+            element.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', function () {
                 me.removeToken(element);
             });
 
             this.container.insertBefore(element, this.parent.textInput);
+            this.updateHasValue();
 
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
@@ -610,6 +644,8 @@ class TokenAutocomplete {
                 this.parent.addHiddenEmptyOption();
             }
 
+            this.updateHasValue();
+
             this.parent.log('removed token', token.textContent);
         }
 
@@ -634,7 +670,7 @@ class TokenAutocomplete {
             chip.textContent = token.text;
 
             let deleteToken = document.createElement('span');
-            deleteToken.classList.add('token-autocomplete-token-delete');
+            deleteToken.classList.add('token-autocomplete-delete-button');
             chip.appendChild(deleteToken);
 
             return chip;
@@ -672,10 +708,9 @@ class TokenAutocomplete {
             this.container.classList.add('token-autocomplete-singleselect');
             this.parent.textInput.tabIndex = 0;
             if (this.options.optional) {
-                let deleteToken = document.createElement('span');
-                deleteToken.classList.add('token-singleselect-token-delete');
-                deleteToken.textContent = '\u00D7';
-                this.container.appendChild(deleteToken);
+                let clearButton = document.createElement('span');
+                clearButton.classList.add('token-autocomplete-delete-button');
+                this.container.appendChild(clearButton);
             }
         }
 
@@ -692,9 +727,9 @@ class TokenAutocomplete {
             let me = this;
             let tokenText = me.parent.textInput.textContent;
             let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]') as HTMLElement;
-            if (me.options.optional) {
-                this.container.classList.remove('optional-singleselect-with-value');
-            }
+
+            this.container.classList.remove('token-autocomplete-has-value');
+
             const previousValue = hiddenOption?.dataset.value;
             const previousText = hiddenOption?.dataset.text;
             const previousType = hiddenOption?.dataset.type;
@@ -774,8 +809,8 @@ class TokenAutocomplete {
             this.parent.textInput.textContent = tokenText;
             this.parent.textInput.contentEditable = 'false';
             this.parent.textInput.blur();
-            if (this.options.optional && tokenText !== '') {
-                this.container.classList.add('optional-singleselect-with-value');
+            if (tokenText !== '') {
+                this.container.classList.add('token-autocomplete-has-value');
             }
 
             this.parent.addHiddenOption(tokenValue, tokenText, tokenType);
@@ -878,7 +913,7 @@ class TokenAutocomplete {
                 }, 0);
 
             });
-            parent.container.querySelector('.token-singleselect-token-delete')?.addEventListener('click', function () {
+            parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', function () {
                 me.clear(false, false);
             });
         }
@@ -1080,6 +1115,7 @@ class TokenAutocomplete {
         hideSuggestions() {
             // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
             this.abortPendingRequest();
+            this.container.classList.remove('token-autocomplete-suggestions-displayed');
             this.suggestions.style.display = '';
 
             let _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
@@ -1092,6 +1128,7 @@ class TokenAutocomplete {
          * Shows the suggestions dropdown to the user.
          */
         showSuggestions() {
+            this.container.classList.add('token-autocomplete-suggestions-displayed');
             this.suggestions.style.display = 'block';
 
             const inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;
