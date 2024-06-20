@@ -173,8 +173,12 @@ class TokenAutocomplete {
         this.hiddenSelect.setAttribute('autocomplete', 'off');
         this.hiddenSelect.style.display = 'none';
 
-        if (this.options.readonly && this.options.tokenRenderer === TokenAutocomplete.MultiSelect.defaultRenderer) {
-            this.options.tokenRenderer = TokenAutocomplete.MultiSelect.defaultReadonlyRenderer;
+        // If the field is readonly, we don't want to show the clear button.
+        if (this.options.readonly) {
+            this.options.showClearButton = false;
+            if (this.options.tokenRenderer === TokenAutocomplete.MultiSelect.defaultRenderer) {
+                this.options.tokenRenderer = TokenAutocomplete.MultiSelect.defaultReadonlyRenderer;
+            }
         }
 
         this.textInput = document.createElement('span');
