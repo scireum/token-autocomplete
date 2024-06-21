@@ -46,6 +46,8 @@ interface SelectMode {
 
     handleInputAsValue(input: string): void;
 
+    updateHasValue(): void;
+
     initEventListeners(): void;
 
     clear(silent: boolean): void;
@@ -171,8 +173,12 @@ class TokenAutocomplete {
         this.hiddenSelect.setAttribute('autocomplete', 'off');
         this.hiddenSelect.style.display = 'none';
 
-        if (this.options.readonly && this.options.tokenRenderer === TokenAutocomplete.MultiSelect.defaultRenderer) {
-            this.options.tokenRenderer = TokenAutocomplete.MultiSelect.defaultReadonlyRenderer;
+        // If the field is readonly, we don't want to show the clear button.
+        if (this.options.readonly) {
+            this.options.showClearButton = false;
+            if (this.options.tokenRenderer === TokenAutocomplete.MultiSelect.defaultRenderer) {
+                this.options.tokenRenderer = TokenAutocomplete.MultiSelect.defaultReadonlyRenderer;
+            }
         }
 
         this.textInput = document.createElement('span');
@@ -333,6 +339,7 @@ class TokenAutocomplete {
 
     setCurrentInput(input: string, silent: boolean) {
         this.textInput.textContent = input;
+        this.select.updateHasValue();
 
         if (silent) {
             return;
@@ -795,6 +802,17 @@ class TokenAutocomplete {
 
         clearCurrentInput(): void {
             this.clear(true);
+        }
+
+        /**
+         * Updates the 'token-autocomplete-has-value' class of this SingleSelect autocomplete.
+         */
+        updateHasValue(): void {
+            if (this.parent.getCurrentInput() === '' && this.parent.val().length === 0) {
+                this.container.classList.remove('token-autocomplete-has-value');
+            } else {
+                this.container.classList.add('token-autocomplete-has-value');
+            }
         }
 
         addToken(tokenValue: string | null, tokenText: string | null, tokenType: string | null, silent: boolean): void {
