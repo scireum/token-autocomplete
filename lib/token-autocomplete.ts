@@ -119,6 +119,7 @@ class TokenAutocomplete {
 
     options: Options;
     container: any;
+    tokenContainer: HTMLDivElement;
     hiddenSelect: HTMLSelectElement;
     textInput: HTMLSpanElement;
 
@@ -161,6 +162,10 @@ class TokenAutocomplete {
 
         this.container = passedContainer;
         this.container.classList.add('token-autocomplete-container');
+
+        this.tokenContainer = document.createElement('div');
+        this.tokenContainer.classList.add('token-autocomplete-tokens');
+        this.container.appendChild(this.tokenContainer);
 
         if (!Array.isArray(this.options.initialTokens) && !Array.isArray(this.options.initialSuggestions)) {
             this.parseTokensAndSuggestions();
@@ -206,7 +211,7 @@ class TokenAutocomplete {
         } else {
             this.container.classList.add('token-autocomplete-readonly');
         }
-        this.container.appendChild(this.textInput);
+        this.tokenContainer.appendChild(this.textInput);
 
 
         this.container.appendChild(this.hiddenSelect);
@@ -424,12 +429,14 @@ class TokenAutocomplete {
 
         parent: TokenAutocomplete;
         container: any;
+        tokenContainer: HTMLDivElement;
         options: Options;
         renderer: TokenRenderer;
 
         constructor(parent: TokenAutocomplete) {
             this.parent = parent;
             this.container = parent.container;
+            this.tokenContainer = parent.tokenContainer;
             this.options = parent.options;
             this.renderer = parent.options.tokenRenderer;
 
@@ -581,7 +588,7 @@ class TokenAutocomplete {
                 me.removeToken(element);
             });
 
-            this.container.insertBefore(element, this.parent.textInput);
+            this.tokenContainer.insertBefore(element, this.parent.textInput);
             this.updateHasValue();
 
             if (!silent) {
@@ -600,7 +607,7 @@ class TokenAutocomplete {
          * Completely clears the currently present tokens from the field.
          */
         clear(silent: boolean = false) {
-            let tokens: NodeListOf<HTMLElement> = this.container.querySelectorAll('.token-autocomplete-token');
+            let tokens: NodeListOf<HTMLElement> = this.tokenContainer.querySelectorAll('.token-autocomplete-token');
 
             let me = this;
             tokens.forEach(function (token) {
@@ -612,8 +619,8 @@ class TokenAutocomplete {
          * Removes the last token in the list of currently present token. This is the last added token next to the input field.
          */
         removeLastToken() {
-            let tokens = this.container.querySelectorAll('.token-autocomplete-token');
-            let token = tokens[tokens.length - 1];
+            let tokens = this.tokenContainer.querySelectorAll('.token-autocomplete-token');
+            let token = tokens[tokens.length - 1] as HTMLElement;
             if (token) {
                 this.removeToken(token);
             }
@@ -626,7 +633,7 @@ class TokenAutocomplete {
          * @param {boolean} silent - whether an appropriate event should be triggered
          */
         removeToken(token: HTMLElement, silent: boolean = false) {
-            this.container.removeChild(token);
+            this.tokenContainer.removeChild(token);
 
             let tokenText = token.dataset.text;
             let hiddenOption = this.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]');
@@ -660,7 +667,7 @@ class TokenAutocomplete {
             if (tokenText === null) {
                 return;
             }
-            let token = this.container.querySelector('.token-autocomplete-token[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]');
+            let token = this.tokenContainer.querySelector('.token-autocomplete-token[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]') as HTMLElement;
             if (token !== null) {
                 this.removeToken(token);
             }
@@ -1351,7 +1358,7 @@ class TokenAutocomplete {
                 element.classList.add('token-autocomplete-suggestion-disabled');
             }
 
-            if (this.container.querySelector('.token-autocomplete-token[data-value="' + value + '"]') !== null) {
+            if (this.parent.tokenContainer.querySelector('.token-autocomplete-token[data-value="' + value + '"]') !== null) {
                 element.classList.add('token-autocomplete-suggestion-active');
             }
 
