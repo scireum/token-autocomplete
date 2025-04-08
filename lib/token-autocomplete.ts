@@ -1011,11 +1011,20 @@ class TokenAutocomplete {
                     let highlightedSuggestion = me.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                     if (highlightedSuggestion == null) {
                         // highlight last entry and scroll to bottom
-                        me.highlightSuggestionAtPosition(me.suggestions.childNodes.length - 1);
-                        me.suggestions.scrollTop = me.suggestions.scrollHeight;
+                        let bottomSuggestion = me.suggestions.lastChild;
+                        while (bottomSuggestion != null && TokenAutocomplete.shouldIgnoreSuggestion(bottomSuggestion)) {
+                            bottomSuggestion = bottomSuggestion.previousSibling;
+                        }
+                        if (bottomSuggestion != null) {
+                            me.highlightSuggestion(bottomSuggestion as Element);
+                            me.suggestions.scrollTop = me.suggestions.scrollHeight;
+                        }
                         return;
                     }
                     let aboveSuggestion = highlightedSuggestion.previousSibling;
+                    while (aboveSuggestion != null && TokenAutocomplete.shouldIgnoreSuggestion(aboveSuggestion)) {
+                        aboveSuggestion = aboveSuggestion.previousSibling;
+                    }
                     if (aboveSuggestion != null) {
                         // if the suggestions is above the scroll position, scroll to the suggestion
                         let suggestionTop = (aboveSuggestion as HTMLElement).offsetTop;
@@ -1033,11 +1042,20 @@ class TokenAutocomplete {
                     let highlightedSuggestion = me.suggestions.querySelector('.token-autocomplete-suggestion-highlighted');
                     if (highlightedSuggestion == null) {
                         // highlight first entry and scroll to top
-                        me.highlightSuggestionAtPosition(0);
-                        me.suggestions.scrollTop = 0;
+                        let topSuggestion = me.suggestions.firstChild;
+                        while (topSuggestion != null && TokenAutocomplete.shouldIgnoreSuggestion(topSuggestion)) {
+                            topSuggestion = topSuggestion.nextSibling;
+                        }
+                        if (topSuggestion != null) {
+                            me.highlightSuggestion(topSuggestion as Element);
+                            me.suggestions.scrollTop = 0;
+                        }
                         return;
                     }
                     let belowSuggestion = highlightedSuggestion?.nextSibling;
+                    while (belowSuggestion != null && TokenAutocomplete.shouldIgnoreSuggestion(belowSuggestion)) {
+                        belowSuggestion = belowSuggestion.nextSibling;
+                    }
                     if (belowSuggestion != null) {
                         // if the suggestions is not completely visible, scroll until the suggestion is at the bottom
                         let suggestionBottom = (belowSuggestion as HTMLElement).offsetTop + (belowSuggestion as HTMLElement).offsetHeight;
@@ -1325,6 +1343,9 @@ class TokenAutocomplete {
             if (suggestion.type != null) {
                 element.dataset.type = suggestion.type;
             }
+            if (suggestion.disabled) {
+                element.dataset.disabled = 'true';
+            }
 
             let me = this;
             element.addEventListener('click', function (_event: Event) {
@@ -1389,5 +1410,12 @@ class TokenAutocomplete {
 
     static escapeQuotes(text: string | null | undefined): string {
         return text?.replace(/\x22/g, '\\\x22') ?? '';
+    }
+
+    static shouldIgnoreSuggestion(suggestion: Node) {
+        if (suggestion instanceof HTMLElement) {
+            return suggestion.dataset.disabled === 'true';
+        }
+        return true;
     }
 }
