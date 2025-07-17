@@ -711,6 +711,7 @@ class TokenAutocomplete {
 
         parent: TokenAutocomplete;
         container: any;
+        toggleButton: HTMLButtonElement;
         options: Options;
         renderer: TokenRenderer;
         previousValue: any;
@@ -729,6 +730,10 @@ class TokenAutocomplete {
                 clearButton.classList.add('token-autocomplete-delete-button');
                 this.container.appendChild(clearButton);
             }
+            this.toggleButton = document.createElement('button');
+            this.toggleButton.classList.add('token-autocomplete-toggle-button');
+            this.toggleButton.type = 'button';
+            this.container.appendChild(this.toggleButton);
         }
 
         /**
@@ -918,7 +923,11 @@ class TokenAutocomplete {
                 focusInput();
             });
 
-            parent.textInput.addEventListener('focusout', function () {
+            parent.textInput.addEventListener('focusout', (event: FocusEvent) => {
+                if (event.relatedTarget === this.toggleButton) {
+                    // If the focus is moved to the toggle button, we mark it so the click handler does not set focus again.
+                    this.toggleButton.dataset.inputWasFocused = 'true';
+                }
                 // Using setTimeout here seems hacky on first sight but ensures proper order of events / handling.
                 // We first want to handle a click on a suggestion (when one is made) before hiding the suggestions on focusout of the input.
                 // Not doing so could mean the suggestion is hidden before the click is handled und thus resulting in not being selected.
@@ -943,6 +952,17 @@ class TokenAutocomplete {
             });
             parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', function () {
                 me.clear(false, false);
+            });
+
+            this.toggleButton.addEventListener('click', () => {
+                if (this.toggleButton.dataset.inputWasFocused === 'true') {
+                    // The focus was moved to the toggle button, so we do not want to focus the input again.
+                    delete this.toggleButton.dataset.inputWasFocused;
+                    this.toggleButton.blur();
+                } else {
+                    // If the input is not focused, we want to focus it and show the suggestions.
+                    focusInput();
+                }
             });
         }
 

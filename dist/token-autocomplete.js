@@ -588,6 +588,10 @@ var TokenAutocomplete = /** @class */ (function () {
                 clearButton.classList.add('token-autocomplete-delete-button');
                 this.container.appendChild(clearButton);
             }
+            this.toggleButton = document.createElement('button');
+            this.toggleButton.classList.add('token-autocomplete-toggle-button');
+            this.toggleButton.type = 'button';
+            this.container.appendChild(this.toggleButton);
         }
         /**
          * Clears the current user input so new text can be entered.
@@ -708,6 +712,7 @@ var TokenAutocomplete = /** @class */ (function () {
             }
         };
         class_2.prototype.initEventListeners = function () {
+            var _this = this;
             var _c;
             var me = this;
             var parent = this.parent;
@@ -760,7 +765,11 @@ var TokenAutocomplete = /** @class */ (function () {
             parent.textInput.addEventListener('click', function () {
                 focusInput();
             });
-            parent.textInput.addEventListener('focusout', function () {
+            parent.textInput.addEventListener('focusout', function (event) {
+                if (event.relatedTarget === _this.toggleButton) {
+                    // If the focus is moved to the toggle button, we mark it so the click handler does not set focus again.
+                    _this.toggleButton.dataset.inputWasFocused = 'true';
+                }
                 // Using setTimeout here seems hacky on first sight but ensures proper order of events / handling.
                 // We first want to handle a click on a suggestion (when one is made) before hiding the suggestions on focusout of the input.
                 // Not doing so could mean the suggestion is hidden before the click is handled und thus resulting in not being selected.
@@ -784,6 +793,17 @@ var TokenAutocomplete = /** @class */ (function () {
             });
             (_c = parent.container.querySelector('.token-autocomplete-delete-button')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () {
                 me.clear(false, false);
+            });
+            this.toggleButton.addEventListener('click', function () {
+                if (_this.toggleButton.dataset.inputWasFocused === 'true') {
+                    // The focus was moved to the toggle button, so we do not want to focus the input again.
+                    delete _this.toggleButton.dataset.inputWasFocused;
+                    _this.toggleButton.blur();
+                }
+                else {
+                    // If the input is not focused, we want to focus it and show the suggestions.
+                    focusInput();
+                }
             });
         };
         class_2.prototype.handleInput = function (highlightedSuggestion) {
