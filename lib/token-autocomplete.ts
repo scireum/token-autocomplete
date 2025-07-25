@@ -16,7 +16,7 @@ interface Suggestion {
 
 interface Options {
     name: string,
-    selector: string,
+    selector: HTMLElement | string,
     noMatchesText: string | null,
     noMatchesCustomEntriesDescription: string | null,
     placeholderText: string | null,
@@ -157,12 +157,16 @@ class TokenAutocomplete {
     constructor(options: Options) {
         this.options = {...this.defaults, ...options};
 
-        let passedContainer = document.querySelector(this.options.selector);
-        if (!passedContainer) {
-            throw new Error('passed selector does not point to a DOM element.');
+        if (this.options.selector instanceof HTMLElement) {
+            this.container = this.options.selector;
+        } else {
+            let passedContainer = document.querySelector(this.options.selector);
+            if (!passedContainer) {
+                throw new Error('passed selector does not point to a DOM element.');
+            }
+            this.container = passedContainer;
         }
 
-        this.container = passedContainer;
         this.container.classList.add('token-autocomplete-container');
 
         this.tokenContainer = document.createElement('div');
