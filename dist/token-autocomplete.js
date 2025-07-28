@@ -71,11 +71,16 @@ var TokenAutocomplete = /** @class */ (function () {
             requestDelay: 200
         };
         this.options = __assign(__assign({}, this.defaults), options);
-        var passedContainer = document.querySelector(this.options.selector);
-        if (!passedContainer) {
-            throw new Error('passed selector does not point to a DOM element.');
+        if (this.options.selector instanceof HTMLElement) {
+            this.container = this.options.selector;
         }
-        this.container = passedContainer;
+        else {
+            var passedContainer = document.querySelector(this.options.selector);
+            if (!passedContainer) {
+                throw new Error('passed selector does not point to a DOM element.');
+            }
+            this.container = passedContainer;
+        }
         this.container.classList.add('token-autocomplete-container');
         this.tokenContainer = document.createElement('div');
         this.tokenContainer.classList.add('token-autocomplete-tokens');
