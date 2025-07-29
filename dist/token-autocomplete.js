@@ -391,9 +391,7 @@ var TokenAutocomplete = /** @class */ (function () {
                         event.preventDefault();
                     }
                 });
-                parent.textInput.addEventListener('keyup', function (event) {
-                    _this.updateHasValue();
-                });
+                parent.textInput.addEventListener('keyup', function () { return _this.updateHasValue(); });
                 if (this.options.showClearButton) {
                     (_c = parent.container.querySelector('.token-autocomplete-delete-button')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () {
                         _this.clear(true);

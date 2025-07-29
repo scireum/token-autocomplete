@@ -499,9 +499,7 @@ class TokenAutocomplete {
                 }
             });
 
-            parent.textInput.addEventListener('keyup', event => {
-                this.updateHasValue();
-            });
+            parent.textInput.addEventListener('keyup', () => this.updateHasValue());
 
             if (this.options.showClearButton) {
                 parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', () => {
@@ -739,7 +737,7 @@ class TokenAutocomplete {
          * @param {boolean} silent - whether an appropriate event should be triggered
          * @param {boolean} keepPreviousValue - if true, the previous value will be stored and shown as a placeholder
          */
-        clear(silent: boolean, keepPreviousValue = true): void {
+        clear(silent: boolean, keepPreviousValue: boolean = true): void {
             if (this.options.readonly) {
                 return;
             }
