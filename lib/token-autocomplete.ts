@@ -452,8 +452,11 @@ class TokenAutocomplete {
             }
         }
 
-        clearCurrentInput(): void {
+        clearCurrentInput(ignored: boolean = false): void {
+            const previousInput = this.parent.getCurrentInput();
             this.parent.textInput.textContent = '';
+
+            this.parent.log('cleared input', previousInput);
         }
 
         initEventListeners(): void {
@@ -501,6 +504,27 @@ class TokenAutocomplete {
 
             parent.textInput.addEventListener('keyup', () => this.updateHasValue());
 
+            parent.textInput.addEventListener('focusout', (event: FocusEvent) => {
+                // Using setTimeout here seems hacky on first sight but ensures proper order of events / handling.
+                // We first want to handle a click on a suggestion (when one is made) before hiding the suggestions on focusout of the input.
+                // Not doing so could mean the suggestion is hidden before the click is handled und thus resulting in not being selected.
+                // This depends on the order in which a browser handles different events and when it sets the active pseudo-selector on clicked events (Firefox for example)
+                setTimeout(() => {
+                    if (parent.autocomplete.areSuggestionsActive()) {
+                        return;
+                    }
+                    const input = this.parent.getCurrentInput();
+                    if (input != '' && !this.handleInputAsValue(input)) {
+                        this.container.dispatchEvent(new CustomEvent('input-ignored', {
+                            detail: {
+                                input: input
+                            }
+                        }));
+                    }
+                }, 0);
+
+            });
+
             if (this.options.showClearButton) {
                 parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', () => {
                     this.clear(true);
@@ -546,16 +570,18 @@ class TokenAutocomplete {
          *
          * @param {string} input - the actual input the user entered
          */
-        handleInputAsValue(input: string): void {
+        handleInputAsValue(input: string): boolean {
             if (input != '' && this.parent.options.allowCustomEntries) {
                 this.clearCurrentInput();
                 this.addToken(input, input, null);
-                return;
+                return true;
             }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
+                return true;
             } else {
                 this.clearCurrentInput();
+                return false;
             }
         }
 
@@ -967,12 +993,13 @@ class TokenAutocomplete {
          *
          * @param {string} input - the actual input the user entered
          */
-        handleInputAsValue(input: string) {
+        handleInputAsValue(input: string): boolean {
             this.container.dispatchEvent(new CustomEvent('query-changed', {
                 detail: {
                     query: input
                 }
             }));
+            return true;
         }
     }
 

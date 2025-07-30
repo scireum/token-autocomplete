@@ -349,8 +349,11 @@ var TokenAutocomplete = /** @class */ (function () {
                     this.container.appendChild(clearButton);
                 }
             }
-            class_1.prototype.clearCurrentInput = function () {
+            class_1.prototype.clearCurrentInput = function (ignored) {
+                if (ignored === void 0) { ignored = false; }
+                var previousInput = this.parent.getCurrentInput();
                 this.parent.textInput.textContent = '';
+                this.parent.log('cleared input', previousInput);
             };
             class_1.prototype.initEventListeners = function () {
                 var _this = this;
@@ -392,6 +395,25 @@ var TokenAutocomplete = /** @class */ (function () {
                     }
                 });
                 parent.textInput.addEventListener('keyup', function () { return _this.updateHasValue(); });
+                parent.textInput.addEventListener('focusout', function (event) {
+                    // Using setTimeout here seems hacky on first sight but ensures proper order of events / handling.
+                    // We first want to handle a click on a suggestion (when one is made) before hiding the suggestions on focusout of the input.
+                    // Not doing so could mean the suggestion is hidden before the click is handled und thus resulting in not being selected.
+                    // This depends on the order in which a browser handles different events and when it sets the active pseudo-selector on clicked events (Firefox for example)
+                    setTimeout(function () {
+                        if (parent.autocomplete.areSuggestionsActive()) {
+                            return;
+                        }
+                        var input = _this.parent.getCurrentInput();
+                        if (input != '' && !_this.handleInputAsValue(input)) {
+                            _this.container.dispatchEvent(new CustomEvent('input-ignored', {
+                                detail: {
+                                    input: input
+                                }
+                            }));
+                        }
+                    }, 0);
+                });
                 if (this.options.showClearButton) {
                     (_c = parent.container.querySelector('.token-autocomplete-delete-button')) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () {
                         _this.clear(true);
@@ -440,13 +462,15 @@ var TokenAutocomplete = /** @class */ (function () {
                 if (input != '' && this.parent.options.allowCustomEntries) {
                     this.clearCurrentInput();
                     this.addToken(input, input, null);
-                    return;
+                    return true;
                 }
                 if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                     this.parent.autocomplete.suggestions.firstChild.click();
+                    return true;
                 }
                 else {
                     this.clearCurrentInput();
+                    return false;
                 }
             };
             /**
@@ -740,14 +764,6 @@ var TokenAutocomplete = /** @class */ (function () {
                     event.preventDefault();
                 }
             });
-            // if (parent.options.allowCustomEntries) {
-            //     parent.textInput.addEventListener('keyup', event => {
-            //         if (event.key != parent.KEY_ENTER && event.key != parent.KEY_TAB && event.key != parent.KEY_DOWN && event.key != parent.KEY_UP) {
-            //             event.preventDefault();
-            //             parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
-            //         }
-            //     });
-            // }
             var focusInput = function () {
                 if (!parent.autocomplete.areSuggestionsDisplayed() && parent.options.showSuggestionsOnFocus) {
                     parent.autocomplete.showSuggestions();
@@ -833,6 +849,7 @@ var TokenAutocomplete = /** @class */ (function () {
                     query: input
                 }
             }));
+            return true;
         };
         return class_3;
     }(TokenAutocomplete.MultiSelect));
