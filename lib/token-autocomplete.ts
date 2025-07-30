@@ -889,15 +889,6 @@ class TokenAutocomplete {
                 }
             });
 
-            if (parent.options.allowCustomEntries) {
-                parent.textInput.addEventListener('keyup', event => {
-                    if (event.key != parent.KEY_ENTER && event.key != parent.KEY_TAB && event.key != parent.KEY_DOWN && event.key != parent.KEY_UP) {
-                        event.preventDefault();
-                        parent.addHiddenOption(parent.getCurrentInput(), parent.getCurrentInput(), null, true);
-                    }
-                });
-            }
-
             const focusInput = () => {
                 if (!parent.autocomplete.areSuggestionsDisplayed() && parent.options.showSuggestionsOnFocus) {
                     parent.autocomplete.showSuggestions();
