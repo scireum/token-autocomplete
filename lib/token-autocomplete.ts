@@ -504,26 +504,29 @@ class TokenAutocomplete {
 
             parent.textInput.addEventListener('keyup', () => this.updateHasValue());
 
-            parent.textInput.addEventListener('focusout', (event: FocusEvent) => {
-                // Using setTimeout here seems hacky on first sight but ensures proper order of events / handling.
-                // We first want to handle a click on a suggestion (when one is made) before hiding the suggestions on focusout of the input.
-                // Not doing so could mean the suggestion is hidden before the click is handled und thus resulting in not being selected.
-                // This depends on the order in which a browser handles different events and when it sets the active pseudo-selector on clicked events (Firefox for example)
-                setTimeout(() => {
-                    if (parent.autocomplete.areSuggestionsActive()) {
-                        return;
-                    }
-                    const input = this.parent.getCurrentInput();
-                    if (input != '' && !this.handleInputAsValue(input)) {
-                        this.container.dispatchEvent(new CustomEvent('input-ignored', {
-                            detail: {
-                                input: input
-                            }
-                        }));
-                    }
-                }, 0);
-
-            });
+            if (!(this instanceof TokenAutocomplete.SearchMultiSelect)) {
+                // We don't want to trigger a search when the user focuses out of the input field in a search field.
+                // This should only try to apply the current input text as value in normal multi-selects.
+                parent.textInput.addEventListener('focusout', (event: FocusEvent) => {
+                    // Using setTimeout here seems hacky on first sight but ensures proper order of events / handling.
+                    // We first want to handle a click on a suggestion (when one is made) before hiding the suggestions on focusout of the input.
+                    // Not doing so could mean the suggestion is hidden before the click is handled und thus resulting in not being selected.
+                    // This depends on the order in which a browser handles different events and when it sets the active pseudo-selector on clicked events (Firefox for example)
+                    setTimeout(() => {
+                        if (parent.autocomplete.areSuggestionsActive()) {
+                            return;
+                        }
+                        const input = this.parent.getCurrentInput();
+                        if (input != '' && !this.handleInputAsValue(input)) {
+                            this.container.dispatchEvent(new CustomEvent('input-ignored', {
+                                detail: {
+                                    input: input
+                                }
+                            }));
+                        }
+                    }, 0);
+                });
+            }
 
             if (this.options.showClearButton) {
                 parent.container.querySelector('.token-autocomplete-delete-button')?.addEventListener('click', () => {
