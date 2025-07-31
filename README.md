@@ -67,6 +67,11 @@ This event is emitted when a suggestion is selected by the user. The event detai
 
 This event is emitted when the whole input is cleared by the user using the clear button.
 
+### input-ignored
+
+This event is emitted when the user leaves the field with left-over text that can't be converted to a custom token or suggestion.
+In this case, the text is cleared from the input field and no token is created.
+
 ## Build / Development
 
 Install typescript:

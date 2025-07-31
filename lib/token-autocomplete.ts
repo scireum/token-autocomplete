@@ -44,7 +44,7 @@ enum SelectModes {
 interface SelectMode {
     addToken(suggestionValue: string | null, suggestionText: string | null, suggestionType: string | null, silent: boolean): void;
 
-    handleInputAsValue(input: string): void;
+    handleInputAsValue(input: string): boolean;
 
     updateHasValue(): void;
 
@@ -572,6 +572,7 @@ class TokenAutocomplete {
          * Adds the current user input as a net token and resets the input area so new text can be entered.
          *
          * @param {string} input - the actual input the user entered
+         * @returns {boolean} - whether the input was handled as a value (true) or discarded (false)
          */
         handleInputAsValue(input: string): boolean {
             if (input != '' && this.parent.options.allowCustomEntries) {
@@ -823,20 +824,22 @@ class TokenAutocomplete {
          * Adds the current user input as a net token and resets the input area so new text can be entered.
          *
          * @param {string} input - the actual input the user entered
+         * @returns {boolean} - whether the input was handled as a value (true) or discarded (false)
          */
-        handleInputAsValue(input: string): void {
+        handleInputAsValue(input: string): boolean {
             if (input != '' && this.parent.options.allowCustomEntries) {
                 this.clearCurrentInput();
                 this.addToken(input, input, null, false);
                 this.parent.autocomplete.clearSuggestions();
                 this.parent.autocomplete.hideSuggestions();
-                return;
+                return true;
             }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
-                return;
+                return true;
             }
             this.clear(true, false);
+            return false;
         }
 
         clearCurrentInput(): void {
@@ -953,7 +956,13 @@ class TokenAutocomplete {
                         return;
                     }
                     if (input != '') {
-                        this.handleInputAsValue(input);
+                        if (!this.handleInputAsValue(input)) {
+                            this.container.dispatchEvent(new CustomEvent('input-ignored', {
+                                detail: {
+                                    input: input
+                                }
+                            }));
+                        }
                         return;
                     }
                     if (this.previousValue) {
@@ -995,6 +1004,7 @@ class TokenAutocomplete {
          * area and instead send an event so the user search request can be handled / executed.
          *
          * @param {string} input - the actual input the user entered
+         * @returns {boolean} - whether the input was handled as a value (true) or discarded (false)
          */
         handleInputAsValue(input: string): boolean {
             this.container.dispatchEvent(new CustomEvent('query-changed', {

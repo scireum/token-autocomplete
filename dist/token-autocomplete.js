@@ -461,6 +461,7 @@ var TokenAutocomplete = /** @class */ (function () {
              * Adds the current user input as a net token and resets the input area so new text can be entered.
              *
              * @param {string} input - the actual input the user entered
+             * @returns {boolean} - whether the input was handled as a value (true) or discarded (false)
              */
             class_1.prototype.handleInputAsValue = function (input) {
                 if (input != '' && this.parent.options.allowCustomEntries) {
@@ -684,6 +685,7 @@ var TokenAutocomplete = /** @class */ (function () {
          * Adds the current user input as a net token and resets the input area so new text can be entered.
          *
          * @param {string} input - the actual input the user entered
+         * @returns {boolean} - whether the input was handled as a value (true) or discarded (false)
          */
         class_2.prototype.handleInputAsValue = function (input) {
             if (input != '' && this.parent.options.allowCustomEntries) {
@@ -691,13 +693,14 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.addToken(input, input, null, false);
                 this.parent.autocomplete.clearSuggestions();
                 this.parent.autocomplete.hideSuggestions();
-                return;
+                return true;
             }
             if (this.parent.autocomplete.suggestions.childNodes.length === 1 && this.parent.autocomplete.suggestions.childNodes[0].dataset.value != '_no_match_') {
                 this.parent.autocomplete.suggestions.firstChild.click();
-                return;
+                return true;
             }
             this.clear(true, false);
+            return false;
         };
         class_2.prototype.clearCurrentInput = function () {
             this.clear(true);
@@ -801,7 +804,13 @@ var TokenAutocomplete = /** @class */ (function () {
                         return;
                     }
                     if (input != '') {
-                        _this.handleInputAsValue(input);
+                        if (!_this.handleInputAsValue(input)) {
+                            _this.container.dispatchEvent(new CustomEvent('input-ignored', {
+                                detail: {
+                                    input: input
+                                }
+                            }));
+                        }
                         return;
                     }
                     if (_this.previousValue) {
@@ -846,6 +855,7 @@ var TokenAutocomplete = /** @class */ (function () {
          * area and instead send an event so the user search request can be handled / executed.
          *
          * @param {string} input - the actual input the user entered
+         * @returns {boolean} - whether the input was handled as a value (true) or discarded (false)
          */
         class_3.prototype.handleInputAsValue = function (input) {
             this.container.dispatchEvent(new CustomEvent('query-changed', {
