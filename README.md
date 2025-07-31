@@ -70,7 +70,11 @@ This event is emitted when the whole input is cleared by the user using the clea
 ### input-ignored
 
 This event is emitted when the user leaves the field with left-over text that can't be converted to a custom token or suggestion.
-In this case, the text is cleared from the input field and no token is created.
+In this case, the text is cleared from the input field and no token is created. The event details contain the previous input value:
+
+| Name  | Type   | Description                          |
+|-------|--------|--------------------------------------|
+| input | string | The input text before it was cleared |
 
 ## Build / Development
 
