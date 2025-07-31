@@ -30,6 +30,9 @@
         })();
     </script>
     <style>
+        body {
+            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        }
         .token-autocomplete-container {
             width: 100%;
         }
@@ -126,6 +129,27 @@
     </div>
     <h1>Single select optional:</h1>
     <div id="sample9">
+        <option value="apple">
+            Apple
+        </option>
+        <option value="banana">
+            Banana
+        </option>
+        <option value="donut">
+            Donut
+        </option>
+        <option value="pizza">
+            Pizza
+        </option>
+        <option value="burger" selected="selected">
+            Burger
+        </option>
+        <option value="pancake">
+            Pancake
+        </option>
+    </div>
+    <h1>Search Multi Select:</h1>
+    <div id="sample10">
         <option value="apple">
             Apple
         </option>
@@ -329,6 +353,17 @@
     });
 
     tokenAutocomplete9.debug(true);
+
+    let tokenAutocomplete10 = new TokenAutocomplete({
+        name: 'sample10',
+        selector: '#sample10',
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
+        selectMode: 2,
+        optional: true
+    });
+
+    tokenAutocomplete10.debug(true);
 
 </script>
 </body>
