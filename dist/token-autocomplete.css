@@ -131,7 +131,7 @@
     display: block;
 }
 
-.token-autocomplete-suggestions {
+.token-autocomplete-container .token-autocomplete-suggestions {
     display: none;
     position: fixed;
     z-index: 1000;
