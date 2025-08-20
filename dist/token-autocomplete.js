@@ -101,14 +101,14 @@ var TokenAutocomplete = /** @class */ (function () {
             resolveUri: '',
             resolveUriBuilder: function (value) {
                 // We have to do this manually instead of using URL, as we can't be sure that a polyfill for IE11 is present
-                var querySeparator = this.resolveUri.indexOf('?') >= 0 ? '&' : '?';
-                return this.resolveUri + querySeparator + 'value=' + encodeURIComponent(value);
+                var querySeparator = _this.options.resolveUri.indexOf('?') >= 0 ? '&' : '?';
+                return _this.options.resolveUri + querySeparator + 'value=' + encodeURIComponent(value);
             },
             suggestionsUri: '',
             suggestionsUriBuilder: function (query) {
                 // We have to do this manually instead of using URL, as we can't be sure that a polyfill for IE11 is present
-                var querySeparator = this.suggestionsUri.indexOf('?') >= 0 ? '&' : '?';
-                return this.suggestionsUri + querySeparator + 'query=' + encodeURIComponent(query);
+                var querySeparator = _this.options.suggestionsUri.indexOf('?') >= 0 ? '&' : '?';
+                return _this.options.suggestionsUri + querySeparator + 'query=' + encodeURIComponent(query);
             },
             suggestionRenderer: TokenAutocomplete.Autocomplete.defaultRenderer,
             minCharactersForSuggestion: 1,

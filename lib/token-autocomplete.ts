@@ -143,16 +143,16 @@ class TokenAutocomplete {
         tokenRenderer: TokenAutocomplete.MultiSelect.defaultRenderer,
         selectMode: SelectModes.MULTI,
         resolveUri: '',
-        resolveUriBuilder: function (value) {
+        resolveUriBuilder: (value) => {
             // We have to do this manually instead of using URL, as we can't be sure that a polyfill for IE11 is present
-            const querySeparator = this.resolveUri.indexOf('?') >= 0 ? '&' : '?';
-            return this.resolveUri + querySeparator + 'value=' + encodeURIComponent(value);
+            const querySeparator = this.options.resolveUri.indexOf('?') >= 0 ? '&' : '?';
+            return this.options.resolveUri + querySeparator + 'value=' + encodeURIComponent(value);
         },
         suggestionsUri: '',
-        suggestionsUriBuilder: function (query) {
+        suggestionsUriBuilder: (query) => {
             // We have to do this manually instead of using URL, as we can't be sure that a polyfill for IE11 is present
-            const querySeparator = this.suggestionsUri.indexOf('?') >= 0 ? '&' : '?';
-            return this.suggestionsUri + querySeparator + 'query=' + encodeURIComponent(query);
+            const querySeparator = this.options.suggestionsUri.indexOf('?') >= 0 ? '&' : '?';
+            return this.options.suggestionsUri + querySeparator + 'query=' + encodeURIComponent(query);
         },
         suggestionRenderer: TokenAutocomplete.Autocomplete.defaultRenderer,
         minCharactersForSuggestion: 1,
