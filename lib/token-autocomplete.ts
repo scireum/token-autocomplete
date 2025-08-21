@@ -24,6 +24,8 @@ interface Options {
     initialSuggestions: Array<Suggestion> | null,
     tokenRenderer: TokenRenderer,
     selectMode: SelectModes,
+    resolveUri: string,
+    resolveUriBuilder: ResolveUriBuilder,
     suggestionsUri: string,
     suggestionsUriBuilder: SuggestionUriBuilder,
     suggestionRenderer: SuggestionRenderer,
@@ -106,6 +108,10 @@ interface SuggestionUriBuilder {
     (query: string): string;
 }
 
+interface ResolveUriBuilder {
+    (value: string): string;
+}
+
 class TokenAutocomplete {
 
     KEY_BACKSPACE = 'Backspace';
@@ -135,12 +141,18 @@ class TokenAutocomplete {
         initialTokens: null,
         initialSuggestions: null,
         tokenRenderer: TokenAutocomplete.MultiSelect.defaultRenderer,
-        suggestionsUri: '',
         selectMode: SelectModes.MULTI,
-        suggestionsUriBuilder: function (query) {
+        resolveUri: '',
+        resolveUriBuilder: (value) => {
             // We have to do this manually instead of using URL, as we can't be sure that a polyfill for IE11 is present
-            const querySeparator = this.suggestionsUri.indexOf('?') >= 0 ? '&' : '?';
-            return this.suggestionsUri + querySeparator + 'query=' + query;
+            const querySeparator = this.options.resolveUri.indexOf('?') >= 0 ? '&' : '?';
+            return this.options.resolveUri + querySeparator + 'value=' + encodeURIComponent(value);
+        },
+        suggestionsUri: '',
+        suggestionsUriBuilder: (query) => {
+            // We have to do this manually instead of using URL, as we can't be sure that a polyfill for IE11 is present
+            const querySeparator = this.options.suggestionsUri.indexOf('?') >= 0 ? '&' : '?';
+            return this.options.suggestionsUri + querySeparator + 'query=' + encodeURIComponent(query);
         },
         suggestionRenderer: TokenAutocomplete.Autocomplete.defaultRenderer,
         minCharactersForSuggestion: 1,
@@ -241,6 +253,11 @@ class TokenAutocomplete {
 
         if (Array.isArray(this.options.initialTokens)) {
             this.val(this.options.initialTokens);
+            this.enrichInitialTokens().then(shouldUpdate => {
+                if (shouldUpdate) {
+                    this.val(this.options.initialTokens);
+                }
+            });
         }
 
         this.container.tokenAutocomplete = this as TokenAutocomplete;
@@ -248,6 +265,22 @@ class TokenAutocomplete {
         if (this.options.selectMode == SelectModes.SINGLE && !this.options.optional && this.val().length == 0) {
             this.autocomplete.loadSuggestions();
         }
+    }
+
+    async enrichInitialTokens() {
+        if (this.options.resolveUri.length > 0 && this.options.initialTokens) {
+            for await (const token of this.options.initialTokens) {
+                // Fetch the data for each initial token and update its properties
+                let resolveUri = this.options.resolveUriBuilder(token.value);
+                await fetch(resolveUri).then(response => response.json()).then(data => {
+                    token.text = data.text ?? token.text;
+                    token.value = data.value ?? token.value;
+                    token.type = data.type ?? token.type;
+                });
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

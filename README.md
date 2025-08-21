@@ -2,6 +2,12 @@
 
 Small demo: [click here](https://sabieber.github.io/token-autocomplete/)
 
+## Requirements
+
+This library requires a somewhat modern browser (ES5 or later) and additionally the following features/polyfills:
+- [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) for making HTTP requests
+- [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) for handling asynchronous operations
+
 ## Parameters
 
 | Name                              | Description                                                                                                              | Default                                                   |

@@ -208,7 +208,11 @@
         selector: '#sample3',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
-        suggestionsUri: 'https://run.mocky.io/v3/370a7bae-d0bd-448e-9868-d4e8d46d61c2'
+        suggestionsUri: 'http://127.0.0.1:5000/suggest',
+        resolveUri: 'http://127.0.0.1:5000/resolve',
+        initialTokens: [
+            {value: 'test', text: 'test'}
+        ]
     });
     tokenAutocomplete3.debug(true);
 
