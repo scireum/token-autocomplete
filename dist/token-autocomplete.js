@@ -744,6 +744,7 @@ var TokenAutocomplete = /** @class */ (function () {
             this.toggleButton = document.createElement('button');
             this.toggleButton.classList.add('token-autocomplete-toggle-button');
             this.toggleButton.type = 'button';
+            this.toggleButton.tabIndex = 0;
             this.container.appendChild(this.toggleButton);
         }
         /**
