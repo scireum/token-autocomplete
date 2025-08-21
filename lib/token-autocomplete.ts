@@ -1025,6 +1025,10 @@ class TokenAutocomplete {
         renderer: SuggestionRenderer;
         request: XMLHttpRequest | null;
         timeout: number | undefined;
+        scrollParent: HTMLElement | Window | null = null;
+        private hideHandler = () => {
+            this.hideSuggestions();
+        }
 
         constructor(parent: TokenAutocomplete) {
             this.parent = parent;
@@ -1035,7 +1039,6 @@ class TokenAutocomplete {
             this.suggestions = document.createElement('ul');
             this.suggestions.id = this.container.id + '-suggestions';
             this.suggestions.classList.add('token-autocomplete-suggestions');
-
             this.container.appendChild(this.suggestions);
         }
 
@@ -1208,7 +1211,9 @@ class TokenAutocomplete {
             let _highlightedSuggestions = this.suggestions.querySelectorAll('li.token-autocomplete-suggestion-highlighted');
             _highlightedSuggestions.forEach(_suggestion => {
                 _suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
-            })
+            });
+            window.removeEventListener('resize', this.hideHandler);
+            this.scrollParent?.removeEventListener('scroll', this.hideHandler);
         }
 
         /**
@@ -1218,15 +1223,45 @@ class TokenAutocomplete {
             this.container.classList.add('token-autocomplete-suggestions-displayed');
             this.suggestions.style.display = 'block';
 
-            const inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;
+            this.updateSuggestionsPosition();
+            window.addEventListener('resize', this.hideHandler);
+            this.scrollParent = this.findScrollParent(this.container);
+            this.scrollParent?.addEventListener('scroll', this.hideHandler);
+        }
+
+        updateSuggestionsPosition() {
+            if (!this.areSuggestionsDisplayed()) {
+                return;
+            }
+            const containerBox = this.container.getBoundingClientRect();
             const suggestionsHeight = this.suggestions.offsetHeight;
             const viewportHeight = window.innerHeight;
-            const spaceBelow = viewportHeight - inputBottomPosition;
+            const spaceBelow = viewportHeight - containerBox.bottom;
+
+            this.suggestions.style.left = `${containerBox.left}px`;
+            this.suggestions.style.width = `${containerBox.width}px`;
             if (spaceBelow < suggestionsHeight) {
-                this.suggestions.classList.add('token-autocomplete-suggestions-above');
+                this.suggestions.style.bottom = `${viewportHeight - containerBox.top}px`;
+                this.suggestions.style.top = 'initial';
             } else {
-                this.suggestions.classList.remove('token-autocomplete-suggestions-above');
+                this.suggestions.style.top = `${containerBox.bottom}px`;
+                this.suggestions.style.bottom = 'initial';
             }
+        }
+
+        findScrollParent(_scrollingElement: HTMLElement | null): HTMLElement | Window | null {
+            if (_scrollingElement == null) {
+                return window;
+            }
+            if (_scrollingElement === document.documentElement || _scrollingElement === document.body) {
+                return window;
+            }
+            const overflowY = window.getComputedStyle(_scrollingElement).overflowY;
+            const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
+            if (isScrollable && _scrollingElement.scrollHeight >= _scrollingElement.clientHeight) {
+                return _scrollingElement;
+            }
+            return this.findScrollParent(_scrollingElement.parentNode as HTMLElement);
         }
 
         areSuggestionsDisplayed() {

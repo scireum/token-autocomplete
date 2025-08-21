@@ -869,6 +869,11 @@ var TokenAutocomplete = /** @class */ (function () {
     }(TokenAutocomplete.MultiSelect));
     TokenAutocomplete.Autocomplete = (_b = /** @class */ (function () {
             function class_4(parent) {
+                var _this = this;
+                this.scrollParent = null;
+                this.hideHandler = function () {
+                    _this.hideSuggestions();
+                };
                 this.parent = parent;
                 this.container = parent.container;
                 this.options = parent.options;
@@ -1042,6 +1047,7 @@ var TokenAutocomplete = /** @class */ (function () {
              * Hides the suggestions dropdown from the user.
              */
             class_4.prototype.hideSuggestions = function () {
+                var _c;
                 // as the suggestions will be re-shown if a pending request is executed, we abort them if we want to hide
                 this.abortPendingRequest();
                 this.container.classList.remove('token-autocomplete-suggestions-displayed');
@@ -1050,23 +1056,53 @@ var TokenAutocomplete = /** @class */ (function () {
                 _highlightedSuggestions.forEach(function (_suggestion) {
                     _suggestion.classList.remove('token-autocomplete-suggestion-highlighted');
                 });
+                window.removeEventListener('resize', this.hideHandler);
+                (_c = this.scrollParent) === null || _c === void 0 ? void 0 : _c.removeEventListener('scroll', this.hideHandler);
             };
             /**
              * Shows the suggestions dropdown to the user.
              */
             class_4.prototype.showSuggestions = function () {
+                var _c;
                 this.container.classList.add('token-autocomplete-suggestions-displayed');
                 this.suggestions.style.display = 'block';
-                var inputBottomPosition = this.parent.textInput.getBoundingClientRect().bottom;
+                this.updateSuggestionsPosition();
+                window.addEventListener('resize', this.hideHandler);
+                this.scrollParent = this.findScrollParent(this.container);
+                (_c = this.scrollParent) === null || _c === void 0 ? void 0 : _c.addEventListener('scroll', this.hideHandler);
+            };
+            class_4.prototype.updateSuggestionsPosition = function () {
+                if (!this.areSuggestionsDisplayed()) {
+                    return;
+                }
+                var containerBox = this.container.getBoundingClientRect();
                 var suggestionsHeight = this.suggestions.offsetHeight;
                 var viewportHeight = window.innerHeight;
-                var spaceBelow = viewportHeight - inputBottomPosition;
+                var spaceBelow = viewportHeight - containerBox.bottom;
+                this.suggestions.style.left = "".concat(containerBox.left, "px");
+                this.suggestions.style.width = "".concat(containerBox.width, "px");
                 if (spaceBelow < suggestionsHeight) {
-                    this.suggestions.classList.add('token-autocomplete-suggestions-above');
+                    this.suggestions.style.bottom = "".concat(viewportHeight - containerBox.top, "px");
+                    this.suggestions.style.top = 'initial';
                 }
                 else {
-                    this.suggestions.classList.remove('token-autocomplete-suggestions-above');
+                    this.suggestions.style.top = "".concat(containerBox.bottom, "px");
+                    this.suggestions.style.bottom = 'initial';
                 }
+            };
+            class_4.prototype.findScrollParent = function (_scrollingElement) {
+                if (_scrollingElement == null) {
+                    return window;
+                }
+                if (_scrollingElement === document.documentElement || _scrollingElement === document.body) {
+                    return window;
+                }
+                var overflowY = window.getComputedStyle(_scrollingElement).overflowY;
+                var isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
+                if (isScrollable && _scrollingElement.scrollHeight >= _scrollingElement.clientHeight) {
+                    return _scrollingElement;
+                }
+                return this.findScrollParent(_scrollingElement.parentNode);
             };
             class_4.prototype.areSuggestionsDisplayed = function () {
                 return this.suggestions.style.display === 'block';
