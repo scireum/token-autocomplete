@@ -744,6 +744,7 @@ var TokenAutocomplete = /** @class */ (function () {
             this.toggleButton = document.createElement('button');
             this.toggleButton.classList.add('token-autocomplete-toggle-button');
             this.toggleButton.type = 'button';
+            this.toggleButton.tabIndex = 0;
             this.container.appendChild(this.toggleButton);
         }
         /**
@@ -758,39 +759,38 @@ var TokenAutocomplete = /** @class */ (function () {
             if (this.options.readonly) {
                 return;
             }
-            var me = this;
-            var tokenText = me.parent.textInput.textContent;
-            var hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]');
+            var tokenText = this.parent.textInput.textContent;
+            var hiddenOption = this.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]');
             this.container.classList.remove('token-autocomplete-has-value');
             var previousValue = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.value;
             var previousText = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.text;
             var previousType = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.dataset.type;
             if (keepPreviousValue) {
-                me.previousValue = previousValue;
-                me.previousText = previousText;
-                me.previousType = previousType;
-                if (hiddenOption == null && me.options.allowCustomEntries) {
-                    me.previousValue = tokenText;
-                    me.previousText = tokenText;
+                this.previousValue = previousValue;
+                this.previousText = previousText;
+                this.previousType = previousType;
+                if (hiddenOption == null && this.options.allowCustomEntries) {
+                    this.previousValue = tokenText;
+                    this.previousText = tokenText;
                 }
-                if (me.previousText && me.previousText !== '') {
-                    me.parent.textInput.dataset.placeholder = me.previousText;
+                if (this.previousText && this.previousText !== '') {
+                    this.parent.textInput.dataset.placeholder = this.previousText;
                 }
             }
             else {
                 // We should reset these fields, so they are not used to restore the previously selected value
                 // when the focusout event is handled after the click event on the suggestion.
-                delete me.previousValue;
-                delete me.previousText;
-                delete me.previousType;
-                if (me.parent.options.placeholderText != null) {
-                    me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
+                delete this.previousValue;
+                delete this.previousText;
+                delete this.previousType;
+                if (this.parent.options.placeholderText != null) {
+                    this.parent.textInput.dataset.placeholder = this.parent.options.placeholderText;
                 }
             }
             (_c = hiddenOption === null || hiddenOption === void 0 ? void 0 : hiddenOption.parentElement) === null || _c === void 0 ? void 0 : _c.removeChild(hiddenOption);
-            me.parent.addHiddenEmptyOption();
-            me.parent.textInput.textContent = '';
-            me.parent.textInput.contentEditable = 'true';
+            this.parent.addHiddenEmptyOption();
+            this.parent.textInput.textContent = '';
+            this.parent.textInput.contentEditable = 'true';
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
                     detail: {
@@ -1140,7 +1140,7 @@ var TokenAutocomplete = /** @class */ (function () {
                             _this.addSuggestion(suggestion);
                         }
                     });
-                    if (this.suggestions.childNodes.length == 0) {
+                    if (this.suggestions.childNodes.length == 0 && value.length >= this.parent.options.minCharactersForSuggestion) {
                         if (this.parent.options.allowCustomEntries && this.parent.options.noMatchesCustomEntriesDescription) {
                             this.addSuggestion({
                                 id: null,
@@ -1270,19 +1270,19 @@ var TokenAutocomplete = /** @class */ (function () {
              * @param query the query to search suggestions for
              */
             class_4.prototype.requestSuggestions = function (query) {
-                var me = this;
-                clearTimeout(me.timeout);
-                if (!me.timeout) {
-                    me.debouncedRequestSuggestions.call(me, query);
-                    me.timeout = window.setTimeout(function () {
-                        delete me.timeout;
-                    }, me.parent.options.requestDelay);
+                var _this = this;
+                clearTimeout(this.timeout);
+                if (!this.timeout) {
+                    this.debouncedRequestSuggestions.call(this, query);
+                    this.timeout = window.setTimeout(function () {
+                        delete _this.timeout;
+                    }, this.parent.options.requestDelay);
                 }
                 else {
-                    me.timeout = window.setTimeout(function () {
-                        delete me.timeout;
-                        me.debouncedRequestSuggestions.call(me, query);
-                    }, me.parent.options.requestDelay);
+                    this.timeout = window.setTimeout(function () {
+                        delete _this.timeout;
+                        _this.debouncedRequestSuggestions.call(_this, query);
+                    }, this.parent.options.requestDelay);
                 }
             };
             class_4.prototype.dispatchSuggestionSelectedEvent = function (_suggestion) {
@@ -1357,6 +1357,7 @@ var TokenAutocomplete = /** @class */ (function () {
              * @param showSuggestions - if the suggestions box should be shown, default true
              */
             class_4.prototype.addSuggestion = function (suggestion, showSuggestions) {
+                var _this = this;
                 if (showSuggestions === void 0) { showSuggestions = true; }
                 var element = this.renderer(suggestion);
                 var value = suggestion.id || suggestion.value;
@@ -1370,37 +1371,36 @@ var TokenAutocomplete = /** @class */ (function () {
                 if (suggestion.disabled) {
                     element.dataset.disabled = 'true';
                 }
-                var me = this;
                 element.addEventListener('click', function (_event) {
                     if (value == '_no_match_' || suggestion.disabled) {
                         return;
                     }
-                    if (me.parent.options.selectMode == SelectModes.SINGLE) {
+                    if (_this.parent.options.selectMode == SelectModes.SINGLE) {
                         if (element.classList.contains('token-autocomplete-suggestion-active')) {
-                            me.parent.select.clear(false);
+                            _this.parent.select.clear(false);
                         }
                         else {
                             if (element.dataset.becomesToken !== 'false') {
-                                me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                                _this.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                             }
-                            me.dispatchSuggestionSelectedEvent(element);
+                            _this.dispatchSuggestionSelectedEvent(element);
                         }
                     }
                     else {
-                        me.parent.select.clearCurrentInput();
+                        _this.parent.select.clearCurrentInput();
                         if (element.classList.contains('token-autocomplete-suggestion-active')) {
-                            var multiSelect = me.parent.select;
+                            var multiSelect = _this.parent.select;
                             multiSelect.removeTokenWithText(suggestion.fieldLabel);
                         }
                         else {
                             if (element.dataset.becomesToken !== 'false') {
-                                me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                                _this.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                             }
-                            me.dispatchSuggestionSelectedEvent(element);
+                            _this.dispatchSuggestionSelectedEvent(element);
                         }
                     }
-                    me.clearSuggestions();
-                    me.hideSuggestions();
+                    _this.clearSuggestions();
+                    _this.hideSuggestions();
                 });
                 if (suggestion.disabled) {
                     element.classList.add('token-autocomplete-suggestion-disabled');
@@ -1412,7 +1412,7 @@ var TokenAutocomplete = /** @class */ (function () {
                 if (showSuggestions) {
                     this.showSuggestions();
                 }
-                me.parent.log('added suggestion', suggestion);
+                this.parent.log('added suggestion', suggestion);
             };
             return class_4;
         }()),

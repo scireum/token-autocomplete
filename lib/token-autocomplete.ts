@@ -791,6 +791,7 @@ class TokenAutocomplete {
             this.toggleButton = document.createElement('button');
             this.toggleButton.classList.add('token-autocomplete-toggle-button');
             this.toggleButton.type = 'button';
+            this.toggleButton.tabIndex = 0;
             this.container.appendChild(this.toggleButton);
         }
 
@@ -804,9 +805,8 @@ class TokenAutocomplete {
             if (this.options.readonly) {
                 return;
             }
-            let me = this;
-            let tokenText = me.parent.textInput.textContent;
-            let hiddenOption = me.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]') as HTMLElement;
+            let tokenText = this.parent.textInput.textContent;
+            let hiddenOption = this.parent.hiddenSelect.querySelector('option[data-text="' + TokenAutocomplete.escapeQuotes(tokenText) + '"]') as HTMLElement;
 
             this.container.classList.remove('token-autocomplete-has-value');
 
@@ -814,30 +814,30 @@ class TokenAutocomplete {
             const previousText = hiddenOption?.dataset.text;
             const previousType = hiddenOption?.dataset.type;
             if (keepPreviousValue) {
-                me.previousValue = previousValue;
-                me.previousText = previousText;
-                me.previousType = previousType;
-                if (hiddenOption == null && me.options.allowCustomEntries) {
-                    me.previousValue = tokenText;
-                    me.previousText = tokenText;
+                this.previousValue = previousValue;
+                this.previousText = previousText;
+                this.previousType = previousType;
+                if (hiddenOption == null && this.options.allowCustomEntries) {
+                    this.previousValue = tokenText;
+                    this.previousText = tokenText;
                 }
-                if (me.previousText && me.previousText !== '') {
-                    me.parent.textInput.dataset.placeholder = me.previousText;
+                if (this.previousText && this.previousText !== '') {
+                    this.parent.textInput.dataset.placeholder = this.previousText;
                 }
             } else {
                 // We should reset these fields, so they are not used to restore the previously selected value
                 // when the focusout event is handled after the click event on the suggestion.
-                delete me.previousValue;
-                delete me.previousText;
-                delete me.previousType;
-                if (me.parent.options.placeholderText != null) {
-                    me.parent.textInput.dataset.placeholder = me.parent.options.placeholderText;
+                delete this.previousValue;
+                delete this.previousText;
+                delete this.previousType;
+                if (this.parent.options.placeholderText != null) {
+                    this.parent.textInput.dataset.placeholder = this.parent.options.placeholderText;
                 }
             }
             hiddenOption?.parentElement?.removeChild(hiddenOption);
-            me.parent.addHiddenEmptyOption();
-            me.parent.textInput.textContent = '';
-            me.parent.textInput.contentEditable = 'true';
+            this.parent.addHiddenEmptyOption();
+            this.parent.textInput.textContent = '';
+            this.parent.textInput.contentEditable = 'true';
 
             if (!silent) {
                 this.container.dispatchEvent(new CustomEvent('tokens-changed', {
@@ -1205,7 +1205,7 @@ class TokenAutocomplete {
                         this.addSuggestion(suggestion);
                     }
                 });
-                if (this.suggestions.childNodes.length == 0) {
+                if (this.suggestions.childNodes.length == 0 && value.length >= this.parent.options.minCharactersForSuggestion) {
                     if (this.parent.options.allowCustomEntries && this.parent.options.noMatchesCustomEntriesDescription) {
                         this.addSuggestion({
                             id: null,
@@ -1345,18 +1345,17 @@ class TokenAutocomplete {
          * @param query the query to search suggestions for
          */
         requestSuggestions(query: string) {
-            let me = this;
-            clearTimeout(me.timeout);
-            if (!me.timeout) {
-                me.debouncedRequestSuggestions.call(me, query);
-                me.timeout = window.setTimeout(() => {
-                    delete me.timeout;
-                }, me.parent.options.requestDelay);
+            clearTimeout(this.timeout);
+            if (!this.timeout) {
+                this.debouncedRequestSuggestions.call(this, query);
+                this.timeout = window.setTimeout(() => {
+                    delete this.timeout;
+                }, this.parent.options.requestDelay);
             } else {
-                me.timeout = window.setTimeout(() => {
-                    delete me.timeout;
-                    me.debouncedRequestSuggestions.call(me, query);
-                }, me.parent.options.requestDelay);
+                this.timeout = window.setTimeout(() => {
+                    delete this.timeout;
+                    this.debouncedRequestSuggestions.call(this, query);
+                }, this.parent.options.requestDelay);
             }
         }
 
@@ -1452,34 +1451,33 @@ class TokenAutocomplete {
                 element.dataset.disabled = 'true';
             }
 
-            let me = this;
             element.addEventListener('click', (_event: Event) => {
                 if (value == '_no_match_' || suggestion.disabled) {
                     return;
                 }
-                if (me.parent.options.selectMode == SelectModes.SINGLE) {
+                if (this.parent.options.selectMode == SelectModes.SINGLE) {
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
-                        me.parent.select.clear(false);
+                        this.parent.select.clear(false);
                     } else {
                         if (element.dataset.becomesToken !== 'false') {
-                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                            this.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                         }
-                        me.dispatchSuggestionSelectedEvent(element);
+                        this.dispatchSuggestionSelectedEvent(element);
                     }
                 } else {
-                    me.parent.select.clearCurrentInput();
+                    this.parent.select.clearCurrentInput();
                     if (element.classList.contains('token-autocomplete-suggestion-active')) {
-                        let multiSelect = me.parent.select as MultiSelect;
+                        let multiSelect = this.parent.select as MultiSelect;
                         multiSelect.removeTokenWithText(suggestion.fieldLabel);
                     } else {
                         if (element.dataset.becomesToken !== 'false') {
-                            me.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
+                            this.parent.select.addToken(value, suggestion.fieldLabel, suggestion.type, false);
                         }
-                        me.dispatchSuggestionSelectedEvent(element);
+                        this.dispatchSuggestionSelectedEvent(element);
                     }
                 }
-                me.clearSuggestions();
-                me.hideSuggestions();
+                this.clearSuggestions();
+                this.hideSuggestions();
             });
 
             if (suggestion.disabled) {
@@ -1495,7 +1493,7 @@ class TokenAutocomplete {
                 this.showSuggestions();
             }
 
-            me.parent.log('added suggestion', suggestion);
+            this.parent.log('added suggestion', suggestion);
         }
 
         static defaultRenderer: SuggestionRenderer = function (suggestion: Suggestion): HTMLElement {
