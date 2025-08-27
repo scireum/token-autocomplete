@@ -1214,7 +1214,7 @@ class TokenAutocomplete {
                             type: '_no_match_',
                             completionDescription: this.parent.options.noMatchesCustomEntriesDescription,
                             completionLabel: null,
-                            disabled: true
+                            disabled: false
                         });
 
                     } else if (this.parent.options.noMatchesText) {
