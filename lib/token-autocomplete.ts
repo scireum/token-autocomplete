@@ -1205,8 +1205,9 @@ class TokenAutocomplete {
                         this.addSuggestion(suggestion);
                     }
                 });
-                if (this.suggestions.childNodes.length == 0 && value.length >= this.parent.options.minCharactersForSuggestion) {
-                    if (this.parent.options.allowCustomEntries && this.parent.options.noMatchesCustomEntriesDescription) {
+                if (value.length >= this.parent.options.minCharactersForSuggestion) {
+                    const hasExactMatch = this.suggestions.querySelector(`li[data-value='${value}']:not([data-type='_no_match_']),li[data-text='${value}']:not([data-type='_no_match_'])`);
+                    if (!hasExactMatch && this.parent.options.allowCustomEntries && this.parent.options.noMatchesCustomEntriesDescription) {
                         this.addSuggestion({
                             id: null,
                             value: value,
@@ -1217,7 +1218,7 @@ class TokenAutocomplete {
                             disabled: false
                         });
 
-                    } else if (this.parent.options.noMatchesText) {
+                    } else if (this.suggestions.childNodes.length == 0 && this.parent.options.noMatchesText) {
                         this.addSuggestion({
                             id: null,
                             value: '_no_match_',
