@@ -33,6 +33,7 @@
         body {
             font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         }
+
         .token-autocomplete-container {
             width: 100%;
         }
@@ -41,10 +42,12 @@
 </head>
 <body>
 <form>
-    <h1>Tokens / Suggestions via constructor parameters:</h1>
-    <div id="sample"></div>
-    <h1>Tokens / Suggestions via option elements:</h1>
-    <div id="sample2">
+    <h1>Multi Select Mode</h1>
+
+    <h2>Tokens / Suggestions via constructor parameters:</h2>
+    <div id="multiSelect1"></div>
+    <h2>Tokens / Suggestions via option elements:</h2>
+    <div id="multiSelect2">
         <option value="apple" data-description="One a day keeps the doctor away.">
             Apple
         </option>
@@ -64,15 +67,25 @@
             Pancake
         </option>
     </div>
-    <h1>Suggestions via service URI:</h1>
-    <div id="sample3"></div>
-    <h1>Custom suggestion renderer:</h1>
-    <div id="sample4"></div>
+    <h2>Suggestions via service URI:</h2>
+    <div id="multiSelect3"></div>
+    <h2>Custom suggestion renderer:</h2>
+    <div id="multiSelect4"></div>
     <div>
         <button type="submit">Submit</button>
     </div>
-    <h1>Single select via option elements:</h1>
-    <div id="sample5">
+    <h2>No custom entries, only given options can be choosen:</h2>
+    <div id="multiSelect5"></div>
+    <h2>Readonly:</h2>
+    <div id="multiSelect6"></div>
+    <div style="margin-top: 1rem;">
+        <div id="multiSelect7"></div>
+    </div>
+
+    <h1>Single Select Mode</h1>
+
+    <h2>Via option elements:</h2>
+    <div id="singleSelect1">
         <option value="apple">
             Apple
         </option>
@@ -92,10 +105,31 @@
             Pancake
         </option>
     </div>
-    <h1>No custom entries, only given options can be choosen:</h1>
-    <div id="sample6"></div>
-    <h1>Single select readonly:</h1>
-    <div id="sample7">
+    <h2>Suggestions via service URI:</h2>
+    <div id="singleSelect2"></div>
+    <h2>Optional:</h2>
+    <div id="singleSelect3">
+        <option value="apple">
+            Apple
+        </option>
+        <option value="banana">
+            Banana
+        </option>
+        <option value="donut">
+            Donut
+        </option>
+        <option value="pizza">
+            Pizza
+        </option>
+        <option value="burger" selected="selected">
+            Burger
+        </option>
+        <option value="pancake">
+            Pancake
+        </option>
+    </div>
+    <h2>Readonly:</h2>
+    <div id="singleSelect4">
         <option value="apple">
             Apple
         </option>
@@ -116,40 +150,16 @@
         </option>
     </div>
     <div style="margin-top: 1rem;">
-        <div id="sample7-2">
+        <div id="singleSelect5">
             <option value="apple">
                 Apple
             </option>
         </div>
     </div>
-    <h1>Multiselect readonly:</h1>
-    <div id="sample8"></div>
-    <div style="margin-top: 1rem;">
-        <div id="sample8-2"></div>
-    </div>
-    <h1>Single select optional:</h1>
-    <div id="sample9">
-        <option value="apple">
-            Apple
-        </option>
-        <option value="banana">
-            Banana
-        </option>
-        <option value="donut">
-            Donut
-        </option>
-        <option value="pizza">
-            Pizza
-        </option>
-        <option value="burger" selected="selected">
-            Burger
-        </option>
-        <option value="pancake">
-            Pancake
-        </option>
-    </div>
-    <h1>Search Multi Select:</h1>
-    <div id="sample10">
+
+    <h1>Search Mode</h1>
+
+    <div id="searchSelect1">
         <option value="apple">
             Apple
         </option>
@@ -174,9 +184,11 @@
 
 <script>
 
-    let tokenAutocomplete = new TokenAutocomplete({
-        name: 'sample',
-        selector: document.getElementById('sample'),
+    // Multi Select Mode
+
+    let multiSelect1 = new TokenAutocomplete({
+        name: 'multiSelect1',
+        selector: document.getElementById('multiSelect1'),
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
         initialTokens: [
@@ -193,19 +205,19 @@
             {value: 'pancake', fieldLabel: 'Pancake', completionDescription: 'Sweet'}
         ]
     });
-    tokenAutocomplete.debug(true);
+    multiSelect1.debug(true);
 
-    let tokenAutocomplete2 = new TokenAutocomplete({
-        name: 'sample2',
-        selector: '#sample2',
+    let multiSelect2 = new TokenAutocomplete({
+        name: 'multiSelect2',
+        selector: '#multiSelect2',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...'
     });
-    tokenAutocomplete2.debug(true);
+    multiSelect2.debug(true);
 
-    let tokenAutocomplete3 = new TokenAutocomplete({
-        name: 'sample3',
-        selector: '#sample3',
+    let multiSelect3 = new TokenAutocomplete({
+        name: 'multiSelect3',
+        selector: '#multiSelect3',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
         suggestionsUri: 'http://127.0.0.1:5000/suggest',
@@ -214,11 +226,11 @@
             {value: 'test', text: 'test'}
         ]
     });
-    tokenAutocomplete3.debug(true);
+    multiSelect3.debug(true);
 
-    let tokenAutocomplete4 = new TokenAutocomplete({
-        name: 'sample4',
-        selector: '#sample4',
+    let multiSelect4 = new TokenAutocomplete({
+        name: 'multiSelect4',
+        selector: '#multiSelect4',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
         initialTokens: [
@@ -250,21 +262,11 @@
             return option;
         }
     });
-    tokenAutocomplete4.debug(true);
+    multiSelect4.debug(true);
 
-    let tokenAutocomplete5 = new TokenAutocomplete({
-        name: 'sample5',
-        selector: '#sample5',
-        noMatchesText: 'No matching results...',
-        noMatchesCustomEntriesDescription: 'Create custom entry...',
-        selectMode: 0
-    });
-
-    tokenAutocomplete5.debug(true);
-
-    let tokenAutocomplete6 = new TokenAutocomplete({
-        name: 'sample6',
-        selector: '#sample6',
+    let multiSelect5 = new TokenAutocomplete({
+        name: 'multiSelect5',
+        selector: '#multiSelect5',
         noMatchesText: 'No matching results...',
         allowCustomEntries: false,
         initialTokens: [
@@ -282,34 +284,11 @@
         ]
     });
 
-    tokenAutocomplete6.debug(true);
+    multiSelect5.debug(true);
 
-    let tokenAutocomplete7 = new TokenAutocomplete({
-        name: 'sample7',
-        selector: '#sample7',
-        noMatchesText: 'No matching results...',
-        noMatchesCustomEntriesDescription: 'Create custom entry...',
-        selectMode: 0,
-        readonly: true
-    });
-
-    tokenAutocomplete7.debug(true);
-
-    let tokenAutocomplete72 = new TokenAutocomplete({
-        name: 'sample7-2',
-        selector: '#sample7-2',
-        noMatchesText: 'No matching results...',
-        noMatchesCustomEntriesDescription: 'Create custom entry...',
-        optional: true,
-        selectMode: 0,
-        readonly: true
-    });
-
-    tokenAutocomplete72.debug(true);
-
-    let tokenAutocomplete8 = new TokenAutocomplete({
-        name: 'sample8',
-        selector: '#sample8',
+    let multiSelect6 = new TokenAutocomplete({
+        name: 'multiSelect6',
+        selector: '#multiSelect6',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
         allowCustomEntries: false,
@@ -329,11 +308,11 @@
         ]
     });
 
-    tokenAutocomplete8.debug(true);
+    multiSelect6.debug(true);
 
-    let tokenAutocomplete82 = new TokenAutocomplete({
-        name: 'sample8-2',
-        selector: '#sample8-2',
+    let multiSelect7 = new TokenAutocomplete({
+        name: 'multiSelect7',
+        selector: '#multiSelect7',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
         allowCustomEntries: false,
@@ -345,29 +324,77 @@
         ]
     });
 
-    tokenAutocomplete82.debug(true);
+    multiSelect7.debug(true);
 
-    let tokenAutocomplete9 = new TokenAutocomplete({
-        name: 'sample9',
-        selector: '#sample9',
+    // Single Select Mode
+
+    let singleSelect1 = new TokenAutocomplete({
+        name: 'singleSelect1',
+        selector: '#singleSelect1',
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
+        selectMode: 0
+    });
+
+    singleSelect1.debug(true);
+
+    let singleSelect2 = new TokenAutocomplete({
+        name: 'singleSelect2',
+        selector: '#singleSelect2',
+        selectMode: 0,
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
+        suggestionsUri: 'http://127.0.0.1:5000/suggest',
+        resolveUri: 'http://127.0.0.1:5000/resolve'
+    });
+    singleSelect2.debug(true);
+
+    let singleSelect3 = new TokenAutocomplete({
+        name: 'singleSelect3',
+        selector: '#singleSelect3',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
         selectMode: 0,
         optional: true
     });
 
-    tokenAutocomplete9.debug(true);
+    singleSelect3.debug(true);
 
-    let tokenAutocomplete10 = new TokenAutocomplete({
-        name: 'sample10',
-        selector: '#sample10',
+    let singleSelect4 = new TokenAutocomplete({
+        name: 'singleSelect4',
+        selector: '#singleSelect4',
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
+        selectMode: 0,
+        readonly: true
+    });
+
+    singleSelect4.debug(true);
+
+    let singleSelect5 = new TokenAutocomplete({
+        name: 'singleSelect5',
+        selector: '#singleSelect5',
+        noMatchesText: 'No matching results...',
+        noMatchesCustomEntriesDescription: 'Create custom entry...',
+        optional: true,
+        selectMode: 0,
+        readonly: true
+    });
+
+    singleSelect5.debug(true);
+
+    // Search Mode
+
+    let searchSelect1 = new TokenAutocomplete({
+        name: 'searchSelect1',
+        selector: '#searchSelect1',
         noMatchesText: 'No matching results...',
         noMatchesCustomEntriesDescription: 'Create custom entry...',
         selectMode: 2,
         optional: true
     });
 
-    tokenAutocomplete10.debug(true);
+    searchSelect1.debug(true);
 
 </script>
 </body>
