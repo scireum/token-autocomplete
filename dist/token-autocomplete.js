@@ -910,7 +910,7 @@ var TokenAutocomplete = /** @class */ (function () {
             };
             parent.textInput.addEventListener('click', function () { return focusInput(); });
             parent.textInput.addEventListener('focusout', function (event) {
-                if (event.relatedTarget === _this.toggleButton) {
+                if (event.relatedTarget === _this.toggleButton && parent.autocomplete.areSuggestionsDisplayed()) {
                     // If the focus is moved to the toggle button, we mark it so the click handler does not set focus again.
                     _this.toggleButton.dataset.inputWasFocused = 'true';
                 }

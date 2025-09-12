@@ -972,7 +972,7 @@ class TokenAutocomplete {
             parent.textInput.addEventListener('click', () => focusInput());
 
             parent.textInput.addEventListener('focusout', (event: FocusEvent) => {
-                if (event.relatedTarget === this.toggleButton) {
+                if (event.relatedTarget === this.toggleButton && parent.autocomplete.areSuggestionsDisplayed()) {
                     // If the focus is moved to the toggle button, we mark it so the click handler does not set focus again.
                     this.toggleButton.dataset.inputWasFocused = 'true';
                 }
