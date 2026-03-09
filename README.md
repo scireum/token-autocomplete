@@ -32,6 +32,7 @@ This library requires a somewhat modern browser (ES5 or later) and additionally 
 | enableTabulator                   | If true, the user can select a suggestion by pressing the tab key.                                                       | true                                                      |
 | showSuggestionsOnFocus            | If true, the suggestions are shown when the input field receives focus.                                                  | true                                                      |
 | requestDelay                      | The delay in milliseconds before a request for suggestions is sent after the user entered text                           | 200                                                       |
+| maxInputLength                    | Maximum number of characters allowed in the editable input text (applies to typing and pasting). Use `null` for no limit | null                                                      |
 
 ## Events
 

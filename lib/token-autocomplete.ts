@@ -36,7 +36,8 @@ interface Options {
     showClearButton: boolean,
     enableTabulator: boolean,
     showSuggestionsOnFocus: boolean,
-    requestDelay: number
+    requestDelay: number,
+    maxInputLength?: number | null
 }
 
 enum SelectModes {
@@ -162,7 +163,8 @@ class TokenAutocomplete {
         showClearButton: false,
         enableTabulator: true,
         showSuggestionsOnFocus: true,
-        requestDelay: 200
+        requestDelay: 200,
+        maxInputLength: null
     };
     log: any;
 
@@ -214,18 +216,26 @@ class TokenAutocomplete {
             }
 
             this.textInput.contentEditable = 'true';
+            this.textInput.addEventListener('input', () => {
+                this.enforceMaxInputLength();
+            });
             this.textInput.addEventListener("paste", event => {
                 event.preventDefault();
-                if (event.clipboardData) {
-                    //  Normal handling for modern browsers
-                    const text = event.clipboardData?.getData("text/plain");
-                    document.execCommand("insertHTML", false, text);
-                } else {
-                    // Fallback logic for IE11
-                    const globalText = window.clipboardData?.getData("Text");
-                    const range = document.getSelection()?.getRangeAt(0);
-                    range?.insertNode(document.createTextNode(globalText));
+                const clipboardText = event.clipboardData?.getData("text/plain") || window.clipboardData?.getData("Text") || '';
+                const {text, wasTruncated} = this.limitTextToRemainingInputLength(clipboardText);
+                if (text.length == 0) {
+                    if (wasTruncated) {
+                        this.showInputLimitReachedFeedback();
+                    }
+                    return;
                 }
+
+                this.insertTextAtCursor(text);
+
+                if (wasTruncated) {
+                    this.showInputLimitReachedFeedback();
+                }
+                this.enforceMaxInputLength();
             });
         } else {
             this.container.classList.add('token-autocomplete-readonly');
@@ -378,6 +388,128 @@ class TokenAutocomplete {
      */
     getCurrentInput() {
         return this.textInput.textContent || '';
+    }
+
+    private getMaxInputLength(): number | null {
+        const maxInputLength = this.options.maxInputLength;
+        if (typeof maxInputLength !== 'number' || !isFinite(maxInputLength) || maxInputLength < 0) {
+            return null;
+        }
+        return Math.floor(maxInputLength);
+    }
+
+    private getSelectedInputLength() {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            return 0;
+        }
+
+        const range = selection.getRangeAt(0);
+        if (!this.textInput.contains(range.commonAncestorContainer)) {
+            return 0;
+        }
+
+        return range.toString().length;
+    }
+
+    private getRemainingInputLength(): number | null {
+        const maxInputLength = this.getMaxInputLength();
+        if (maxInputLength === null) {
+            return null;
+        }
+
+        const currentLength = this.getCurrentInput().length;
+        const selectedLength = this.getSelectedInputLength();
+        return Math.max(0, maxInputLength - (currentLength - selectedLength));
+    }
+
+    private limitTextToRemainingInputLength(text: string) {
+        const remainingLength = this.getRemainingInputLength();
+        if (remainingLength === null || text.length <= remainingLength) {
+            return {
+                text: text,
+                wasTruncated: false
+            };
+        }
+
+        return {
+            text: text.slice(0, remainingLength),
+            wasTruncated: true
+        };
+    }
+
+    private getInputCursorPosition(selection: Selection | null) {
+        if (!selection || selection.rangeCount === 0) {
+            return null;
+        }
+
+        const range = selection.getRangeAt(0);
+        if (!this.textInput.contains(range.startContainer)) {
+            return null;
+        }
+
+        return Math.min(range.startOffset, this.getCurrentInput().length);
+    }
+
+    private setInputCursorPosition(position: number) {
+        const selection = window.getSelection();
+        if (!selection || !this.textInput.firstChild) {
+            return;
+        }
+
+        const range = document.createRange();
+        range.setStart(this.textInput.firstChild, Math.min(position, this.textInput.textContent?.length || 0));
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+
+    private insertTextAtCursor(text: string) {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            const textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+
+            const updatedRange = document.createRange();
+            updatedRange.setStart(textNode, text.length);
+            updatedRange.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(updatedRange);
+            return;
+        }
+
+        this.textInput.textContent = (this.textInput.textContent || '') + text;
+    }
+
+    private enforceMaxInputLength() {
+        const maxInputLength = this.getMaxInputLength();
+        if (maxInputLength === null) {
+            return;
+        }
+
+        const input = this.getCurrentInput();
+        if (input.length >= maxInputLength) {
+            if (input.length > maxInputLength) {
+                const selection = window.getSelection();
+                const cursorPos = this.getInputCursorPosition(selection) ?? maxInputLength;
+
+                this.textInput.textContent = input.slice(0, maxInputLength);
+                this.setInputCursorPosition(cursorPos);
+            }
+            this.showInputLimitReachedFeedback();
+        }
+    }
+
+    private showInputLimitReachedFeedback() {
+        const cls = 'token-autocomplete-input-limit-reached';
+        this.container.classList.remove(cls);
+        void this.container.offsetWidth;
+        this.container.classList.add(cls);
+        this.container.addEventListener('animationend', () => {
+            this.container.classList.remove(cls);
+        }, {once: true});
     }
 
     setCurrentInput(input: string, silent: boolean) {

@@ -118,7 +118,8 @@ var TokenAutocomplete = /** @class */ (function () {
             showClearButton: false,
             enableTabulator: true,
             showSuggestionsOnFocus: true,
-            requestDelay: 200
+            requestDelay: 200,
+            maxInputLength: null
         };
         this.options = __assign(__assign({}, this.defaults), options);
         if (this.options.selector instanceof HTMLElement) {
@@ -160,20 +161,25 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.textInput.dataset.placeholder = this.options.placeholderText;
             }
             this.textInput.contentEditable = 'true';
+            this.textInput.addEventListener('input', function () {
+                _this.enforceMaxInputLength();
+            });
             this.textInput.addEventListener("paste", function (event) {
-                var _c, _d, _e;
+                var _c, _d;
                 event.preventDefault();
-                if (event.clipboardData) {
-                    //  Normal handling for modern browsers
-                    var text = (_c = event.clipboardData) === null || _c === void 0 ? void 0 : _c.getData("text/plain");
-                    document.execCommand("insertHTML", false, text);
+                var clipboardText = ((_c = event.clipboardData) === null || _c === void 0 ? void 0 : _c.getData("text/plain")) || ((_d = window.clipboardData) === null || _d === void 0 ? void 0 : _d.getData("Text")) || '';
+                var _e = _this.limitTextToRemainingInputLength(clipboardText), text = _e.text, wasTruncated = _e.wasTruncated;
+                if (text.length == 0) {
+                    if (wasTruncated) {
+                        _this.showInputLimitReachedFeedback();
+                    }
+                    return;
                 }
-                else {
-                    // Fallback logic for IE11
-                    var globalText = (_d = window.clipboardData) === null || _d === void 0 ? void 0 : _d.getData("Text");
-                    var range = (_e = document.getSelection()) === null || _e === void 0 ? void 0 : _e.getRangeAt(0);
-                    range === null || range === void 0 ? void 0 : range.insertNode(document.createTextNode(globalText));
+                _this.insertTextAtCursor(text);
+                if (wasTruncated) {
+                    _this.showInputLimitReachedFeedback();
                 }
+                _this.enforceMaxInputLength();
             });
         }
         else {
@@ -369,6 +375,111 @@ var TokenAutocomplete = /** @class */ (function () {
      */
     TokenAutocomplete.prototype.getCurrentInput = function () {
         return this.textInput.textContent || '';
+    };
+    TokenAutocomplete.prototype.getMaxInputLength = function () {
+        var maxInputLength = this.options.maxInputLength;
+        if (typeof maxInputLength !== 'number' || !isFinite(maxInputLength) || maxInputLength < 0) {
+            return null;
+        }
+        return Math.floor(maxInputLength);
+    };
+    TokenAutocomplete.prototype.getSelectedInputLength = function () {
+        var selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            return 0;
+        }
+        var range = selection.getRangeAt(0);
+        if (!this.textInput.contains(range.commonAncestorContainer)) {
+            return 0;
+        }
+        return range.toString().length;
+    };
+    TokenAutocomplete.prototype.getRemainingInputLength = function () {
+        var maxInputLength = this.getMaxInputLength();
+        if (maxInputLength === null) {
+            return null;
+        }
+        var currentLength = this.getCurrentInput().length;
+        var selectedLength = this.getSelectedInputLength();
+        return Math.max(0, maxInputLength - (currentLength - selectedLength));
+    };
+    TokenAutocomplete.prototype.limitTextToRemainingInputLength = function (text) {
+        var remainingLength = this.getRemainingInputLength();
+        if (remainingLength === null || text.length <= remainingLength) {
+            return {
+                text: text,
+                wasTruncated: false
+            };
+        }
+        return {
+            text: text.slice(0, remainingLength),
+            wasTruncated: true
+        };
+    };
+    TokenAutocomplete.prototype.getInputCursorPosition = function (selection) {
+        if (!selection || selection.rangeCount === 0) {
+            return null;
+        }
+        var range = selection.getRangeAt(0);
+        if (!this.textInput.contains(range.startContainer)) {
+            return null;
+        }
+        return Math.min(range.startOffset, this.getCurrentInput().length);
+    };
+    TokenAutocomplete.prototype.setInputCursorPosition = function (position) {
+        var _c;
+        var selection = window.getSelection();
+        if (!selection || !this.textInput.firstChild) {
+            return;
+        }
+        var range = document.createRange();
+        range.setStart(this.textInput.firstChild, Math.min(position, ((_c = this.textInput.textContent) === null || _c === void 0 ? void 0 : _c.length) || 0));
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    };
+    TokenAutocomplete.prototype.insertTextAtCursor = function (text) {
+        var selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            var range = selection.getRangeAt(0);
+            range.deleteContents();
+            var textNode = document.createTextNode(text);
+            range.insertNode(textNode);
+            var updatedRange = document.createRange();
+            updatedRange.setStart(textNode, text.length);
+            updatedRange.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(updatedRange);
+            return;
+        }
+        this.textInput.textContent = (this.textInput.textContent || '') + text;
+    };
+    TokenAutocomplete.prototype.enforceMaxInputLength = function () {
+        var _c;
+        var maxInputLength = this.getMaxInputLength();
+        if (maxInputLength === null) {
+            return;
+        }
+        var input = this.getCurrentInput();
+        if (input.length >= maxInputLength) {
+            if (input.length > maxInputLength) {
+                var selection = window.getSelection();
+                var cursorPos = (_c = this.getInputCursorPosition(selection)) !== null && _c !== void 0 ? _c : maxInputLength;
+                this.textInput.textContent = input.slice(0, maxInputLength);
+                this.setInputCursorPosition(cursorPos);
+            }
+            this.showInputLimitReachedFeedback();
+        }
+    };
+    TokenAutocomplete.prototype.showInputLimitReachedFeedback = function () {
+        var _this = this;
+        var cls = 'token-autocomplete-input-limit-reached';
+        this.container.classList.remove(cls);
+        void this.container.offsetWidth;
+        this.container.classList.add(cls);
+        this.container.addEventListener('animationend', function () {
+            _this.container.classList.remove(cls);
+        }, { once: true });
     };
     TokenAutocomplete.prototype.setCurrentInput = function (input, silent) {
         this.textInput.textContent = input;
