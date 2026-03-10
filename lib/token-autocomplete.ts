@@ -36,7 +36,8 @@ interface Options {
     showClearButton: boolean,
     enableTabulator: boolean,
     showSuggestionsOnFocus: boolean,
-    requestDelay: number
+    requestDelay: number,
+    maxInputLength?: number | null,
 }
 
 enum SelectModes {
@@ -162,7 +163,8 @@ class TokenAutocomplete {
         showClearButton: false,
         enableTabulator: true,
         showSuggestionsOnFocus: true,
-        requestDelay: 200
+        requestDelay: 200,
+        maxInputLength: null,
     };
     log: any;
 

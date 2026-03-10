@@ -118,7 +118,8 @@ var TokenAutocomplete = /** @class */ (function () {
             showClearButton: false,
             enableTabulator: true,
             showSuggestionsOnFocus: true,
-            requestDelay: 200
+            requestDelay: 200,
+            maxInputLength: null,
         };
         this.options = __assign(__assign({}, this.defaults), options);
         if (this.options.selector instanceof HTMLElement) {
