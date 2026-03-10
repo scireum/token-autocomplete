@@ -161,6 +161,9 @@ var TokenAutocomplete = /** @class */ (function () {
                 this.textInput.dataset.placeholder = this.options.placeholderText;
             }
             this.textInput.contentEditable = 'true';
+            this.textInput.addEventListener('input', function () {
+                _this.enforceMaxInputLength();
+            });
             this.textInput.addEventListener("paste", function (event) {
                 var _c, _d, _e;
                 event.preventDefault();
@@ -448,6 +451,27 @@ var TokenAutocomplete = /** @class */ (function () {
                 // Intentionally left empty to only log when debugging is enabled.
             };
         }
+    };
+    TokenAutocomplete.prototype.enforceMaxInputLength = function () {
+        var _c;
+        var maxInputLength = (_c = this.options.maxInputLength) !== null && _c !== void 0 ? _c : -1;
+        if (maxInputLength <= 0) {
+            return;
+        }
+        var input = this.getCurrentInput();
+        if (input.length >= maxInputLength) {
+            this.showInputLimitReachedFeedback();
+        }
+    };
+    TokenAutocomplete.prototype.showInputLimitReachedFeedback = function () {
+        var _this = this;
+        var markerClass = 'token-autocomplete-input-limit-reached';
+        this.container.classList.remove(markerClass);
+        void this.container.offsetWidth;
+        this.container.classList.add(markerClass);
+        this.container.addEventListener('animationend', function () {
+            _this.container.classList.remove(markerClass);
+        }, { once: true });
     };
     TokenAutocomplete.escapeQuotes = function (text) {
         var _c;

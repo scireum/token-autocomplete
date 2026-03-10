@@ -216,6 +216,9 @@ class TokenAutocomplete {
             }
 
             this.textInput.contentEditable = 'true';
+            this.textInput.addEventListener('input', () => {
+                this.enforceMaxInputLength();
+            });
             this.textInput.addEventListener("paste", event => {
                 event.preventDefault();
                 if (event.clipboardData) {
@@ -463,6 +466,28 @@ class TokenAutocomplete {
                 // Intentionally left empty to only log when debugging is enabled.
             }
         }
+    }
+
+    private enforceMaxInputLength(): void {
+        const maxInputLength = this.options.maxInputLength ?? -1;
+        if (maxInputLength <= 0) {
+            return;
+        }
+
+        const input = this.getCurrentInput();
+        if (input.length >= maxInputLength) {
+            this.showInputLimitReachedFeedback();
+        }
+    }
+
+    private showInputLimitReachedFeedback(): void {
+        const markerClass = 'token-autocomplete-input-limit-reached';
+        this.container.classList.remove(markerClass);
+        void this.container.offsetWidth;
+        this.container.classList.add(markerClass);
+        this.container.addEventListener('animationend', () => {
+            this.container.classList.remove(markerClass);
+        }, {once: true});
     }
 
     static MultiSelect = class implements MultiSelect {
