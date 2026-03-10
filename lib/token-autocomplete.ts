@@ -476,8 +476,41 @@ class TokenAutocomplete {
 
         const input = this.getCurrentInput();
         if (input.length >= maxInputLength) {
+            if (input.length > maxInputLength) {
+                const cursorPos = this.getInputCursorPosition() ?? maxInputLength;
+
+                this.textInput.textContent = input.slice(0, maxInputLength);
+                this.setInputCursorPosition(cursorPos);
+            }
             this.showInputLimitReachedFeedback();
         }
+    }
+
+    private getInputCursorPosition(): number | null {
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            return null;
+        }
+
+        const range = selection.getRangeAt(0);
+        if (!this.textInput.contains(range.startContainer)) {
+            return null;
+        }
+
+        return Math.min(range.startOffset, this.getCurrentInput().length);
+    }
+
+    private setInputCursorPosition(position: number): void {
+        const selection = window.getSelection();
+        if (!selection || !this.textInput.firstChild) {
+            return;
+        }
+
+        const range = document.createRange();
+        range.setStart(this.textInput.firstChild, Math.min(position, this.textInput.textContent?.length ?? 0));
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
     }
 
     private showInputLimitReachedFeedback(): void {

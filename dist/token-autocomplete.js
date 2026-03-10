@@ -453,15 +453,43 @@ var TokenAutocomplete = /** @class */ (function () {
         }
     };
     TokenAutocomplete.prototype.enforceMaxInputLength = function () {
-        var _c;
+        var _c, _d;
         var maxInputLength = (_c = this.options.maxInputLength) !== null && _c !== void 0 ? _c : -1;
         if (maxInputLength <= 0) {
             return;
         }
         var input = this.getCurrentInput();
         if (input.length >= maxInputLength) {
+            if (input.length > maxInputLength) {
+                var cursorPos = (_d = this.getInputCursorPosition()) !== null && _d !== void 0 ? _d : maxInputLength;
+                this.textInput.textContent = input.slice(0, maxInputLength);
+                this.setInputCursorPosition(cursorPos);
+            }
             this.showInputLimitReachedFeedback();
         }
+    };
+    TokenAutocomplete.prototype.getInputCursorPosition = function () {
+        var selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            return null;
+        }
+        var range = selection.getRangeAt(0);
+        if (!this.textInput.contains(range.startContainer)) {
+            return null;
+        }
+        return Math.min(range.startOffset, this.getCurrentInput().length);
+    };
+    TokenAutocomplete.prototype.setInputCursorPosition = function (position) {
+        var _c, _d;
+        var selection = window.getSelection();
+        if (!selection || !this.textInput.firstChild) {
+            return;
+        }
+        var range = document.createRange();
+        range.setStart(this.textInput.firstChild, Math.min(position, (_d = (_c = this.textInput.textContent) === null || _c === void 0 ? void 0 : _c.length) !== null && _d !== void 0 ? _d : 0));
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
     };
     TokenAutocomplete.prototype.showInputLimitReachedFeedback = function () {
         var _this = this;
