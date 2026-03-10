@@ -376,6 +376,7 @@ var TokenAutocomplete = /** @class */ (function () {
     };
     TokenAutocomplete.prototype.setCurrentInput = function (input, silent) {
         this.textInput.textContent = input;
+        this.enforceMaxInputLength();
         this.select.updateHasValue();
         if (silent) {
             return;

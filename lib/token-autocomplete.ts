@@ -387,6 +387,7 @@ class TokenAutocomplete {
 
     setCurrentInput(input: string, silent: boolean) {
         this.textInput.textContent = input;
+        this.enforceMaxInputLength();
         this.select.updateHasValue();
 
         if (silent) {
