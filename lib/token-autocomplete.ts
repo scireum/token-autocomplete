@@ -396,7 +396,7 @@ class TokenAutocomplete {
 
         this.container.dispatchEvent(new CustomEvent('query-changed', {
             detail: {
-                query: input
+                query: this.getCurrentInput()
             }
         }));
     }
